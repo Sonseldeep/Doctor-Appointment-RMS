@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoctorAppointmentSystem.Api", "DoctorAppointmentSystem.Api\DoctorAppointmentSystem.Api.csproj", "{AA30A016-93BD-4079-94AF-79511C875989}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoctorAppointmentSystem.Infrastructure", "DoctorAppointmentSystem.Infrastructure\DoctorAppointmentSystem.Infrastructure.csproj", "{BBA676FB-BFAB-42F6-A0EA-54347BC104D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoctorAppointmentSystem.Application", "DoctorAppointmentSystem.Application\DoctorAppointmentSystem.Application.csproj", "{06400A25-899F-4E29-B9B5-2A306F84866D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoctorAppointmentSystem.Domain", "DoctorAppointmentSystem.Domain\DoctorAppointmentSystem.Domain.csproj", "{5D7C3EFD-CA72-4D05-8572-A760DA78FCA5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA30A016-93BD-4079-94AF-79511C875989}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA30A016-93BD-4079-94AF-79511C875989}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA30A016-93BD-4079-94AF-79511C875989}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA30A016-93BD-4079-94AF-79511C875989}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBA676FB-BFAB-42F6-A0EA-54347BC104D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA676FB-BFAB-42F6-A0EA-54347BC104D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBA676FB-BFAB-42F6-A0EA-54347BC104D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBA676FB-BFAB-42F6-A0EA-54347BC104D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06400A25-899F-4E29-B9B5-2A306F84866D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06400A25-899F-4E29-B9B5-2A306F84866D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06400A25-899F-4E29-B9B5-2A306F84866D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06400A25-899F-4E29-B9B5-2A306F84866D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D7C3EFD-CA72-4D05-8572-A760DA78FCA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D7C3EFD-CA72-4D05-8572-A760DA78FCA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D7C3EFD-CA72-4D05-8572-A760DA78FCA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D7C3EFD-CA72-4D05-8572-A760DA78FCA5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
