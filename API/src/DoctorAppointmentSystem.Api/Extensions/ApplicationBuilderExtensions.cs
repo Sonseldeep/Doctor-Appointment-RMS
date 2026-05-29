@@ -1,0 +1,22 @@
+﻿using DoctorAppointmentSystem.Api.Common.Middleware;
+using DoctorAppointmentSystem.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
+
+namespace DoctorAppointmentSystem.Api.Extensions;
+
+public static class ApplicationBuilderExtensions
+{
+
+    public static IApplicationBuilder UseRequestContextLogging(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<RequestContextLoggingMiddleware>();
+        return app;
+    }
+
+    public static void ApplyMigrations(this IApplicationBuilder app)
+    {
+        using var scope = app.ApplicationServices.CreateScope();
+        using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        dbContext.Database.Migrate();
+    }
+}
