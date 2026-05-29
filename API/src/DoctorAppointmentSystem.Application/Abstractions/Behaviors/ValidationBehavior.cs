@@ -22,16 +22,19 @@ internal sealed class ValidationBehavior<TRequest, TResponse>
     {
         if (!_validators.Any())
         {
-            return await next();
+            return await next(cancellationToken);
         }
 
         var context = new ValidationContext<TRequest>(request);
 
-        var failures = _validators
-            .Select(v => v.Validate(context))
+        var validationResults = await Task.WhenAll(
+            _validators.Select(v => v.ValidateAsync(context, cancellationToken)));
+
+        var failures = validationResults
             .SelectMany(r => r.Errors)
             .Where(f => f is not null)
             .ToList();
+
 
         if (failures.Count != 0)
         {
@@ -43,6 +46,6 @@ internal sealed class ValidationBehavior<TRequest, TResponse>
             return (dynamic)errors;
         }
 
-        return await next();
+        return await next(cancellationToken);
     }
 }

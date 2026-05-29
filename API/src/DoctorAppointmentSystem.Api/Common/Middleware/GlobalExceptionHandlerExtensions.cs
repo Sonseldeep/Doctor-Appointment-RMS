@@ -1,6 +1,4 @@
-﻿using DoctorAppointmentSystem.Common.Middleware;
-
-namespace DoctorAppointmentSystem.Api.Common.Middleware;
+﻿namespace DoctorAppointmentSystem.Api.Common.Middleware;
 
 public static class GlobalExceptionHandlerExtensions
 {

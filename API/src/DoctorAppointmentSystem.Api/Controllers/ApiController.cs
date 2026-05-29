@@ -5,16 +5,16 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace DoctorAppointmentSystem.Api.Controllers;
 
 [ApiController]
-public class ApiController : ControllerBase
+public abstract class ApiController : ControllerBase
 {
     protected IActionResult Problem(List<Error> errors)
     {
-        if (errors.Count is 0)
+        if (errors.Count == 0)
         {
             return Problem();
         }
 
-        if (errors.All(error => error.Type == ErrorType.Validation))
+        if (errors.All(e => e.Type == ErrorType.Validation))
         {
             return ValidationProblem(errors);
         }
@@ -26,27 +26,36 @@ public class ApiController : ControllerBase
     {
         var statusCode = error.Type switch
         {
-            ErrorType.Conflict => StatusCodes.Status409Conflict,
             ErrorType.Validation => StatusCodes.Status400BadRequest,
+            ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
+            ErrorType.Forbidden => StatusCodes.Status403Forbidden,
             ErrorType.NotFound => StatusCodes.Status404NotFound,
-            ErrorType.Unauthorized => StatusCodes.Status403Forbidden,
-            _ => StatusCodes.Status500InternalServerError,
+            ErrorType.Conflict => StatusCodes.Status409Conflict,
+            _ => StatusCodes.Status500InternalServerError
         };
 
-        return Problem(statusCode: statusCode, detail: error.Description);
+        return Problem(
+            statusCode: statusCode,
+            title: "Request failed",
+            type: error.Code,
+            detail: error.Description);
     }
 
-    protected IActionResult ValidationProblem(List<Error> errors)
+    private IActionResult ValidationProblem(List<Error> errors)
     {
         var modelStateDictionary = new ModelStateDictionary();
 
         foreach (var error in errors)
         {
-            modelStateDictionary.AddModelError(
-                error.Code,
-                error.Description);
+            modelStateDictionary.AddModelError(error.Code, error.Description);
         }
 
-        return ValidationProblem(modelStateDictionary);
+        return ValidationProblem(new ValidationProblemDetails(modelStateDictionary)
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Validation error",
+            Type = "ValidationFailure",
+            Detail = "One or more validation errors occurred."
+        });
     }
 }

@@ -1,11 +1,8 @@
-﻿using System.Net;
-using System.Text.Json;
-using DoctorAppointmentSystem.Api.Common;
-using DoctorAppointmentSystem.Api.Common.Exceptions;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace DoctorAppointmentSystem.Common.Middleware;
+namespace DoctorAppointmentSystem.Api.Common.Middleware;
 
-public class GlobalExceptionHandlerMiddleware(
+public sealed class GlobalExceptionHandlerMiddleware(
     RequestDelegate next,
     ILogger<GlobalExceptionHandlerMiddleware> logger)
 {
@@ -15,34 +12,32 @@ public class GlobalExceptionHandlerMiddleware(
         {
             await next(context);
         }
+        catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+        {
+            context.Response.StatusCode = StatusCodes.Status499ClientClosedRequest;
+        }
         catch (Exception ex)
         {
-            logger.LogError(ex, ex.Message);
-            await HandleExceptionAsync(context, ex);
+            logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
+
+            if (context.Response.HasStarted)
+            {
+                throw;
+            }
+
+            context.Response.Clear();
+            context.Response.ContentType = "application/problem+json";
+
+            var problem = new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Type = "ServerError",
+                Title = "Server error",
+                Detail = "An unexpected error has occurred."
+            };
+
+            context.Response.StatusCode = problem.Status.Value;
+            await context.Response.WriteAsJsonAsync(problem);
         }
-    }
-
-    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
-    {
-        context.Response.ContentType = "application/json";
-
-        var (statusCode, message) = exception switch
-        {
-            // custom domain exception (you can add later)
-            AppException appEx => (appEx.StatusCode, appEx.Message),
-
-            _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred")
-        };
-
-        var response = ApiResponse<object>.ErrorResponse(message, (HttpStatusCode)statusCode);
-
-        context.Response.StatusCode = statusCode;
-
-        var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
-
-        await context.Response.WriteAsync(json);
     }
 }

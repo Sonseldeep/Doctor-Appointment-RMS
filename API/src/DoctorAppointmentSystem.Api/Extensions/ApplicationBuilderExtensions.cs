@@ -1,5 +1,4 @@
 ﻿using DoctorAppointmentSystem.Api.Common.Middleware;
-using DoctorAppointmentSystem.Common.Middleware;
 using DoctorAppointmentSystem.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
