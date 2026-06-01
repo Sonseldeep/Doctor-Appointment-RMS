@@ -78,7 +78,7 @@ public sealed class AuthController : ApiController
                 var response = new AuthResponse(success.AccessToken);
                 return Ok(response);
             },
-            errors => Problem(errors));
+            Problem);
     }
 
     [HttpPost("logout")]
