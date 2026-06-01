@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DoctorAppointmentSystem.Api.Controllers;
 
-[ApiController]
 [Route("users")]
     
 public class UsersController : ApiController
@@ -22,14 +21,11 @@ public class UsersController : ApiController
     [Authorize]
     public async Task<IActionResult> Me(CancellationToken cancellationToken)
     {
-        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var parsed = Guid.TryParse(userIdValue, out var userId);
-
-        if (!parsed)
+        if (!TryGetCurrentUserId(out var userId))
         {
             return Unauthorized();
         }
-
+        
         var query = new GetCurrentUserQuery(userId);
 
         var result = await _sender.Send(query, cancellationToken);

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using DoctorAppointmentSystem.Api.Common.Authentication;
+using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Authentication.Common.Contracts;
 using DoctorAppointmentSystem.Application.Authentication.Login;
 using DoctorAppointmentSystem.Application.Authentication.Logout;
@@ -15,10 +16,15 @@ namespace DoctorAppointmentSystem.Api.Controllers;
 public sealed class AuthController : ApiController
 {
     private readonly ISender _sender;
+    private IRefreshTokenLifetime  _refreshTokenLifetime;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public AuthController(ISender sender)
+
+    public AuthController(ISender sender, IRefreshTokenLifetime refreshTokenLifetime, IDateTimeProvider dateTimeProvider)
     {
         _sender = sender;
+        _refreshTokenLifetime = refreshTokenLifetime;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     [HttpPost("register")]
@@ -61,7 +67,8 @@ public sealed class AuthController : ApiController
     [AllowAnonymous]
     public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
     {
-        var found = Request.Cookies.TryGetValue(AuthCookies.RefreshTokenCookieName, out string? refreshToken);
+        var found = Request.Cookies.TryGetValue(AuthCookies.RefreshTokenCookieName, out var refreshToken);
+        
         if (!found || string.IsNullOrWhiteSpace(refreshToken))
         {
             return Unauthorized();
@@ -85,10 +92,7 @@ public sealed class AuthController : ApiController
     [Authorize]
     public async Task<IActionResult> Logout(CancellationToken cancellationToken)
     {
-        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var parsed = Guid.TryParse(userIdValue, out Guid userId);
-
-        if (!parsed)
+        if (!TryGetCurrentUserId(out var userId))
         {
             return Unauthorized();
         }
@@ -108,7 +112,7 @@ public sealed class AuthController : ApiController
 
     private void AppendRefreshTokenCookie(string refreshToken)
     {
-        var expiresAt = DateTimeOffset.UtcNow.AddDays(AuthCookieDefaults.RefreshTokenDays);
+        var expiresAt = DateTimeOffset.UtcNow.Add(_refreshTokenLifetime.Duration);
 
         Response.Cookies.Append(
             AuthCookies.RefreshTokenCookieName,

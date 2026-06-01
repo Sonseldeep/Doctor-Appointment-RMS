@@ -1,4 +1,5 @@
-﻿using ErrorOr;
+﻿using System.Security.Claims;
+using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -7,6 +8,11 @@ namespace DoctorAppointmentSystem.Api.Controllers;
 [ApiController]
 public abstract class ApiController : ControllerBase
 {
+    protected bool TryGetCurrentUserId(out Guid userId)
+    {
+        var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(value, out userId);
+    }
     protected IActionResult Problem(List<Error> errors)
     {
         if (errors.Count == 0)
@@ -58,4 +64,6 @@ public abstract class ApiController : ControllerBase
             Detail = "One or more validation errors occurred."
         });
     }
+    
+    
 }
