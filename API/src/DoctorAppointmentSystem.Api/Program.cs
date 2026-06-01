@@ -1,5 +1,4 @@
 using DoctorAppointmentSystem.Api;
-using DoctorAppointmentSystem.Api.Common.Middleware;
 using DoctorAppointmentSystem.Api.Extensions;
 using DoctorAppointmentSystem.Application;
 using DoctorAppointmentSystem.Infrastructure;
