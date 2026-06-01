@@ -1,0 +1,108 @@
+services:
+  hospital-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hospital
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../.containers/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hospital"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      hospital-db:
+        condition: service_healthy
+
+  # Keycloak Database (identity data: users, realms, sessions)
+  keycloak-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ../.containers/keycloak-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d keycloak"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # Keycloak (Identity Provider)
+  hospital-idp:
+    image: quay.io/keycloak/keycloak:latest
+    restart: unless-stopped
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    # import realm on startup (good for first boot). After first boot you can remove --import-realm if you want.
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+
+      # Helps when running behind port mapping. Good enough for local dev.
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY: edge
+    ports:
+      - "18080:8080"
+    volumes:
+      - ../.files/hospital-realm-export.json:/opt/keycloak/data/import/hospital-realm-export.json:ro
+
+  # Seq (logs)
+  doctorappointmentsystem-seq:
+    image: datalust/seq:latest
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINPASSWORD: "admin123"
+    ports:
+      - "5341:80"
+
+  # Your API
+  doctorappointmentsystem.api:
+    build:
+      context: .
+      dockerfile: DoctorAppointmentSystem.Api/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5000:8080"
+    depends_on:
+      hospital-db:
+        condition: service_healthy
+      hospital-idp:
+        condition: service_started
+      doctorappointmentsystem-seq:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+      # App DB
+      ConnectionStrings__Database: Host=hospital-db;Port=5432;Database=hospital;Username=postgres;Password=postgres
+
+      # If your code uses it anywhere
+      Keycloak__AuthServerUrl: http://hospital-idp:8080
+
+      # (Optional) override Seq URL via env so you don't have to edit appsettings again
+      Serilog__WriteTo__1__Args__serverUrl: http://doctorappointmentsystem-seq

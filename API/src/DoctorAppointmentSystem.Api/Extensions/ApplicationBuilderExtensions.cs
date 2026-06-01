@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DoctorAppointmentSystem.Api.Extensions;
 
-public static class ApplicationBuilderExtensions
+public static class  ApplicationBuilderExtensions
 {
 
     public static IApplicationBuilder UseRequestContextLogging(this IApplicationBuilder app)
