@@ -1,7 +1,8 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
-using DoctorAppointmentSystem.Application.Authentication.Contracts;
+using DoctorAppointmentSystem.Application.Authentication.Common;
+using DoctorAppointmentSystem.Application.Authentication.Common.Contracts;
 using ErrorOr;
 
 namespace DoctorAppointmentSystem.Application.Authentication.Login;

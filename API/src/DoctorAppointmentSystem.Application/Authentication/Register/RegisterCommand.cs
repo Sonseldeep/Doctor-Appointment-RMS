@@ -1,5 +1,5 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Messaging;
-using DoctorAppointmentSystem.Application.Authentication.Contracts;
+using DoctorAppointmentSystem.Application.Authentication.Common.Contracts;
 
 namespace DoctorAppointmentSystem.Application.Authentication.Register;
 

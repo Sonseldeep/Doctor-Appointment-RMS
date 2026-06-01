@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using DoctorAppointmentSystem.Api.Common.Authentication;
-using DoctorAppointmentSystem.Application.Authentication.Contracts;
+using DoctorAppointmentSystem.Application.Authentication.Common.Contracts;
 using DoctorAppointmentSystem.Application.Authentication.Login;
 using DoctorAppointmentSystem.Application.Authentication.Logout;
 using DoctorAppointmentSystem.Application.Authentication.Refresh;

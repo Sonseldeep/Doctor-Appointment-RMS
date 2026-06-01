@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace DoctorAppointmentSystem.Application.Authentication;
+namespace DoctorAppointmentSystem.Application.Authentication.Common;
 
 internal static class RefreshTokenGenerator
 {

@@ -1,4 +1,4 @@
-﻿namespace DoctorAppointmentSystem.Application.Authentication.Contracts;
+﻿namespace DoctorAppointmentSystem.Application.Authentication.Common.Contracts;
 
 public sealed record RegisterRequest(
     string FirstName,

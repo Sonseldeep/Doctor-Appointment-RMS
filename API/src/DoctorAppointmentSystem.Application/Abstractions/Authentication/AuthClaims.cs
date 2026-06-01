@@ -9,9 +9,9 @@ internal static class AuthClaims
     {
         Claim[] claims =
         [
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.Role.ToString()),
             new(AuthClaimTypes.TokenVersion, user.TokenVersion.ToString())
 
         ];

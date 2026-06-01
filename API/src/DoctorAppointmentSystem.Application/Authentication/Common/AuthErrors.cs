@@ -1,6 +1,6 @@
 ﻿using ErrorOr;
 
-namespace DoctorAppointmentSystem.Application.Authentication;
+namespace DoctorAppointmentSystem.Application.Authentication.Common;
 
 internal static class AuthErrors
 {
