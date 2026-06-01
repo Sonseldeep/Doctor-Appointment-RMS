@@ -41,4 +41,12 @@ public sealed class User : Entity
     }
     
     
+    public Guid TokenVersion { get; private set; } = Guid.NewGuid();
+
+    public void RotateTokenVersion()
+    {
+        TokenVersion = Guid.NewGuid();
+    }
+    
+    
 }
