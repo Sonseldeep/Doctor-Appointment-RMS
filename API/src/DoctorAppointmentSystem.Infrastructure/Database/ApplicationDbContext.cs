@@ -1,10 +1,13 @@
-﻿using DoctorAppointmentSystem.Application.Abstractions.Data;
+﻿using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
+using DoctorAppointmentSystem.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace DoctorAppointmentSystem.Infrastructure.Database;
 
 public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 {
+    public DbSet<User> Users => Set<User>();
+    public DbSet<UserRefreshToken> UserRefreshTokens => Set<UserRefreshToken>();
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
     }
