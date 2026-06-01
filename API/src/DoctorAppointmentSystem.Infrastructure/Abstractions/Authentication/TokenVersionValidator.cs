@@ -15,12 +15,12 @@ internal sealed class TokenVersionValidator
 
     public async Task ValidateAsync(TokenValidatedContext context)
     {
-        ClaimsPrincipal principal = context.Principal!;
-        string? userIdValue = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-        string? tokenVersionValue = principal.FindFirstValue(AuthClaimTypes.TokenVersion);
+        var principal = context.Principal!;
+        var userIdValue = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        var tokenVersionValue = principal.FindFirstValue(AuthClaimTypes.TokenVersion);
 
-        bool parsedUserId = Guid.TryParse(userIdValue, out Guid userId);
-        bool parsedVersion = Guid.TryParse(tokenVersionValue, out Guid tokenVersion);
+        var parsedUserId = Guid.TryParse(userIdValue, out Guid userId);
+        var parsedVersion = Guid.TryParse(tokenVersionValue, out Guid tokenVersion);
 
         if (!parsedUserId || !parsedVersion)
         {
