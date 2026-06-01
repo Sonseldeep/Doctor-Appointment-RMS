@@ -51,6 +51,9 @@ internal sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand, Lo
         {
             return UserErrors.NotFound;
         }
+        
+        user.RotateTokenVersion();
+
 
         var claims = AuthClaims.Create(user);
 

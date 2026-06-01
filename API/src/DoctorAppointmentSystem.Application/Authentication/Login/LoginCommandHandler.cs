@@ -50,6 +50,8 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
             return AuthErrors.InvalidCredentials;
         }
         
+        user.RotateTokenVersion();
+
         var claims = AuthClaims.Create(user);
         var accessToken = _jwtTokenGenerator.GenerateAccessToken(claims);
         var refreshToken = RefreshTokenGenerator.Generate();

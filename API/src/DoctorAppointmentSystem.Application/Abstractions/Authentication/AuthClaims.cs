@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using DoctorAppointmentSystem.Domain.Users;
 
-namespace DoctorAppointmentSystem.Application.Authentication;
+namespace DoctorAppointmentSystem.Application.Abstractions.Authentication;
 
 internal static class AuthClaims
 {
@@ -11,7 +11,9 @@ internal static class AuthClaims
         [
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new(AuthClaimTypes.TokenVersion, user.TokenVersion.ToString())
+
         ];
 
         return claims;

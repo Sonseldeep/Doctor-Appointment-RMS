@@ -63,6 +63,14 @@ public static class DependencyInjection
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async context =>
+                    {
+                        var validator = context.HttpContext.RequestServices.GetRequiredService<TokenVersionValidator>();
+                        await validator.ValidateAsync(context);
+                    }
+                };
             });
 
         services.AddAuthorization();
@@ -73,6 +81,8 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IRefreshTokenLifetime, RefreshTokenLifetime>();
+        services.AddScoped<TokenVersionValidator>();
+
 
         return services;
     }
