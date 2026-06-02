@@ -8,7 +8,7 @@ public sealed class User : Entity
     {
     }
 
-    public User(
+    private User(
         Guid id,
         string firstName,
         string lastName,
@@ -22,6 +22,7 @@ public sealed class User : Entity
         Email = email;
         PasswordHash = passwordHash;
         Role = role;
+        TokenVersion = Guid.NewGuid();
     }
 
     public string FirstName { get; private set; } = string.Empty;
@@ -33,6 +34,8 @@ public sealed class User : Entity
     public string PasswordHash { get; private set; } = string.Empty;
 
     public UserRole Role { get; private set; }
+    public Guid TokenVersion { get; private set; } 
+
 
     public static User Create(string firstName, string lastName, string email, string passwordHash, UserRole role)
     {
@@ -41,7 +44,6 @@ public sealed class User : Entity
     }
     
     
-    public Guid TokenVersion { get; private set; } = Guid.NewGuid();
 
     public void RotateTokenVersion()
     {

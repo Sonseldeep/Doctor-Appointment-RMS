@@ -1,6 +1,6 @@
 ﻿namespace DoctorAppointmentSystem.Domain.Abstractions;
 
-public abstract class Entity
+public abstract class Entity 
 {
     protected Entity(Guid id)
     {

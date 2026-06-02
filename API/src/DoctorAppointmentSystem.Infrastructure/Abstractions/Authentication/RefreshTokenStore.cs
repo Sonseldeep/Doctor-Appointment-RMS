@@ -24,7 +24,7 @@ internal sealed class RefreshTokenStore : IRefreshTokenStore
 
         if (existing is null)
         {
-            var entity = new UserRefreshToken(userId, tokenHash, expiresAt);
+            var entity = UserRefreshToken.Create(userId, refreshToken, expiresAt);
             await _dbContext.UserRefreshTokens.AddAsync(entity, cancellationToken);
             return;
         }

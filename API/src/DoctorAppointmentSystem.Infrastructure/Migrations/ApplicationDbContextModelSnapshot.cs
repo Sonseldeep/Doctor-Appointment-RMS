@@ -65,7 +65,8 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.UserRefreshToken", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("ExpiresAt")
@@ -79,7 +80,13 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.HasKey("UserId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("user_refresh_tokens", "hospital_management");
                 });

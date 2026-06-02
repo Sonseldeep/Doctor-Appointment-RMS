@@ -1,12 +1,14 @@
-﻿namespace DoctorAppointmentSystem.Domain.Users;
+﻿using DoctorAppointmentSystem.Domain.Abstractions;
 
-public sealed class UserRefreshToken
+namespace DoctorAppointmentSystem.Domain.Users;
+
+public sealed class UserRefreshToken : Entity
 {
     private UserRefreshToken()
     {
     }
 
-    public UserRefreshToken(Guid userId, string tokenHash, DateTimeOffset expiresAt)
+    private UserRefreshToken( Guid userId, string tokenHash, DateTimeOffset expiresAt) : base(Guid.NewGuid())
     {
         UserId = userId;
         TokenHash = tokenHash;
@@ -20,6 +22,11 @@ public sealed class UserRefreshToken
     public DateTimeOffset ExpiresAt { get; private set; }
 
     public DateTimeOffset? RevokedAt { get; private set; }
+    
+    public static UserRefreshToken Create(Guid userId, string tokenHash, DateTimeOffset expiresAt)
+    {
+        return new UserRefreshToken(userId, tokenHash, expiresAt);
+    }
 
     public void Update(string tokenHash, DateTimeOffset expiresAt)
     {

@@ -12,7 +12,7 @@ internal sealed class UserRefreshTokenConfiguration : IEntityTypeConfiguration<U
     {
         builder.ToTable("user_refresh_tokens");
 
-        builder.HasKey(x => x.UserId);
+        builder.HasKey(x => x.Id);
 
         builder.Property(x => x.TokenHash)
             .HasMaxLength(TokenHashMaxLength)
