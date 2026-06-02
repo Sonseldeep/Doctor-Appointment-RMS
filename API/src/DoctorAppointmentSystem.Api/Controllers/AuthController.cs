@@ -1,6 +1,5 @@
 ﻿using DoctorAppointmentSystem.Api.Common.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
-using DoctorAppointmentSystem.Application.Authentication.ResendOtp;
 using DoctorAppointmentSystem.Application.Features.Authentication.ChangePassword;
 using DoctorAppointmentSystem.Application.Features.Authentication.Common.Contracts;
 using DoctorAppointmentSystem.Application.Features.Authentication.ForgetPassword;
@@ -8,6 +7,7 @@ using DoctorAppointmentSystem.Application.Features.Authentication.Login;
 using DoctorAppointmentSystem.Application.Features.Authentication.Logout;
 using DoctorAppointmentSystem.Application.Features.Authentication.Refresh;
 using DoctorAppointmentSystem.Application.Features.Authentication.Register;
+using DoctorAppointmentSystem.Application.Features.Authentication.ResendOtp;
 using DoctorAppointmentSystem.Application.Features.Authentication.ResetPassword;
 using DoctorAppointmentSystem.Application.Features.Authentication.VerifyEmail;
 using MediatR;
