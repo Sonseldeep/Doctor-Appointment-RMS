@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using DoctorAppointmentSystem.Application.Users.GetCurrentUser;
+﻿using DoctorAppointmentSystem.Application.Users.GetCurrentUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
