@@ -28,8 +28,18 @@ public abstract class ApiController : ControllerBase
         return Problem(errors[0]);
     }
 
+    
     protected IActionResult Problem(Error error)
     {
+        if (error.Code == "Otp.TooManyRequests")
+        {
+            return Problem(
+                statusCode: StatusCodes.Status429TooManyRequests,
+                title: "Too many requests",
+                type: error.Code,
+                detail: error.Description);
+        }
+
         var statusCode = error.Type switch
         {
             ErrorType.Validation => StatusCodes.Status400BadRequest,
