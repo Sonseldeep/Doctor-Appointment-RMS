@@ -58,4 +58,8 @@ public sealed class User : Entity
         IsEmailVerified = true;
     }
     
+    public void ChangePasswordHash(string passwordHash)
+    {
+        PasswordHash = passwordHash;
+    }
 }

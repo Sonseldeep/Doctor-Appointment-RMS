@@ -95,6 +95,7 @@ public static class DependencyInjection
        
         services.AddScoped<IOtpGenerator, OtpGenerator>();
         services.AddScoped<IOtpStore, OtpStore>();
+        services.AddScoped<IOtpRequestLimiter, OtpRequestLimiter>();
 
 
 

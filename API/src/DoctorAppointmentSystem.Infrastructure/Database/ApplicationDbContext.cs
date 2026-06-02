@@ -10,6 +10,8 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<UserRefreshToken> UserRefreshTokens => Set<UserRefreshToken>();
 
     public DbSet<UserOtp> UserOtps => Set<UserOtp>();
+    public DbSet<OtpRequestLimit> OtpRequestLimits => Set<OtpRequestLimit>();
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
     }

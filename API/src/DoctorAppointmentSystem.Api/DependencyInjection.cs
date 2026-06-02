@@ -14,6 +14,10 @@ public static class DependencyInjection
         
         services.AddSwaggerDependencies();
 
+        services.AddRateLimiting();
+
         return services;
     }
 }
+
+

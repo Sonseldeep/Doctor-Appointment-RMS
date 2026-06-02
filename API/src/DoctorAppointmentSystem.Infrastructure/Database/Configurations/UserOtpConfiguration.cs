@@ -14,6 +14,11 @@ public sealed class UserOtpConfiguration : IEntityTypeConfiguration<UserOtp>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.UserId).IsRequired();
+
+        builder.Property(x => x.Purpose)
+            .IsRequired();
+
         builder.Property(x => x.OtpHash)
             .HasMaxLength(OtpHashMaxLength)
             .IsRequired();
@@ -21,11 +26,15 @@ public sealed class UserOtpConfiguration : IEntityTypeConfiguration<UserOtp>
         builder.Property(x => x.ExpiresAt)
             .IsRequired();
 
-        builder.Property(x => x.UsedAt);
+        builder.Property(x => x.CreatedAt)
+            .IsRequired();
 
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(x => x.UsedAt);
+        builder.Property(x => x.InvalidatedAt);
+
+        builder.Property(x => x.FailedAttempts)
+            .IsRequired();
+
+        builder.HasIndex(x => new { x.UserId, x.Purpose });
     }
 }

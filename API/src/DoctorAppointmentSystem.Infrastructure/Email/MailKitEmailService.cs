@@ -1,4 +1,5 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Email;
+using DoctorAppointmentSystem.Domain.Users;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
@@ -24,12 +25,32 @@ public class MailKitEmailService : IEmailService
         string toEmail,
         string toName,
         string otp,
+        OtpPurpose purpose,
         CancellationToken cancellationToken)
     {
         try
         {
             if (string.IsNullOrWhiteSpace(toEmail))
                 throw new ArgumentException("Recipient email is required", nameof(toEmail));
+            
+            var (subject, htmlBody) = purpose switch
+            {
+                OtpPurpose.EmailVerification => (
+                    "Verify your email - Doctor Appointment System",
+                    EmailTemplates.OtpVerification(toName, otp)
+                ),
+
+                OtpPurpose.PasswordReset => (
+                    "Reset your password - Doctor Appointment System",
+                    EmailTemplates.PasswordResetOtp(toName, otp)
+                ),
+
+                _ => (
+                    "Your OTP - Doctor Appointment System",
+                    EmailTemplates.OtpVerification(toName, otp)
+                )
+            };
+
 
             var message = new MimeMessage();
 
@@ -43,11 +64,11 @@ public class MailKitEmailService : IEmailService
                 toEmail.Trim()
             ));
 
-            message.Subject = "Verify your email - Doctor Appointment System";
+            message.Subject = subject;
 
             var bodyBuilder = new BodyBuilder
             {
-                HtmlBody = EmailTemplates.OtpVerification(toName, otp)
+                HtmlBody = htmlBody
             };
 
             message.Body = bodyBuilder.ToMessageBody();

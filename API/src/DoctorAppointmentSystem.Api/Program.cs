@@ -39,6 +39,8 @@ app.UseHttpsRedirection();
 app.UseRequestContextLogging();
 app.UseSerilogRequestLogging();
 
+app.UseRateLimiter();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
