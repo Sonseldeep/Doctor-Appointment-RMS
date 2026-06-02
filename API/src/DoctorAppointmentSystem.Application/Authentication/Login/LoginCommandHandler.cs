@@ -3,6 +3,7 @@ using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Authentication.Common;
 using DoctorAppointmentSystem.Application.Authentication.Common.Contracts;
+using DoctorAppointmentSystem.Domain.Users;
 using ErrorOr;
 
 namespace DoctorAppointmentSystem.Application.Authentication.Login;
@@ -49,6 +50,11 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
         if (!isValidPassword)
         {
             return AuthErrors.InvalidCredentials;
+        }
+
+        if (!user.IsEmailVerified)
+        {
+            return UserErrors.NotVerified;
         }
         
         user.RotateTokenVersion();
