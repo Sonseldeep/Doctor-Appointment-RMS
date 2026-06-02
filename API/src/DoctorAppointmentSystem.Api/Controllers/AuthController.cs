@@ -5,6 +5,7 @@ using DoctorAppointmentSystem.Application.Authentication.Login;
 using DoctorAppointmentSystem.Application.Authentication.Logout;
 using DoctorAppointmentSystem.Application.Authentication.Refresh;
 using DoctorAppointmentSystem.Application.Authentication.Register;
+using DoctorAppointmentSystem.Application.Authentication.VerifyEmail;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +42,19 @@ public sealed class AuthController : ApiController
 
         return result.Match(
             _ => Ok(new { message = "User registered successfully." }),  
+            Problem);
+    }
+
+    [HttpPost("verify-email")]
+    [AllowAnonymous]
+    public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new VerifyEmailCommand(request.Email, request.Otp);
+        var result = await _sender.Send(command, cancellationToken);
+        
+        return result.Match(
+            _ => Ok(new { message = "Email verified successfully. You can now log in" }),
             Problem);
     }
 

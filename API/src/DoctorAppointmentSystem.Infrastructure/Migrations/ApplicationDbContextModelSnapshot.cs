@@ -39,6 +39,9 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsEmailVerified")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -61,6 +64,33 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("users", "hospital_management");
+                });
+
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.UserOtp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("OtpHash")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset?>("UsedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("user_otps", "hospital_management");
                 });
 
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.UserRefreshToken", b =>
@@ -89,6 +119,15 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("user_refresh_tokens", "hospital_management");
+                });
+
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.UserOtp", b =>
+                {
+                    b.HasOne("DoctorAppointmentSystem.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.UserRefreshToken", b =>
