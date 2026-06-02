@@ -3,7 +3,6 @@ using DoctorAppointmentSystem.Application.Abstractions.Email;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Abstractions.Otp;
-using DoctorAppointmentSystem.Application.Authentication.ResendOtp;
 using DoctorAppointmentSystem.Domain.Users;
 using ErrorOr;
 
