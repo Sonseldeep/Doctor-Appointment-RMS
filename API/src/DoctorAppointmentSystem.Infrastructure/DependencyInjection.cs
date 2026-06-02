@@ -1,8 +1,12 @@
 ﻿using System.Text;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
+using DoctorAppointmentSystem.Application.Abstractions.Email;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
+using DoctorAppointmentSystem.Application.Abstractions.Otp;
 using DoctorAppointmentSystem.Infrastructure.Abstractions.Authentication;
 using DoctorAppointmentSystem.Infrastructure.Database;
+using DoctorAppointmentSystem.Infrastructure.Email;
+using DoctorAppointmentSystem.Infrastructure.Otp;
 using DoctorAppointmentSystem.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +31,9 @@ public static class DependencyInjection
         });
         
         services.AddAuthenticationInfrastructure(configuration);
+        
+        
+
 
            
         return services;
@@ -82,6 +89,17 @@ public static class DependencyInjection
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IRefreshTokenLifetime, RefreshTokenLifetime>();
         services.AddScoped<TokenVersionValidator>();
+        
+        services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
+        services.AddScoped<IEmailService, MailKitEmailService>();
+       
+        services.AddScoped<IOtpGenerator, OtpGenerator>();
+        services.AddScoped<IOtpStore, OtpStore>();
+
+
+
+        
+        
 
 
         return services;

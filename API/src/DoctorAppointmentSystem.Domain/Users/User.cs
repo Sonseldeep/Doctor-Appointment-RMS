@@ -23,6 +23,7 @@ public sealed class User : Entity
         PasswordHash = passwordHash;
         Role = role;
         TokenVersion = Guid.NewGuid();
+        IsEmailVerified = false;
     }
 
     public string FirstName { get; private set; } = string.Empty;
@@ -34,7 +35,9 @@ public sealed class User : Entity
     public string PasswordHash { get; private set; } = string.Empty;
 
     public UserRole Role { get; private set; }
-    public Guid TokenVersion { get; private set; } 
+    public Guid TokenVersion { get; private set; }
+
+    public bool IsEmailVerified { get; private set; }
 
 
     public static User Create(string firstName, string lastName, string email, string passwordHash, UserRole role)
@@ -49,6 +52,10 @@ public sealed class User : Entity
     {
         TokenVersion = Guid.NewGuid();
     }
-    
+
+    public void VerifyEmail()
+    {
+        IsEmailVerified = true;
+    }
     
 }

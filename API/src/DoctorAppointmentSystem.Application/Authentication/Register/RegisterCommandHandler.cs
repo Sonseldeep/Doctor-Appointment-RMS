@@ -1,8 +1,9 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Authentication;
+using DoctorAppointmentSystem.Application.Abstractions.Email;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
+using DoctorAppointmentSystem.Application.Abstractions.Otp;
 using DoctorAppointmentSystem.Application.Authentication.Common;
-using DoctorAppointmentSystem.Application.Authentication.Common.Contracts;
 using DoctorAppointmentSystem.Domain.Users;
 using ErrorOr;
 
@@ -14,22 +15,43 @@ public class RegisterCommandHandler :
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IUnitOfWork _unitOfWork;
+    
+    private readonly IOtpGenerator _otpGenerator;
+    private readonly IOtpStore _otpStore;
+    private readonly IEmailService _emailService;
+    private readonly IDateTimeProvider _dateTimeProvider;
+    
+    private static readonly TimeSpan OtpLifetime = TimeSpan.FromMinutes(10);
 
-    public RegisterCommandHandler(IUserRepository userRepository, IPasswordHasher passwordHasher, IUnitOfWork unitOfWork)
+
+    public RegisterCommandHandler(
+        IUserRepository userRepository,
+        IPasswordHasher passwordHasher, 
+        IUnitOfWork unitOfWork,
+        IOtpGenerator otpGenerator,
+        IEmailService emailService,
+        IDateTimeProvider dateTimeProvider,
+        IOtpStore otpStore)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _unitOfWork = unitOfWork;
+        _otpGenerator = otpGenerator;
+        _emailService = emailService;
+        _dateTimeProvider = dateTimeProvider;
+        _otpStore = otpStore;
     }
 
     public async Task<ErrorOr<Success>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
+        // 1. Check email already exists
        var existingUser = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
        if (existingUser is not null)
        {
            return AuthErrors.EmailAlreadyExists;
        }
        
+       // 2. Create user (unverified by default)
        var passwordHash = _passwordHasher.Hash(request.Password);
 
        var role = ParseRole(request.Role);
@@ -42,6 +64,19 @@ public class RegisterCommandHandler :
        
        await _userRepository.AddAsync(user, cancellationToken);
        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+       // 3. Generate and store OTP
+       var otp = _otpGenerator.Generate();
+       var expiresAt = _dateTimeProvider.UtcNow.Add(OtpLifetime);
+       await _otpStore.StoreAsync(user.Id, otp, expiresAt, cancellationToken);
+       await _unitOfWork.SaveChangesAsync(cancellationToken);
+       
+       // 4. Send OTP email
+       await _emailService.SendOtpEmailAsync(
+           user.Email,
+           $"{user.FirstName} {user.LastName}",
+           otp,
+           cancellationToken);
        
        return Result.Success;
 

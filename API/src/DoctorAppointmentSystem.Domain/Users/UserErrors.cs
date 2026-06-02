@@ -8,4 +8,10 @@ public static class UserErrors
         code: "User.NotFound",
         description: "The user with the specified identifier was not found.");
     
+    
+    public static Error NotVerified => Error.Forbidden(
+        code: "User.NotVerified",
+        description: "Please verify your email address before logging in."
+        );
+    
 }
