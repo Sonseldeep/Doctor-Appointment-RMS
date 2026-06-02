@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using DoctorAppointmentSystem.Api.Common.Authentication;
+﻿using DoctorAppointmentSystem.Api.Common.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Authentication.Common.Contracts;
 using DoctorAppointmentSystem.Application.Authentication.Login;
@@ -16,7 +15,7 @@ namespace DoctorAppointmentSystem.Api.Controllers;
 public sealed class AuthController : ApiController
 {
     private readonly ISender _sender;
-    private IRefreshTokenLifetime  _refreshTokenLifetime;
+    private readonly IRefreshTokenLifetime  _refreshTokenLifetime;
     private readonly IDateTimeProvider _dateTimeProvider;
 
 
@@ -41,7 +40,7 @@ public sealed class AuthController : ApiController
         var result = await _sender.Send(command, cancellationToken);
 
         return result.Match(
-            Ok,
+            _ => Ok(new { message = "User registered successfully." }),  
             Problem);
     }
 
@@ -112,7 +111,7 @@ public sealed class AuthController : ApiController
 
     private void AppendRefreshTokenCookie(string refreshToken)
     {
-        var expiresAt = DateTimeOffset.UtcNow.Add(_refreshTokenLifetime.Duration);
+        var expiresAt = _dateTimeProvider.UtcNow.Add(_refreshTokenLifetime.Duration);
 
         Response.Cookies.Append(
             AuthCookies.RefreshTokenCookieName,
