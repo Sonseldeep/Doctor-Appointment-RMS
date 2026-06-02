@@ -8,4 +8,4 @@ public sealed record RegisterCommand(
     string LastName,
     string Email,
     string Password,
-    string Role) : ICommand<AuthResponse>;
+    string Role) : ICommand;
