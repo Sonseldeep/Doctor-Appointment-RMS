@@ -33,22 +33,18 @@ public class MailKitEmailService : IEmailService
 
             var message = new MimeMessage();
 
-            // FROM
             message.From.Add(new MailboxAddress(
                 _options.FromName,
                 _options.FromEmail.Trim()
             ));
 
-            // TO (❗ THIS WAS YOUR MAIN BUG)
             message.To.Add(new MailboxAddress(
                 toName,
                 toEmail.Trim()
             ));
 
-            // SUBJECT
             message.Subject = "Verify your email - Doctor Appointment System";
 
-            // BODY
             var bodyBuilder = new BodyBuilder
             {
                 HtmlBody = EmailTemplates.OtpVerification(toName, otp)
@@ -58,7 +54,6 @@ public class MailKitEmailService : IEmailService
 
             using var client = new SmtpClient();
 
-            // CONNECT (Gmail requires STARTTLS on 587)
             await client.ConnectAsync(
                 _options.Host,
                 _options.Port,
@@ -66,17 +61,14 @@ public class MailKitEmailService : IEmailService
                 cancellationToken
             );
 
-            // AUTH
             await client.AuthenticateAsync(
                 _options.Username,
                 _options.Password,
                 cancellationToken
             );
 
-            // SEND
             await client.SendAsync(message, cancellationToken);
 
-            // DISCONNECT
             await client.DisconnectAsync(true, cancellationToken);
 
             _logger.LogInformation("OTP email sent successfully to {Email}", toEmail);
