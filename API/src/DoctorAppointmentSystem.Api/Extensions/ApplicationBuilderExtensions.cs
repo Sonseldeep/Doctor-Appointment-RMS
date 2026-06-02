@@ -6,11 +6,15 @@ namespace DoctorAppointmentSystem.Api.Extensions;
 
 public static class ApplicationBuilderExtensions
 {
+    
+    public static void UseGlobalExceptionHandler(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+    }
 
-    public static IApplicationBuilder UseRequestContextLogging(this IApplicationBuilder app)
+    public static void UseRequestContextLogging(this IApplicationBuilder app)
     {
         app.UseMiddleware<RequestContextLoggingMiddleware>();
-        return app;
     }
 
     public static void ApplyMigrations(this IApplicationBuilder app)

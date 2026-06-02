@@ -12,11 +12,11 @@ public class RequestContextLoggingMiddleware
         _next = next;
     }
 
-    public Task Invoke(HttpContext httpContext)
+    public async Task Invoke(HttpContext httpContext)
     {
         using (LogContext.PushProperty("CorrelationId", GetCorrelationId(httpContext)))
         {
-            return _next(httpContext);
+            await _next(httpContext);
         }
     }
 
