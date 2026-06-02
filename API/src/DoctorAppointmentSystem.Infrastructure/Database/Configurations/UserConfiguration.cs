@@ -38,5 +38,8 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Role)
             .HasConversion<int>()
             .IsRequired();
+        
+        builder.Property(x => x.TokenVersion)
+            .IsRequired();
     }
 }
