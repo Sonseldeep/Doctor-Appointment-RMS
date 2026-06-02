@@ -14,40 +14,59 @@ internal sealed class OtpStore : IOtpStore
         _dbContext = dbContext;
     }
 
+    public async Task InvalidateActiveAsync(
+        Guid userId,
+        OtpPurpose purpose,
+        DateTimeOffset utcNow,
+        CancellationToken cancellationToken)
+    {
+        var actives = await _dbContext.UserOtps
+            .Where(x => x.UserId == userId
+                        && x.Purpose == purpose
+                        && x.UsedAt == null
+                        && x.InvalidatedAt == null)
+            .ToListAsync(cancellationToken);
+
+        foreach (var otp in actives)
+        {
+            otp.Invalidate(utcNow);
+        }
+    }
+
     public async Task StoreAsync(
         Guid userId,
+        OtpPurpose purpose,
         string otp,
         DateTimeOffset expiresAt,
         CancellationToken cancellationToken)
     {
+        var utcNow = DateTimeOffset.UtcNow;
         var otpHash = OtpHash.Compute(otp);
 
-        var existing = await _dbContext
-            .UserOtps
-            .Where(x => x.UserId == userId && x.UsedAt == null)
-            .ToListAsync(cancellationToken);
+        await InvalidateActiveAsync(userId, purpose, utcNow, cancellationToken);
 
-        _dbContext.UserOtps.RemoveRange(existing);
-
-        var entity = UserOtp.Create(userId, otpHash, expiresAt);
+        var entity = UserOtp.Create(userId, purpose, otpHash, expiresAt, utcNow);
         await _dbContext.UserOtps.AddAsync(entity, cancellationToken);
     }
 
     public async Task<bool> ValidateAndConsumeAsync(
         Guid userId,
+        OtpPurpose purpose,
         string otp,
         DateTimeOffset utcNow,
         CancellationToken cancellationToken)
     {
         var otpHash = OtpHash.Compute(otp);
 
-        var entity = await _dbContext
-            .UserOtps
+        var entity = await _dbContext.UserOtps
             .SingleOrDefaultAsync(
-                x => x.UserId == userId && x.OtpHash == otpHash,
+                x => x.UserId == userId
+                     && x.Purpose == purpose
+                     && x.OtpHash == otpHash
+                     && x.InvalidatedAt == null,
                 cancellationToken);
 
-        if (entity is null || !entity.IsValid(utcNow))
+        if (entity is null || !entity.IsActive(utcNow))
         {
             return false;
         }

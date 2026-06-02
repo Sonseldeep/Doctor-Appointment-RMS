@@ -23,6 +23,34 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.OtpRequestLimit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<int>("Purpose")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("WindowStartUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email", "Purpose")
+                        .IsUnique();
+
+                    b.ToTable("otp_request_limits", "hospital_management");
+                });
+
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -72,13 +100,25 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("FailedAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("InvalidatedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("OtpHash")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Purpose")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset?>("UsedAt")
                         .HasColumnType("datetimeoffset");
@@ -88,7 +128,7 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "Purpose");
 
                     b.ToTable("user_otps", "hospital_management");
                 });
@@ -119,15 +159,6 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("user_refresh_tokens", "hospital_management");
-                });
-
-            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.UserOtp", b =>
-                {
-                    b.HasOne("DoctorAppointmentSystem.Domain.Users.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.UserRefreshToken", b =>
