@@ -1,5 +1,4 @@
-﻿using DoctorAppointmentSystem.Application.Authentication.ResendOtp;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace DoctorAppointmentSystem.Application.Features.Authentication.ResendOtp;
 
