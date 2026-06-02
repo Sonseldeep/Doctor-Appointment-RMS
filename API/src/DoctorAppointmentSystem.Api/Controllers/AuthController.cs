@@ -185,7 +185,7 @@ public sealed class AuthController : ApiController
                 DeleteRefreshTokenCookie();
                 return NoContent();
             },
-            errors => Problem(errors));
+            Problem);
     }
 
     private void AppendRefreshTokenCookie(string refreshToken)
