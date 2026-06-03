@@ -5,9 +5,18 @@ import {
   registerSchema,
 } from "../schemas/auth.schema";
 
-export type LoginDto = z.infer<typeof loginSchema>;
+export type LoginDto = {
+  email: string;
+  password: string;
+};
 
-export type RegisterDto = z.infer<typeof registerSchema>;
+export type RegisterDto = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: string;
+};
 
 export interface AuthResponse {
   accessToken: string;
