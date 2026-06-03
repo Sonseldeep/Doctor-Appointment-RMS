@@ -9,7 +9,7 @@ public static class AddCorsExtensions
             options.AddPolicy("AllowSpecificOrigin",
                 corsPolicyBuilder =>
                 {
-                    corsPolicyBuilder.WithOrigins("http://localhost:5173")
+                    corsPolicyBuilder.WithOrigins("http://localhost:3000")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials()

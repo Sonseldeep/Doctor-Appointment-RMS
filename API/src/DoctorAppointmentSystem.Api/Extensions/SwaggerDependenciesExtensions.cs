@@ -25,6 +25,7 @@ public static class SwaggerDependenciesExtensions
             {
                 [new OpenApiSecuritySchemeReference("bearer", document)] = []
             });
+            
         });
 
         return services;

@@ -29,7 +29,8 @@ internal sealed class GetCurrentUserHandler : IQueryHandler<GetCurrentUserQuery,
             FirstName: user.FirstName,
             LastName: user.LastName,
             Email: user.Email,
-            Role: user.Role.ToString());
+            Role: user.Role.ToString(),
+            ProfilePhotoUrl: user.ProfilePhotoUrl);
 
         return response;
     }
