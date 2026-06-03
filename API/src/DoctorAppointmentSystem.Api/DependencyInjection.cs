@@ -4,7 +4,7 @@ namespace DoctorAppointmentSystem.Api;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
+    public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration config)
     {
         services.AddControllers();
         
@@ -15,6 +15,7 @@ public static class DependencyInjection
         services.AddSwaggerDependencies();
 
         services.AddRateLimiting();
+        services.AddCorsCollection(config);
 
         return services;
     }
