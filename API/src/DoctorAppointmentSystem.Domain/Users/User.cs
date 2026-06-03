@@ -39,6 +39,8 @@ public sealed class User : Entity
 
     public bool IsEmailVerified { get; private set; }
 
+    public string? ProfilePhotoUrl { get; private set; }
+
 
     public static User Create(string firstName, string lastName, string email, string passwordHash, UserRole role)
     {
@@ -61,5 +63,10 @@ public sealed class User : Entity
     public void ChangePasswordHash(string passwordHash)
     {
         PasswordHash = passwordHash;
+    }
+
+    public void UpdateProfilePhoto(string url)
+    {
+        ProfilePhotoUrl = url;
     }
 }
