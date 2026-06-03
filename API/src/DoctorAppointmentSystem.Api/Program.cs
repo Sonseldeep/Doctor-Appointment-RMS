@@ -11,14 +11,14 @@ builder.Host.UseSerilog((context, configuration) =>
 
 builder.Services
     .AddApplication()
-    .AddPresentation()
+    .AddPresentation(builder.Configuration)
     .AddInfrastructure(builder.Configuration);
 
-builder.Services.AddCorsCollection();
 
 var app = builder.Build();
 
 app.UseGlobalExceptionHandler();
+app.UseHttpsRedirection();
 
 
 if (app.Environment.IsDevelopment())
@@ -34,7 +34,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowSpecificOrigin");
-app.UseHttpsRedirection();
 
 app.UseRequestContextLogging();
 app.UseSerilogRequestLogging();
