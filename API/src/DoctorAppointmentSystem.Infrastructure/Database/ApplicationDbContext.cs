@@ -1,6 +1,7 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Domain.Appointments;
 using DoctorAppointmentSystem.Domain.Doctor;
+using DoctorAppointmentSystem.Domain.Patients;
 using DoctorAppointmentSystem.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,9 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<DoctorProfile> DoctorProfiles => Set<DoctorProfile>();
 
     public DbSet<Appointment> Appointments => Set<Appointment>();
+    
+    public DbSet<PatientProfile> PatientProfiles => Set<PatientProfile>();
+
 
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
