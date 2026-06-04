@@ -1,4 +1,5 @@
-﻿using DoctorAppointmentSystem.Api.Extensions;
+﻿using System.Text.Json.Serialization;
+using DoctorAppointmentSystem.Api.Extensions;
 
 namespace DoctorAppointmentSystem.Api;
 
@@ -6,7 +7,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration config)
     {
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
         
         services.AddProblemDetails();
         
