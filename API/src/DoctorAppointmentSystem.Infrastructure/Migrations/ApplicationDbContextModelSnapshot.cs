@@ -103,6 +103,37 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                     b.ToTable("doctor_profiles", "hospital_management");
                 });
 
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Patients.PatientProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("Sex")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("patient_profiles", "hospital_management");
+                });
+
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.OtpRequestLimit", b =>
                 {
                     b.Property<Guid>("Id")
