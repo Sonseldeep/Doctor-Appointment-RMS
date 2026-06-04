@@ -18,7 +18,7 @@ internal static class EmailTemplates
                         <!-- Header -->
                         <div style="background:#2563eb; padding:32px; text-align:center;">
                             <h1 style="color:#ffffff; margin:0; font-size:24px;">
-                                Doctor Appointment System
+                                DoctorProfile Appointment System
                             </h1>
                         </div>
 
@@ -43,7 +43,7 @@ internal static class EmailTemplates
 
                         <!-- Footer -->
                         <div style="background:#f4f4f4; padding:16px; text-align:center; font-size:12px; color:#888;">
-                            © 2026 Doctor Appointment System. All rights reserved.
+                            © 2026 DoctorProfile Appointment System. All rights reserved.
                         </div>
 
                     </div>
@@ -62,7 +62,7 @@ internal static class EmailTemplates
                 <body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:0;">
                   <div style="max-width:600px; margin:40px auto; background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
                     <div style="background:#ef4444; padding:32px; text-align:center;">
-                      <h1 style="color:#ffffff; margin:0; font-size:24px;">Doctor Appointment System</h1>
+                      <h1 style="color:#ffffff; margin:0; font-size:24px;">DoctorProfile Appointment System</h1>
                     </div>
                     <div style="padding:32px;">
                       <p>Hello <strong>{name}</strong>,</p>
@@ -74,7 +74,7 @@ internal static class EmailTemplates
                       <p>If you did not request a password reset, please ignore this email.</p>
                     </div>
                     <div style="background:#f4f4f4; padding:16px; text-align:center; font-size:12px; color:#888;">
-                      © 2026 Doctor Appointment System. All rights reserved.
+                      © 2026 DoctorProfile Appointment System. All rights reserved.
                     </div>
                   </div>
                 </body>

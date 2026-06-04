@@ -36,17 +36,17 @@ public class MailKitEmailService : IEmailService
             var (subject, htmlBody) = purpose switch
             {
                 OtpPurpose.EmailVerification => (
-                    "Verify your email - Doctor Appointment System",
+                    "Verify your email - DoctorProfile Appointment System",
                     EmailTemplates.OtpVerification(toName, otp)
                 ),
 
                 OtpPurpose.PasswordReset => (
-                    "Reset your password - Doctor Appointment System",
+                    "Reset your password - DoctorProfile Appointment System",
                     EmailTemplates.PasswordResetOtp(toName, otp)
                 ),
 
                 _ => (
-                    "Your OTP - Doctor Appointment System",
+                    "Your OTP - DoctorProfile Appointment System",
                     EmailTemplates.OtpVerification(toName, otp)
                 )
             };

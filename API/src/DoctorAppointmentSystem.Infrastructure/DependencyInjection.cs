@@ -1,5 +1,7 @@
 ﻿using System.Text;
+using DoctorAppointmentSystem.Application.Abstractions.Appointments;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
+using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Email;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Otp;
@@ -99,6 +101,9 @@ public static class DependencyInjection
         services.AddScoped<IOtpGenerator, OtpGenerator>();
         services.AddScoped<IOtpStore, OtpStore>();
         services.AddScoped<IOtpRequestLimiter, OtpRequestLimiter>();
+        
+        services.AddScoped<IDoctorProfileRepository, DoctorProfileRepository>();
+        services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
 
 

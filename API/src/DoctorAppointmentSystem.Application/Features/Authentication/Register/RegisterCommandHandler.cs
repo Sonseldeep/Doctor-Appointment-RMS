@@ -54,13 +54,19 @@ public class RegisterCommandHandler :
        // 2. Create user (unverified by default)
        var passwordHash = _passwordHasher.Hash(request.Password);
 
-       var role = ParseRole(request.Role);
+       var roleResult = ParseRole(request.Role);
+       
+       if (roleResult.IsError)
+       {
+           return roleResult.Errors;
+       }
        
        var user = User.Create(
            request.FirstName,
            request.LastName,
-           request.Email, passwordHash,
-           role);
+           request.Email,
+           passwordHash,
+           roleResult.Value);
        
        await _userRepository.AddAsync(user, cancellationToken);
        await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -85,16 +91,14 @@ public class RegisterCommandHandler :
 
     }
     
-    private static UserRole ParseRole(string role)
+    private static ErrorOr<UserRole> ParseRole(string role)
     {
-        if (string.Equals(role, nameof(UserRole.Admin), StringComparison.OrdinalIgnoreCase))
+        if (Enum.TryParse<UserRole>(role?.Trim(), ignoreCase: true, out var parsed))
         {
-            return UserRole.Admin;
+            return parsed;
         }
 
-        return string.Equals(role, nameof(UserRole.Doctor), StringComparison.OrdinalIgnoreCase)
-            ? UserRole.Doctor 
-            : UserRole.Registered;
+        return Error.Validation("Role", "Role must be Registered, Doctor, or Admin.");
     }
     
     
