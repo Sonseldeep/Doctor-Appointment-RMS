@@ -10,7 +10,8 @@ internal sealed class UpdatePatientProfileCommandValidator
         RuleFor(x => x.UserId).NotEmpty();
 
         RuleFor(x => x.PhoneNumber)
-            .MaximumLength(30);
+            .Length(10).WithMessage("Phone number must be exactly 10 digits.")
+            .When(x => !string.IsNullOrEmpty(x.PhoneNumber));
 
         RuleFor(x => x.Address)
             .MaximumLength(500);
