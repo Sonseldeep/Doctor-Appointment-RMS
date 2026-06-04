@@ -1,4 +1,6 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
+using DoctorAppointmentSystem.Domain.Appointments;
+using DoctorAppointmentSystem.Domain.Doctor;
 using DoctorAppointmentSystem.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +13,11 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 
     public DbSet<UserOtp> UserOtps => Set<UserOtp>();
     public DbSet<OtpRequestLimit> OtpRequestLimits => Set<OtpRequestLimit>();
+    
+    public DbSet<DoctorProfile> DoctorProfiles => Set<DoctorProfile>();
+
+    public DbSet<Appointment> Appointments => Set<Appointment>();
+
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
