@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef } from "react";
+
 import {
   Card,
   CardContent,
@@ -7,10 +9,41 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+
+import { Button } from "@/components/ui/button";
+
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
+
+import { useUploadProfilePhoto } from "@/features/auth/hooks/use-upload-profile-photo";
 
 export default function ProfilePage() {
   const { data: user } = useCurrentUser();
+
+  const { mutate: uploadPhoto, isPending } =
+    useUploadProfilePhoto();
+
+  const fileInputRef =
+    useRef<HTMLInputElement | null>(null);
+
+  const initials =
+    `${user?.firstName?.[0] ?? ""}${
+      user?.lastName?.[0] ?? ""
+    }`;
+
+  const handlePhotoUpload = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    uploadPhoto(file);
+  };
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -21,7 +54,44 @@ export default function ProfilePage() {
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-8">
+          
+          {/* PROFILE PHOTO */}
+          <div className="flex flex-col items-center gap-4">
+            <Avatar className="h-28 w-28 border">
+              <AvatarImage
+                src={user?.profilePhotoUrl || ""}
+                alt={user?.firstName}
+              />
+
+              <AvatarFallback className="text-lg">
+                {initials || "U"}
+              </AvatarFallback>
+            </Avatar>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePhotoUpload}
+            />
+
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isPending}
+              onClick={() =>
+                fileInputRef.current?.click()
+              }
+            >
+              {isPending
+                ? "Uploading..."
+                : "Change Photo"}
+            </Button>
+          </div>
+
+          {/* USER INFO */}
           <div>
             <p className="text-sm text-muted-foreground">
               First Name

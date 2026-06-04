@@ -17,6 +17,7 @@ import {
 import {
   Avatar,
   AvatarFallback,
+  AvatarImage,
 } from "@/components/ui/avatar";
 
 export function Navbar() {
@@ -42,10 +43,15 @@ export function Navbar() {
         <DropdownMenu>
           <DropdownMenuTrigger className="outline-none">
             <Avatar className="h-10 w-10 cursor-pointer border">
-              <AvatarFallback className="bg-blue-600 text-white">
-                {initials || "U"}
-              </AvatarFallback>
-            </Avatar>
+  <AvatarImage
+    src={user?.profilePhotoUrl || ""}
+    alt={user?.firstName}
+  />
+
+  <AvatarFallback className="bg-blue-600 text-white">
+    {initials || "U"}
+  </AvatarFallback>
+</Avatar>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent

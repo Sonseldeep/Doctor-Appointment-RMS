@@ -9,6 +9,8 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
     private const int NameMaxLength = 100;
     private const int EmailMaxLength = 320;
     private const int PasswordHashMaxLength = 300;
+    private const int PhotoUrlMaxLength = 500;
+
 
     public void Configure(EntityTypeBuilder<User> builder)
     {
@@ -41,5 +43,15 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         
         builder.Property(x => x.TokenVersion)
             .IsRequired();
+        
+        
+        builder.Property(x => x.IsEmailVerified)
+            .IsRequired()
+            .HasDefaultValue(false);
+        
+        builder.Property(x => x.ProfilePhotoUrl)
+            .HasMaxLength(PhotoUrlMaxLength)
+            .IsRequired(false);
+        
     }
 }

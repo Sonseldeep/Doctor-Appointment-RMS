@@ -1,22 +1,25 @@
-﻿namespace DoctorAppointmentSystem.Api.Extensions;
+﻿
+namespace DoctorAppointmentSystem.Api.Extensions;
 
 public static class AddCorsExtensions
 {
-    public static IServiceCollection AddCorsCollection(this IServiceCollection services)
+    public static IServiceCollection AddCorsCollection(this IServiceCollection services, IConfiguration config)
     {
+        var origins = config.GetSection("Cors:AllowedOrigins").Get<string[]>();
+
         services.AddCors(options =>
         {
-            options.AddPolicy("AllowSpecificOrigin",
-                corsPolicyBuilder =>
-                {
-                    corsPolicyBuilder.WithOrigins("http://localhost:3000")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials()
-                        .SetPreflightMaxAge(TimeSpan.FromMinutes(10))
-                        .SetIsOriginAllowedToAllowWildcardSubdomains();
-                });
+            options.AddPolicy("AllowSpecificOrigin", policy =>
+            {
+                policy
+                    .WithOrigins(origins!)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+            });
         });
+
         return services;
     }
 }

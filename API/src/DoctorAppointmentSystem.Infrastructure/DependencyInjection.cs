@@ -3,11 +3,13 @@ using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Email;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Otp;
+using DoctorAppointmentSystem.Application.Abstractions.Storage;
 using DoctorAppointmentSystem.Infrastructure.Abstractions.Authentication;
 using DoctorAppointmentSystem.Infrastructure.Database;
 using DoctorAppointmentSystem.Infrastructure.Email;
 using DoctorAppointmentSystem.Infrastructure.Otp;
 using DoctorAppointmentSystem.Infrastructure.Repositories;
+using DoctorAppointmentSystem.Infrastructure.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +33,7 @@ public static class DependencyInjection
         });
         
         services.AddAuthenticationInfrastructure(configuration);
+        services.AddStorageInfrastructure(configuration);
         
         
 
@@ -102,6 +105,18 @@ public static class DependencyInjection
         
         
 
+
+        return services;
+    }
+    
+    private static IServiceCollection AddStorageInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<CloudinaryOptions>(
+            configuration.GetSection(CloudinaryOptions.SectionName));
+
+        services.AddScoped<IFileStorageService, CloudinaryFileStorageService>();
 
         return services;
     }
