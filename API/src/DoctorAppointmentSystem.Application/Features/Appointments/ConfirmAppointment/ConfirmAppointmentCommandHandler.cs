@@ -41,29 +41,23 @@ internal sealed class ConfirmAppointmentCommandHandler
             return UserErrors.NotFound;
         }
         
-        if (doctor.Role != UserRole.Doctor)
-        {
-            return AppointmentErrors.Forbidden;
-        }
-
-        var appointment = await _appointments.GetByIdAsync(request.AppointmentId, cancellationToken);
-        
-        if (appointment is null)
-        {
-            return AppointmentErrors.NotFound;
-        }
-        
-        if (appointment.DoctorUserId != request.DoctorUserId)
-        {
-            return AppointmentErrors.Forbidden;
-        }
-        
         var profile = await _doctorProfiles.GetByUserIdAsync(request.DoctorUserId, cancellationToken);
-        var approval = DoctorAccessGuards.EnsureApprovedDoctor(doctor, profile);
+        var approval = DoctorAccessGuards.EnsureApprovedForDoctorActions(doctor, profile);
         
         if (approval.IsError)
         {
             return approval.Errors;
+        }
+
+        var appointment = await _appointments.GetByIdAsync(request.AppointmentId, cancellationToken);
+        if (appointment is null)
+        {
+            return AppointmentErrors.NotFound;
+        }
+           
+        if (appointment.DoctorUserId != request.DoctorUserId)
+        {
+            return AppointmentErrors.Forbidden;
         }
 
         try
