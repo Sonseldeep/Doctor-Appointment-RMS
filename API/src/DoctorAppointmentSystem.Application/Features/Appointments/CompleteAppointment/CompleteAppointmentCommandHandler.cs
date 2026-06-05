@@ -37,14 +37,18 @@ internal sealed class CompleteAppointmentCommandHandler
     public async Task<ErrorOr<Success>> Handle(CompleteAppointmentCommand request, CancellationToken cancellationToken)
     {
         var doctor = await _users.GetByIdAsync(request.DoctorUserId, cancellationToken);
+        
         if (doctor is null)
         {
             return UserErrors.NotFound;
         }
         
-        if (doctor.Role != UserRole.Doctor)
+        var profile = await _doctorProfiles.GetByUserIdAsync(request.DoctorUserId, cancellationToken);
+        var approval = DoctorAccessGuards.EnsureApprovedForDoctorActions(doctor, profile);
+
+        if (approval.IsError)
         {
-            return AppointmentErrors.Forbidden;
+            return approval.Errors;
         }
         
         var appointment = await _appointments.GetByIdAsync(request.AppointmentId, cancellationToken);
@@ -59,13 +63,6 @@ internal sealed class CompleteAppointmentCommandHandler
             return AppointmentErrors.Forbidden;
         }
 
-        var profile = await _doctorProfiles.GetByUserIdAsync(request.DoctorUserId, cancellationToken);
-        var approval = DoctorAccessGuards.EnsureApprovedDoctor(doctor, profile);
-
-        if (approval.IsError)
-        {
-            return approval.Errors;
-        }
         
         try
         {
