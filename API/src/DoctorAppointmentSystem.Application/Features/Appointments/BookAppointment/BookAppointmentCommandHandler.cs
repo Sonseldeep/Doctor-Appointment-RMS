@@ -3,8 +3,8 @@ using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
+using DoctorAppointmentSystem.Application.Features.Doctors.Common;
 using DoctorAppointmentSystem.Domain.Appointments;
-using DoctorAppointmentSystem.Domain.Doctor;
 using DoctorAppointmentSystem.Domain.Users;
 using ErrorOr;
 
@@ -57,22 +57,13 @@ internal sealed class BookAppointmentCommandHandler
         }
         
         var doctorProfile = await _doctorProfiles.GetByUserIdAsync(request.DoctorUserId, cancellationToken);
-        if (doctorProfile is null )
-        {
-            return DoctorErrors.NotFound;
-        }
-
-        if (doctorProfile.Status != DoctorStatus.Active)
-        {
-            return DoctorErrors.NotApproved;
-        }
-            
         
-        if (doctorUser.Role != UserRole.Doctor)
+        var access = DoctorAccessGuards.EnsureApprovedForPublicView(doctorUser, doctorProfile);
+        if (access.IsError)
         {
-            return Error.Validation("Appointment.DoctorInvalid", "Selected user is not a doctor.");
+            return access.Errors;
         }
-
+        
         var overlap = await _appointmentRepository.DoctorHasOverlapAsync(
             request.DoctorUserId, request.StartUtc, request.EndUtc, cancellationToken);
 
