@@ -38,11 +38,18 @@ internal sealed class GetDoctorByUserIdQueryHandler
         }
 
         var profile = await _doctorProfileRepository.GetByUserIdAsync(request.UserId, cancellationToken);
-        if (profile == null && profile?.Status != DoctorStatus.Active)
+        
+        if (profile == null )
         {
             return DoctorErrors.NotFound;
 
         }
+
+        if (profile.Status != DoctorStatus.Active)
+        {
+            return DoctorErrors.Inactive;
+        }
+
 
         var response = new DoctorDetailsResponse(
             DoctorProfileId: profile.Id,
