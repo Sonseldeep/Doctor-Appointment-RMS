@@ -17,7 +17,7 @@ public sealed class DoctorProfile : Entity
         Bio = bio;
         Specialization = specialization;
         ConsultationFee = consultationFee;
-        Status = DoctorStatus.Active; 
+        Status = DoctorStatus.Pending; 
         CreatedAtUtc = DateTimeOffset.UtcNow;
     }
 
