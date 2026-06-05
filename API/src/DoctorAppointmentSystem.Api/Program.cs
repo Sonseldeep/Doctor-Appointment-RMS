@@ -30,7 +30,8 @@ if (app.Environment.IsDevelopment())
     });
     
     app.ApplyMigrations();
-    
+    await app.SeedAdminUserAsync();
+
 }
 
 app.UseCors("AllowSpecificOrigin");
