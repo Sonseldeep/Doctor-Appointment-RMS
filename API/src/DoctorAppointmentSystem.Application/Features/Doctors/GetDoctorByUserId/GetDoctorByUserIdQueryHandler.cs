@@ -26,17 +26,22 @@ internal sealed class GetDoctorByUserIdQueryHandler
     {
         var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
         if (user is null)
-            return UserErrors.NotFound;
-
-        if (user.Role != UserRole.Doctor)
-            return DoctorErrors.UserIsNotDoctor;
-
-        var profile = await _doctorProfileRepository.GetByUserIdAsync(request.UserId, cancellationToken);
-        if (profile is null)
+        {
             return DoctorErrors.NotFound;
 
+        }
+        
+        var profile = await _doctorProfileRepository.GetByUserIdAsync(request.UserId, cancellationToken);
+        var access = DoctorAccessGuards.EnsureApprovedForPublicView(user, profile);
+
+        if (access.IsError)
+        {
+            return access.Errors;
+        }
+        
+
         var response = new DoctorDetailsResponse(
-            DoctorProfileId: profile.Id,
+            DoctorProfileId: profile!.Id,
             UserId: user.Id,
             FirstName: user.FirstName,
             LastName: user.LastName,
