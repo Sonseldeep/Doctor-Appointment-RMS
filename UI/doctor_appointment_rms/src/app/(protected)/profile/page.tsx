@@ -21,6 +21,11 @@ import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 
 import { useUploadProfilePhoto } from "@/features/auth/hooks/use-upload-profile-photo";
 
+import { 
+  isDoctorProfile, 
+  isPatientProfile 
+} from "@/features/auth/types/auth.types";
+
 export default function ProfilePage() {
   const { data: user } = useCurrentUser();
 
@@ -46,7 +51,8 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl space-y-6">
+      {/* BASIC PROFILE CARD */}
       <Card className="shadow-sm">
         <CardHeader>
           <CardTitle className="text-2xl">
@@ -91,58 +97,149 @@ export default function ProfilePage() {
             </Button>
           </div>
 
-          {/* USER INFO */}
-          <div>
-            <p className="text-sm text-muted-foreground">
-              First Name
-            </p>
+          {/* BASIC USER INFO - COMMON FOR ALL ROLES */}
+          <div className="space-y-6 border-t pt-6">
+            <h3 className="font-semibold text-lg">
+              Basic Information
+            </h3>
 
-            <p className="font-medium">
-              {user?.firstName}
-            </p>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  First Name
+                </p>
+                <p className="font-medium">
+                  {user?.firstName || "—"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Last Name
+                </p>
+                <p className="font-medium">
+                  {user?.lastName || "—"}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Email
+              </p>
+              <p className="font-medium">
+                {user?.email || "—"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Role
+              </p>
+              <p className="font-medium capitalize">
+                {user?.role || "—"}
+              </p>
+            </div>
           </div>
-
-          <div>
-            <p className="text-sm text-muted-foreground">
-              Last Name
-            </p>
-
-            <p className="font-medium">
-              {user?.lastName}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-sm text-muted-foreground">
-              Email
-            </p>
-
-            <p className="font-medium">
-              {user?.email}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-sm text-muted-foreground">
-              Role
-            </p>
-
-            <p className="font-medium">
-              {user?.role}
-            </p>
-          </div>
-
-          {/* <div>
-            <p className="text-sm text-muted-foreground">
-              User ID
-            </p>
-
-            <p className="font-medium break-all">
-              {user?.id}
-            </p>
-          </div> */}
         </CardContent>
       </Card>
+
+      {/* DOCTOR-SPECIFIC PROFILE CARD */}
+      {user && isDoctorProfile(user) && (
+        <Card className="shadow-sm border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="text-lg text-blue-900">
+              Professional Information
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Specialization
+                </p>
+                <p className="font-medium">
+                  {user.specialization || "—"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Consultation Fee
+                </p>
+                <p className="font-medium">
+                  {user.consultationFee 
+                    ? `$${user.consultationFee}` 
+                    : "—"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Status
+                </p>
+                <p className="font-medium capitalize">
+                  {user.status || "—"}
+                </p>
+              </div>
+            </div>
+
+            {user.bio && (
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Bio
+                </p>
+                <p className="font-medium whitespace-pre-wrap">
+                  {user.bio}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* PATIENT-SPECIFIC PROFILE CARD */}
+      {user && isPatientProfile(user) && (
+        <Card className="shadow-sm border-green-200 bg-green-50">
+          <CardHeader>
+            <CardTitle className="text-lg text-green-900">
+              Medical Information
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Gender
+                </p>
+                <p className="font-medium capitalize">
+                  {user.sex || "—"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Phone Number
+                </p>
+                <p className="font-medium">
+                  {user.phoneNumber || "—"}
+                </p>
+              </div>
+
+              <div className="md:col-span-2">
+                <p className="text-sm text-muted-foreground">
+                  Address
+                </p>
+                <p className="font-medium">
+                  {user.address || "—"}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

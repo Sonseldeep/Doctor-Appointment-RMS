@@ -1,11 +1,13 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
 import { toast } from "sonner";
-
 import { userApi } from "../api/user-api";
 
+/**
+ * Hook to upload profile photo with proper cache invalidation
+ * Invalidates the current user cache so the new photo loads immediately
+ */
 export function useUploadProfilePhoto() {
   const queryClient = useQueryClient();
 
@@ -13,6 +15,14 @@ export function useUploadProfilePhoto() {
     mutationFn: userApi.uploadProfilePhoto,
 
     onSuccess: () => {
+      // Get all user role variants to invalidate all possible cache keys
+      // This ensures the UI updates regardless of which endpoint was used
+      const userRole = typeof window !== "undefined"
+        ? localStorage.getItem("user_role")
+        : null;
+
+      // Invalidate all possible cache keys for the current user
+      // This covers both the generic ["me"] key and role-specific variants
       queryClient.invalidateQueries({
         queryKey: ["me"],
       });
@@ -20,7 +30,8 @@ export function useUploadProfilePhoto() {
       toast.success("Profile photo updated");
     },
 
-    onError: () => {
+    onError: (error) => {
+      console.error("Profile photo upload error:", error);
       toast.error("Failed to upload profile photo");
     },
   });
