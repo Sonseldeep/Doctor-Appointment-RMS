@@ -3,7 +3,9 @@ using DoctorAppointmentSystem.Application.Abstractions.Email;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Abstractions.Otp;
+using DoctorAppointmentSystem.Application.Abstractions.Patients;
 using DoctorAppointmentSystem.Application.Features.Authentication.Common;
+using DoctorAppointmentSystem.Domain.Patients;
 using DoctorAppointmentSystem.Domain.Users;
 using ErrorOr;
 
@@ -22,6 +24,8 @@ public class RegisterCommandHandler :
     private readonly IDateTimeProvider _dateTimeProvider;
     
     private static readonly TimeSpan OtpLifetime = TimeSpan.FromMinutes(10);
+    private readonly IPatientProfileRepository _patientProfiles;
+
 
 
     public RegisterCommandHandler(
@@ -31,7 +35,8 @@ public class RegisterCommandHandler :
         IOtpGenerator otpGenerator,
         IEmailService emailService,
         IDateTimeProvider dateTimeProvider,
-        IOtpStore otpStore)
+        IOtpStore otpStore,
+        IPatientProfileRepository patientProfiles)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
@@ -40,6 +45,7 @@ public class RegisterCommandHandler :
         _emailService = emailService;
         _dateTimeProvider = dateTimeProvider;
         _otpStore = otpStore;
+        _patientProfiles = patientProfiles;
     }
 
     public async Task<ErrorOr<Success>> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -70,6 +76,14 @@ public class RegisterCommandHandler :
        
        await _userRepository.AddAsync(user, cancellationToken);
        await _unitOfWork.SaveChangesAsync(cancellationToken);
+       
+       
+       if (roleResult.Value == UserRole.Registered)
+       {
+           var profile = PatientProfile.Create(user.Id);
+           await _patientProfiles.AddAsync(profile, cancellationToken);
+           await _unitOfWork.SaveChangesAsync(cancellationToken);
+       }
 
        // 3. Generate and store OTP
        var otp = _otpGenerator.Generate();
