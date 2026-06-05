@@ -14,7 +14,7 @@ public static class SeedDataExtensions
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
 
-        const string adminEmail = "sonseldeep.np@gmail.com";
+        const string adminEmail = "admin@admin.com";
         const string adminPassword = "Admin@12345";
 
         var adminExists = await db.Users.AnyAsync(u => u.Role == UserRole.Admin);
