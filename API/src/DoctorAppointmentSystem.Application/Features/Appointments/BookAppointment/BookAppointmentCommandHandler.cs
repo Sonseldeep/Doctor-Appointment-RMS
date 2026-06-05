@@ -57,10 +57,16 @@ internal sealed class BookAppointmentCommandHandler
         }
         
         var doctorProfile = await _doctorProfiles.GetByUserIdAsync(request.DoctorUserId, cancellationToken);
-        if (doctorProfile is null || doctorProfile.Status != DoctorStatus.Active)
+        if (doctorProfile is null )
         {
-            return Error.Validation("Appointment.DoctorNotApproved", "Doctor is not approved.");
+            return DoctorErrors.NotFound;
         }
+
+        if (doctorProfile.Status != DoctorStatus.Active)
+        {
+            return DoctorErrors.NotApproved;
+        }
+            
         
         if (doctorUser.Role != UserRole.Doctor)
         {
