@@ -9,4 +9,9 @@ public interface IDoctorProfileRepository
     Task AddAsync(DoctorProfile profile, CancellationToken cancellationToken);
 
     Task<IReadOnlyList<DoctorProfile>> GetActiveAsync(CancellationToken cancellationToken);
+    
+    Task<IReadOnlyList<DoctorProfile>> GetAllWithUserAsync(CancellationToken cancellationToken);
+    Task<IReadOnlyList<DoctorProfile>> GetActiveWithUserAsync(CancellationToken cancellationToken);
+
+
 }

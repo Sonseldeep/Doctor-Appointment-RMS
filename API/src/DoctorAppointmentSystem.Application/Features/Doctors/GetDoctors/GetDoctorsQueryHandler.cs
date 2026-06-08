@@ -16,15 +16,17 @@ internal sealed class GetDoctorsQueryHandler
 
     public async Task<ErrorOr<IReadOnlyList<DoctorResponse>>> Handle(GetDoctorsQuery request, CancellationToken cancellationToken)
     {
-        var doctors = await _repo.GetActiveAsync(cancellationToken);
+        var doctors = await _repo.GetActiveWithUserAsync(cancellationToken);
 
         var response = doctors
             .Select(d => new DoctorResponse(
                 DoctorProfileId: d.Id,
                 UserId: d.UserId,
+                FirstName: d.User.FirstName,
+                LastName: d.User.LastName,
+                ProfilePhotoUrl: d.User.ProfilePhotoUrl,
                 Specialization: d.Specialization,
                 ConsultationFee: d.ConsultationFee,
-                Status: d.Status,
                 Bio: d.Bio))
             .ToList()
             .AsReadOnly();
