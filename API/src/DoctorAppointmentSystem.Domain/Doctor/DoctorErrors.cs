@@ -27,5 +27,17 @@ public static class DoctorErrors
     public static Error ProfileMissing => Error.NotFound(
         code: "DoctorProfile.ProfileMissing",
         description: "Doctor profile does not exist.");
+    
+    
+    public static Error AlreadyApproved => Error.Conflict(
+        code: "DoctorProfile.AlreadyApproved",
+        description: "Doctor is already approved and active.");
+
+    public static Error AlreadySuspended => Error.Conflict(
+        code: "DoctorProfile.AlreadySuspended",
+        description: "Doctor is already suspended.");
+    
+    
+    
 
 }

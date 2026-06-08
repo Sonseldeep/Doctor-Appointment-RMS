@@ -2,5 +2,4 @@
 
 namespace DoctorAppointmentSystem.Application.Features.Admin.Doctor.ApproveDoctor;
 
-public sealed record ApproveDoctorCommand(Guid AdminUserId, Guid DoctorUserId) 
-    : ICommand;
+public sealed record ApproveDoctorCommand(Guid DoctorUserId) : ICommand;

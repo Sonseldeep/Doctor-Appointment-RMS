@@ -1,4 +1,5 @@
 ﻿using DoctorAppointmentSystem.Domain.Abstractions;
+using DoctorAppointmentSystem.Domain.Users;
 
 namespace DoctorAppointmentSystem.Domain.Doctor;
 
@@ -32,6 +33,10 @@ public sealed class DoctorProfile : Entity
     public DoctorStatus Status { get; private set; }
 
     public DateTimeOffset CreatedAtUtc { get; private set; }
+    
+    
+    public User User { get; private set; } = null!;
+
 
     public static DoctorProfile Create(
         Guid userId,
