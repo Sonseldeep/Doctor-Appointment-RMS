@@ -2,6 +2,7 @@ using DoctorAppointmentSystem.Api;
 using DoctorAppointmentSystem.Api.Extensions;
 using DoctorAppointmentSystem.Application;
 using DoctorAppointmentSystem.Infrastructure;
+using Hangfire;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +45,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseHangfireDashboard("/hangfire");
 app.MapControllers();
 
 app.Run();

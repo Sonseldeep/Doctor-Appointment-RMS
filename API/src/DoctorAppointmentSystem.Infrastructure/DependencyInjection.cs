@@ -4,15 +4,18 @@ using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Email;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
+using DoctorAppointmentSystem.Application.Abstractions.Jobs;
 using DoctorAppointmentSystem.Application.Abstractions.Otp;
 using DoctorAppointmentSystem.Application.Abstractions.Patients;
 using DoctorAppointmentSystem.Application.Abstractions.Storage;
 using DoctorAppointmentSystem.Infrastructure.Abstractions.Authentication;
 using DoctorAppointmentSystem.Infrastructure.Database;
 using DoctorAppointmentSystem.Infrastructure.Email;
+using DoctorAppointmentSystem.Infrastructure.Jobs;
 using DoctorAppointmentSystem.Infrastructure.Otp;
 using DoctorAppointmentSystem.Infrastructure.Repositories;
 using DoctorAppointmentSystem.Infrastructure.Storage;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -37,7 +40,7 @@ public static class DependencyInjection
         
         services.AddAuthenticationInfrastructure(configuration);
         services.AddStorageInfrastructure(configuration);
-        
+        services.AddHangfireInfrastructure(connectionString);
         
 
 
@@ -107,14 +110,7 @@ public static class DependencyInjection
         services.AddScoped<IAppointmentRepository, AppointmentRepository>();
         
         services.AddScoped<IPatientProfileRepository, PatientProfileRepository>();
-
-
-
-
         
-        
-
-
         return services;
     }
     
@@ -126,6 +122,26 @@ public static class DependencyInjection
             configuration.GetSection(CloudinaryOptions.SectionName));
 
         services.AddScoped<IFileStorageService, CloudinaryFileStorageService>();
+
+        return services;
+    }
+    
+    
+    private static IServiceCollection AddHangfireInfrastructure(
+        this IServiceCollection services,
+        string connectionString)
+    {
+        services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(connectionString));
+
+        services.AddHangfireServer();
+
+        // Job registrations
+        services.AddScoped<IAppointmentReminderJob, AppointmentReminderJob>();
+        services.AddScoped<IAppointmentScheduler, HangfireAppointmentScheduler>();
 
         return services;
     }
