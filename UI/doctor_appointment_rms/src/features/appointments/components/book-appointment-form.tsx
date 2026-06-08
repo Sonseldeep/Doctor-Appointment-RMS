@@ -7,10 +7,14 @@ import { Input } from "@/components/ui/input";
 
 interface BookAppointmentFormProps {
   onSuccess?: () => void;
+  preFilledDoctorId?: string;  // Add this
 }
 
-export function BookAppointmentForm({ onSuccess }: BookAppointmentFormProps) {
-  const [doctorId, setDoctorId] = useState("");
+export function BookAppointmentForm({
+  onSuccess,
+  preFilledDoctorId,
+}: BookAppointmentFormProps) {
+  const [doctorId, setDoctorId] = useState(preFilledDoctorId || "");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [notes, setNotes] = useState("");
@@ -26,7 +30,9 @@ export function BookAppointmentForm({ onSuccess }: BookAppointmentFormProps) {
     }
 
     const startUtc = new Date(`${date}T${time}`).toISOString();
-    const endUtc = new Date(new Date(startUtc).getTime() + 60 * 60 * 1000).toISOString(); // 1 hour duration
+    const endUtc = new Date(
+      new Date(startUtc).getTime() + 60 * 60 * 1000
+    ).toISOString();
 
     bookAppointment(
       {
@@ -37,7 +43,7 @@ export function BookAppointmentForm({ onSuccess }: BookAppointmentFormProps) {
       },
       {
         onSuccess: () => {
-          setDoctorId("");
+          setDoctorId(preFilledDoctorId || "");
           setDate("");
           setTime("");
           setNotes("");
@@ -49,16 +55,18 @@ export function BookAppointmentForm({ onSuccess }: BookAppointmentFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium mb-1">Doctor ID *</label>
-        <Input
-          type="text"
-          placeholder="Enter doctor ID"
-          value={doctorId}
-          onChange={(e) => setDoctorId(e.target.value)}
-          required
-        />
-      </div>
+      {!preFilledDoctorId && (  // Only show if not pre-filled
+        <div>
+          <label className="block text-sm font-medium mb-1">Doctor ID *</label>
+          <Input
+            type="text"
+            placeholder="Enter doctor ID"
+            value={doctorId}
+            onChange={(e) => setDoctorId(e.target.value)}
+            required
+          />
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium mb-1">Date *</label>
