@@ -2,6 +2,7 @@
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
+using DoctorAppointmentSystem.Application.Abstractions.Jobs;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Abstractions.Patients;
 using DoctorAppointmentSystem.Application.Features.Appointments.Contracts;
@@ -20,6 +21,8 @@ internal sealed class BookAppointmentCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDoctorProfileRepository _doctorProfiles;
     private readonly IPatientProfileRepository _patientRepository;
+    private readonly IAppointmentScheduler _scheduler;
+
     
     private const int MaxAppointmentsPerDay = 10;
 
@@ -28,13 +31,17 @@ internal sealed class BookAppointmentCommandHandler
     public BookAppointmentCommandHandler(
         IUserRepository userRepository,
         IAppointmentRepository appointmentRepository,
-        IUnitOfWork unitOfWork, IDoctorProfileRepository doctorProfiles, IPatientProfileRepository patientRepository)
+        IUnitOfWork unitOfWork,
+        IDoctorProfileRepository doctorProfiles,
+        IPatientProfileRepository patientRepository,
+        IAppointmentScheduler scheduler)
     {
         _userRepository = userRepository;
         _appointmentRepository = appointmentRepository;
         _unitOfWork = unitOfWork;
         _doctorProfiles = doctorProfiles;
         _patientRepository = patientRepository;
+        _scheduler = scheduler;
     }
     
 
@@ -115,6 +122,9 @@ internal sealed class BookAppointmentCommandHandler
 
         await _appointmentRepository.AddAsync(appointment, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        // schedule remainders after successful in DB save
+        _scheduler.ScheduleReminders(appointment.Id, appointment.StartUtc);
         
         var remainingSlots = MaxAppointmentsPerDay - (dailyAppointmentCount + 1);
         var response = new BookAppointmentResponse(

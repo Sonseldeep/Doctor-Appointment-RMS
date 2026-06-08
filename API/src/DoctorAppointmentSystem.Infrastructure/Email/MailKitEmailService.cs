@@ -100,4 +100,67 @@ public class MailKitEmailService : IEmailService
             throw;
         }
     }
+    
+    
+    public async Task SendAppointmentReminderAsync(
+        string toEmail,
+        string toName,
+        string doctorName,
+        DateTimeOffset appointmentStart,
+        string reminderType,
+        CancellationToken cancellationToken)
+    {
+        var subject = reminderType == "24h"
+            ? "Reminder: Your appointment is tomorrow - Doctor Appointment System"
+            : "Reminder: Your appointment is in 1 hour - Doctor Appointment System";
+
+        var htmlBody = EmailTemplates.AppointmentReminder(
+            toName, doctorName, appointmentStart, reminderType);
+
+        await SendAsync(toEmail, toName, subject, htmlBody, cancellationToken);
+    }
+    
+    
+    private async Task SendAsync(
+        string toEmail,
+        string toName,
+        string subject,
+        string htmlBody,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(toEmail))
+                throw new ArgumentException("Recipient email is required.", nameof(toEmail));
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_options.FromName, _options.FromEmail.Trim()));
+            message.To.Add(new MailboxAddress(toName, toEmail.Trim()));
+            message.Subject = subject;
+            message.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
+
+            using var client = new SmtpClient();
+
+            await client.ConnectAsync(
+                _options.Host,
+                _options.Port,
+                SecureSocketOptions.StartTls,
+                cancellationToken);
+
+            await client.AuthenticateAsync(
+                _options.Username,
+                _options.Password,
+                cancellationToken);
+
+            await client.SendAsync(message, cancellationToken);
+            await client.DisconnectAsync(true, cancellationToken);
+
+            _logger.LogInformation("Email sent to {Email} — subject: {Subject}", toEmail, subject);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send email to {Email} — subject: {Subject}", toEmail, subject);
+            throw;
+        }
+    }
 }
