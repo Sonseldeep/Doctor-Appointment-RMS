@@ -57,7 +57,11 @@ public sealed class AppointmentsController : ApiController
         var result = await _sender.Send(command, cancellationToken);
 
         return result.Match(
-            appointmentId => Ok(new { appointmentId }),
+            response => Ok(new   {
+                appointmentId = response.AppointmentId,
+                status = response.Status,
+                message = response.Message
+            }),
             Problem);
     }
 

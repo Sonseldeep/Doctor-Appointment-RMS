@@ -15,4 +15,12 @@ public interface IAppointmentRepository
         DateTimeOffset startUtc,
         DateTimeOffset endUtc,
         CancellationToken cancellationToken);
+    
+    Task<int> GetDoctorAppointmentCountForDateAsync(
+        Guid doctorUserId,
+        DateTime appointmentDate,
+        CancellationToken cancellationToken);
+    
+    
+
 }

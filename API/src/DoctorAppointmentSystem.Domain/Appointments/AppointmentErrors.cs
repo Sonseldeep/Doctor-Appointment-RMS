@@ -23,4 +23,21 @@ public static class AppointmentErrors
     public static Error InvalidTime => Error.Validation(
         code: "Appointment.InvalidTime",
         description: "Invalid appointment time range.");
+    
+    
+    public static Error DailyQuotaExceeded(int maxAppointments) => 
+        Error.Conflict(
+            code: "Appointment.DailyQuotaExceeded",
+            description: $"Doctor has reached maximum capacity of {maxAppointments} appointments for this day.");
+    
+    public static Error CannotBookInPast => 
+        Error.Validation(
+            code: "Appointment.CannotBookInPast",
+            description: "Cannot book appointments in the past.");
+    
+    
+    public static Error InvalidDuration => 
+        Error.Validation(
+            code: "Appointment.InvalidDuration",
+            description: "Appointment end time must be after start time.");
 }

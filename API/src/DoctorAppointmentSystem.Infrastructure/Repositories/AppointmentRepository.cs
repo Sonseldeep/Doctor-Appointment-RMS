@@ -46,4 +46,17 @@ internal sealed class AppointmentRepository : IAppointmentRepository
                 && x.EndUtc > startUtc,
             cancellationToken);
     }
+    
+    public async Task<int> GetDoctorAppointmentCountForDateAsync(
+        Guid doctorUserId,
+        DateTime appointmentDate,
+        CancellationToken cancellationToken)
+    {
+        return await _db.Appointments
+            .CountAsync(
+                a => a.DoctorUserId == doctorUserId &&
+                     a.StartUtc.Date == appointmentDate &&
+                     (a.Status == AppointmentStatus.Pending || a.Status == AppointmentStatus.Confirmed),
+                cancellationToken);
+    }
 }
