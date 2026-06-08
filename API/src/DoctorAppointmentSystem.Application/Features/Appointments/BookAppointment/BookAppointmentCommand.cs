@@ -1,4 +1,5 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Messaging;
+using DoctorAppointmentSystem.Application.Features.Appointments.Contracts;
 
 namespace DoctorAppointmentSystem.Application.Features.Appointments.BookAppointment;
 
@@ -8,4 +9,4 @@ public sealed record BookAppointmentCommand(
     DateTimeOffset StartUtc,
     DateTimeOffset EndUtc,
     string? Notes
-) : ICommand<Guid>;
+) : ICommand<BookAppointmentResponse>;

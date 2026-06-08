@@ -2,7 +2,10 @@
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
+using DoctorAppointmentSystem.Application.Abstractions.Jobs;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
+using DoctorAppointmentSystem.Application.Abstractions.Patients;
+using DoctorAppointmentSystem.Application.Features.Appointments.Contracts;
 using DoctorAppointmentSystem.Application.Features.Doctors.Common;
 using DoctorAppointmentSystem.Domain.Appointments;
 using DoctorAppointmentSystem.Domain.Users;
@@ -11,30 +14,49 @@ using ErrorOr;
 namespace DoctorAppointmentSystem.Application.Features.Appointments.BookAppointment;
 
 internal sealed class BookAppointmentCommandHandler
-    : ICommandHandler<BookAppointmentCommand, Guid>
+    : ICommandHandler<BookAppointmentCommand, BookAppointmentResponse>
 {
     private readonly IUserRepository _userRepository;
     private readonly IAppointmentRepository _appointmentRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDoctorProfileRepository _doctorProfiles;
+    private readonly IPatientProfileRepository _patientRepository;
+    private readonly IAppointmentScheduler _scheduler;
+
+    
+    private const int MaxAppointmentsPerDay = 10;
+
 
 
     public BookAppointmentCommandHandler(
         IUserRepository userRepository,
         IAppointmentRepository appointmentRepository,
-        IUnitOfWork unitOfWork, IDoctorProfileRepository doctorProfiles)
+        IUnitOfWork unitOfWork,
+        IDoctorProfileRepository doctorProfiles,
+        IPatientProfileRepository patientRepository,
+        IAppointmentScheduler scheduler)
     {
         _userRepository = userRepository;
         _appointmentRepository = appointmentRepository;
         _unitOfWork = unitOfWork;
         _doctorProfiles = doctorProfiles;
+        _patientRepository = patientRepository;
+        _scheduler = scheduler;
     }
+    
 
-    public async Task<ErrorOr<Guid>> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
+
+
+    public async Task<ErrorOr<BookAppointmentResponse>> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
     {
         if (request.EndUtc <= request.StartUtc)
         {
-            return AppointmentErrors.InvalidTime;
+            return AppointmentErrors.InvalidDuration;
+        }
+        
+        if (request.StartUtc < DateTime.UtcNow)
+        {
+            return AppointmentErrors.CannotBookInPast;
         }
           
 
@@ -48,6 +70,12 @@ internal sealed class BookAppointmentCommandHandler
         {
             return AppointmentErrors.Forbidden;
         }
+        
+        if (!patient.IsEmailVerified)
+        {
+            return UserErrors.NotVerified;
+        }
+
             
 
         var doctorUser = await _userRepository.GetByIdAsync(request.DoctorUserId, cancellationToken);
@@ -72,6 +100,19 @@ internal sealed class BookAppointmentCommandHandler
             return AppointmentErrors.SlotNotAvailable;
         }
         
+        var appointmentDate = request.StartUtc.Date;
+        var dailyAppointmentCount = await _appointmentRepository.GetDoctorAppointmentCountForDateAsync(
+            request.DoctorUserId,
+            appointmentDate,
+            cancellationToken);
+        
+        if (dailyAppointmentCount >= MaxAppointmentsPerDay)
+        {
+            return AppointmentErrors.DailyQuotaExceeded(MaxAppointmentsPerDay);
+        }
+
+
+        
         var appointment = Appointment.Create(
             request.PatientUserId,
             request.DoctorUserId,
@@ -81,7 +122,18 @@ internal sealed class BookAppointmentCommandHandler
 
         await _appointmentRepository.AddAsync(appointment, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        // schedule remainders after successful in DB save
+        _scheduler.ScheduleReminders(appointment.Id, appointment.StartUtc);
+        
+        var remainingSlots = MaxAppointmentsPerDay - (dailyAppointmentCount + 1);
+        var response = new BookAppointmentResponse(
+            AppointmentId: appointment.Id,
+            Status: appointment.Status.ToString(),
+            Message: $"Appointment booked successfully! " +
+                     $"{remainingSlots} slots remaining for {appointmentDate:dd-MM-yyyy}");
 
-        return appointment.Id;
+
+        return response;
     }
 }
