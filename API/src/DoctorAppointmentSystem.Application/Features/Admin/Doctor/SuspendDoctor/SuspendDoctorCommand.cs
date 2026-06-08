@@ -2,5 +2,4 @@
 
 namespace DoctorAppointmentSystem.Application.Features.Admin.Doctor.SuspendDoctor;
 
-public sealed record SuspendDoctorCommand(Guid AdminUserId, Guid DoctorUserId) 
-    : ICommand;
+public sealed record SuspendDoctorCommand(Guid DoctorUserId) : ICommand;

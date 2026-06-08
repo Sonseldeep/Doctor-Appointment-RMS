@@ -33,5 +33,11 @@ internal sealed class DoctorProfileConfiguration : IEntityTypeConfiguration<Doct
 
         builder.Property(x => x.CreatedAtUtc)
             .IsRequired();
+        
+        
+        builder.HasOne(x => x.User)
+            .WithOne()
+            .HasForeignKey<DoctorProfile>(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
