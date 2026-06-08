@@ -130,7 +130,7 @@ export default function DashboardPage() {
 
       {user.role === "Doctor" && <DoctorDashboard />}
 
-      {user.role === "User" && <UserDashboard />}
+      {user.role === "Registered" && <UserDashboard />}
     </div>
   );
 }
