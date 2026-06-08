@@ -13,7 +13,7 @@ export function UserDashboard() {
 
   const { data: appointments, isLoading, refetch } = useQuery({
     queryKey: ["appointments", "user"],
-    queryFn: appointmentsApi.getMyAppointments,  // ← Changed to getMyAppointments
+    queryFn: appointmentsApi.getMyAppointments,  //Changed to getMyAppointments
   });
 
   const upcoming = appointments?.filter(apt => apt.status === "Confirmed" || apt.status === "Pending").length || 0;

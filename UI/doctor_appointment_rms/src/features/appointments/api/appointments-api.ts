@@ -16,7 +16,7 @@ export const appointmentsApi = {
     return res.data;
   },
 
-  // Legacy method (if still needed)
+  
   getAppointments: async (): Promise<Appointment[]> => {
     const res = await axiosClient.get<Appointment[]>("/api/appointments");
     return res.data;

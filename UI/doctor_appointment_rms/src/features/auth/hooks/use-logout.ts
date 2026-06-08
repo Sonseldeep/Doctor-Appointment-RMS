@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 import { authApi } from "../api/auth-api";
 import { tokenStorage } from "../utils/auth-storage";
-import { userRoleStorage } from "../utils/user-role-storage"; // ✅ ADD THIS
+import { userRoleStorage } from "../utils/user-role-storage"; 
 
 export function useLogout() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export function useLogout() {
         // Clear token
         tokenStorage.clear();
         
-        // ✅ ADD THIS - Clear role
+        // Clear role
         userRoleStorage.clear();
         
         // Clear React Query cache
