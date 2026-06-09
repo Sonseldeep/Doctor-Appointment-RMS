@@ -40,7 +40,8 @@ public sealed class PatientsController : ApiController
             UserId: userId,
             PhoneNumber: request.PhoneNumber,
             Address: request.Address,
-            Sex: request.Sex);
+            Sex: request.Sex,
+            DateOfBirth: request.DateOfBirth);
 
         var result = await _sender.Send(cmd, cancellationToken);
         return result.Match(_ => NoContent(), Problem);

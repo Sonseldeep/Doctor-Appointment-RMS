@@ -26,6 +26,11 @@ internal sealed class PatientProfileConfiguration : IEntityTypeConfiguration<Pat
         builder.Property(x => x.Sex)
             .HasConversion<int>()  
             .IsRequired();
+        
+        
+        builder.Property(x => x.DateOfBirth)
+            .HasColumnType("date")
+            .IsRequired();
 
         builder.Property(x => x.CreatedAtUtc).IsRequired();
     }
