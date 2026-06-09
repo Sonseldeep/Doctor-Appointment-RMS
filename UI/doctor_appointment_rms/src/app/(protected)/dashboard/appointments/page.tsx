@@ -11,6 +11,12 @@ export default function AppointmentsPage() {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const { data: doctors, isLoading } = useDoctors();
 
+  // FIX: Safely normalize backend data structures into a clean array 
+  // to prevent client-side "TypeError: doctors.filter is not a function"
+  const safeDoctorsArray = Array.isArray(doctors)
+    ? doctors
+    : (doctors as any)?.items || (doctors as any)?.data || [];
+
   return (
     <div className="space-y-8">
       <div>
@@ -21,7 +27,7 @@ export default function AppointmentsPage() {
       </div>
 
       <DoctorsList
-        doctors={doctors || []}
+        doctors={safeDoctorsArray}
         isLoading={isLoading}
         onSelectDoctor={setSelectedDoctor}
       />
