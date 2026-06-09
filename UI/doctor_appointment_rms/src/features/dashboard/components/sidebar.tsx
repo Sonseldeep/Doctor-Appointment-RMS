@@ -5,6 +5,17 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
+import {
+  RiDashboardLine,
+  RiCalendarLine,
+  RiFileListLine,
+  RiCapsuleLine,
+  RiNotificationLine,
+  RiStethoscopeLine,
+  RiGroupLine,
+  RiBarChart2Line,
+  RiLogoutBoxLine,
+} from "@remixicon/react";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -12,19 +23,19 @@ export function Sidebar() {
   const { data: user } = useCurrentUser();
 
   const userNavItems = [
-    { label: "Dashboard", href: "/dashboard", icon: "📊" },
-    { label: "Appointments", href: "/dashboard/appointments", icon: "📅" },
-    { label: "Medical Records", href: "/dashboard/medical-records", icon: "📋" },
-    { label: "Prescriptions", href: "/dashboard/prescriptions", icon: "💊" },
-    { label: "Notifications", href: "/dashboard/notifications", icon: "🔔" },
-  ];
+    { label: "Dashboard", href: "/dashboard", icon: <RiDashboardLine /> },
+    { label: "Appointments", href: "/dashboard/appointments", icon: <RiCalendarLine /> },
+    { label: "Medical Records", href: "/dashboard/medical-records", icon: <RiFileListLine /> },
+    { label: "Prescriptions", href: "/dashboard/prescriptions", icon: <RiCapsuleLine /> },
+    { label: "Notifications", href: "/dashboard/notifications", icon: <RiNotificationLine /> },
+];
 
   const adminNavItems = [
-    { label: "Dashboard", href: "/dashboard", icon: "📊" },
-    { label: "Doctor Management", href: "/dashboard/admin/doctors", icon: "👨‍⚕️" },
-    { label: "Users", href: "/dashboard/admin/users", icon: "👥" },
-    { label: "Reports", href: "/dashboard/admin/reports", icon: "📊" },
-  ];
+    { label: "Dashboard", href: "/dashboard", icon: <RiDashboardLine /> },
+    { label: "Doctor Management", href: "/dashboard/admin/doctors", icon: <RiStethoscopeLine /> },
+    { label: "Users", href: "/dashboard/admin/users", icon: <RiGroupLine /> },
+    { label: "Reports", href: "/dashboard/admin/reports", icon: <RiBarChart2Line /> },
+];
 
   const navItems = user?.role === "Admin" ? adminNavItems : userNavItems;
 
@@ -36,7 +47,9 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 p-6 flex flex-col shadow-sm">
       {/* Logo */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-blue-600">🏥 MediLink</h2>
+        <h2 className="text-2xl font-bold text-blue-600"> 
+          <RiStethoscopeLine /> MediLink
+        </h2>
         <p className="text-xs text-muted-foreground mt-1">
           {user?.role === "Admin" ? "Admin Panel" : "Patient Dashboard"}
         </p>
@@ -69,7 +82,7 @@ export function Sidebar() {
         variant="outline"
         className="w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50"
       >
-        <span>👋</span>
+        <RiLogoutBoxLine className="text-xl" />
         Logout
       </Button>
     </aside>

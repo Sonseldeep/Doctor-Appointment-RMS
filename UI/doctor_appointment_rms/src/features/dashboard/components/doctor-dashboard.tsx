@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 export function DoctorDashboard() {
   const { data: appointments, isLoading } = useQuery({
     queryKey: ["appointments", "doctor"],
-    queryFn: appointmentsApi.getMyAppointments,  // ← Same endpoint, returns doctor's appointments
+    queryFn: appointmentsApi.getMyAppointments,  
   });
 
   const pending = appointments?.filter(apt => apt.status === "Pending").length || 0;

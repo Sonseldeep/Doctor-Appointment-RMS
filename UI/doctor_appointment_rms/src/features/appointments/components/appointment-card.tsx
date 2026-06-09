@@ -2,6 +2,11 @@
 
 import { Appointment } from "../types/appointments.types";
 import { Button } from "@/components/ui/button";
+import {
+  RiUserHeartLine,
+  RiCalendarLine,
+  RiMapPinLine,
+} from "@remixicon/react";
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -33,7 +38,7 @@ export function AppointmentCard({ appointment, onCancel }: AppointmentCardProps)
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-lg">👨‍⚕️</span>
+            <RiUserHeartLine size={20} className="text-blue-600" />
             <div>
               <p className="font-semibold text-lg">Dr. {appointment.doctorName || appointment.doctorUserId}</p>
               {appointment.specialty && (
@@ -49,13 +54,13 @@ export function AppointmentCard({ appointment, onCancel }: AppointmentCardProps)
 
       <div className="space-y-2 text-sm">
         <div className="flex items-center gap-2">
-          <span>📅</span>
+          <RiCalendarLine size={16} className="text-muted-foreground" />
           <span>{formattedDate} at {formattedTime}</span>
         </div>
 
         {appointment.location && (
           <div className="flex items-center gap-2">
-            <span>📍</span>
+            <RiMapPinLine size={16} className="text-muted-foreground" />
             <span>{appointment.location}</span>
           </div>
         )}

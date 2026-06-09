@@ -2,6 +2,11 @@
 
 import { Doctor } from "../types/doctor.types";
 import { Button } from "@/components/ui/button";
+import {
+  RiUserHeartLine,
+  RiStarFill,
+  RiTimeLine,
+} from "@remixicon/react";
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -24,7 +29,7 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
             />
           ) : (
             <div className="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center text-2xl">
-              👨‍⚕️
+              <RiUserHeartLine className="text-blue-600" size={28} />
             </div>
           )}
         </div>
@@ -54,10 +59,14 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
           {/* Stats */}
           <div className="flex gap-4 mt-3 text-sm text-muted-foreground">
             {doctor.rating && (
-              <span>⭐ {doctor.rating} ({doctor.reviewCount || 0} reviews)</span>
+              <span>
+                <RiStarFill className="text-yellow-500 inline" size={14} /> {doctor.rating} ({doctor.reviewCount || 0} reviews)
+              </span>
             )}
             {doctor.experience && (
-              <span>⏱️ {doctor.experience} years experience</span>
+              <span>
+                <RiTimeLine className="text-blue-500 inline" size={14} /> {doctor.experience} years experience
+              </span>
             )}
           </div>
 

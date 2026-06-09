@@ -4,10 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { userApi } from "../api/user-api";
 
-/**
- * Hook to upload profile photo with proper cache invalidation
- * Invalidates the current user cache so the new photo loads immediately
- */
+
 export function useUploadProfilePhoto() {
   const queryClient = useQueryClient();
 
