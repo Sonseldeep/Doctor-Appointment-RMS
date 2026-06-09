@@ -6,7 +6,6 @@ namespace DoctorAppointmentSystem.Application.Features.Appointments.BookAppointm
 public sealed record BookAppointmentCommand(
     Guid PatientUserId,
     Guid DoctorUserId,
-    DateTimeOffset StartUtc,
-    DateTimeOffset EndUtc,
+    Guid SlotId,
     string? Notes
 ) : ICommand<BookAppointmentResponse>;
