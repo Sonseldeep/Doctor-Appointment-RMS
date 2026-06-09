@@ -22,10 +22,9 @@ public sealed class DoctorsController : ApiController
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> GetDoctors(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetDoctors([FromQuery] GetDoctorsRequest request, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetDoctorsQuery(), cancellationToken);
-
+        var result = await _sender.Send(request.ToQuery(), cancellationToken);
         return result.Match(Ok, Problem);
     }
     

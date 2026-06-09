@@ -2,9 +2,9 @@
 using DoctorAppointmentSystem.Domain.Doctor;
 using DoctorAppointmentSystem.Domain.Patients;
 
-namespace DoctorAppointmentSystem.Application.Features.Appointments.GetMyAppointments;
+namespace DoctorAppointmentSystem.Application.Abstractions.Appointments;
 
-public sealed record AppointmentResponse(
+public sealed record AppointmentWithDetailsDto(
     Guid Id,
     Guid PatientUserId,
     Guid DoctorUserId,
@@ -12,9 +12,11 @@ public sealed record AppointmentResponse(
     DateTimeOffset EndUtc,
     AppointmentStatus Status,
     string? Notes,
-    string DoctorName,
+    string DoctorFirstName,
+    string DoctorLastName,
     Specialization DoctorSpecialization,
-    string PatientName,
-    Sex? PatientSex,
-    int? PatientAge
+    string PatientFirstName,
+    string PatientLastName,
+    Sex PatientSex,
+    int PatientAge
 );

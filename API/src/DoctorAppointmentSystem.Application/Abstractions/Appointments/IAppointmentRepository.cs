@@ -22,5 +22,14 @@ public interface IAppointmentRepository
         CancellationToken cancellationToken);
     
     
+    Task<IReadOnlyList<AppointmentWithDetailsDto>> GetForPatientWithDetailsAsync(
+        Guid patientUserId,
+        CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<AppointmentWithDetailsDto>> GetForDoctorWithDetailsAsync(
+        Guid doctorUserId,
+        CancellationToken cancellationToken);
+    
+    
 
 }

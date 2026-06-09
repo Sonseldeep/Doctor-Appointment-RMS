@@ -1,11 +1,12 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
+using DoctorAppointmentSystem.Application.Common;
 using ErrorOr;
 
 namespace DoctorAppointmentSystem.Application.Features.Admin.Doctor.GetAllDoctors;
 
 internal sealed class GetAllDoctorsQueryHandler
-    : IQueryHandler<GetAllDoctorsQuery, IReadOnlyList<AdminDoctorResponse>>
+    : IQueryHandler<GetAllDoctorsQuery, PagedResult<AdminDoctorResponse>>
 {
     private readonly IDoctorProfileRepository _doctorProfiles;
 
@@ -14,28 +15,11 @@ internal sealed class GetAllDoctorsQueryHandler
         _doctorProfiles = doctorProfiles;
     }
 
-    public async Task<ErrorOr<IReadOnlyList<AdminDoctorResponse>>> Handle(
+    public async Task<ErrorOr<PagedResult<AdminDoctorResponse>>> Handle(
         GetAllDoctorsQuery request,
         CancellationToken cancellationToken)
     {
-        var doctors = await _doctorProfiles.GetAllWithUserAsync(cancellationToken);
+        return await _doctorProfiles.GetAllPagedAsync(request, cancellationToken);
 
-        var result = doctors
-            .Select(d => new AdminDoctorResponse(
-                UserId: d.UserId,
-                DoctorProfileId: d.Id,
-                FirstName: d.User.FirstName,
-                LastName: d.User.LastName,
-                Email: d.User.Email,
-                ProfilePhotoUrl: d.User.ProfilePhotoUrl,
-                Specialization: d.Specialization,
-                ConsultationFee: d.ConsultationFee,
-                Status: d.Status,
-                Bio: d.Bio,
-                CreatedAtUtc: d.CreatedAtUtc))
-            .ToList()
-            .AsReadOnly();
-
-        return result;
     }
 }

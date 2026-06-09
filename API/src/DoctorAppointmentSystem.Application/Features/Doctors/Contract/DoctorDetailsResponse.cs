@@ -1,6 +1,6 @@
 ﻿using DoctorAppointmentSystem.Domain.Doctor;
 
-namespace DoctorAppointmentSystem.Application.Features.Doctors.Common;
+namespace DoctorAppointmentSystem.Application.Features.Doctors.Contract;
 
 public sealed record DoctorDetailsResponse(
     Guid DoctorProfileId,

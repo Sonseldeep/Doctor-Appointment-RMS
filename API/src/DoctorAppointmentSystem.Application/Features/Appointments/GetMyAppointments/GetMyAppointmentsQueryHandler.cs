@@ -21,12 +21,15 @@ internal sealed class GetMyAppointmentsQueryHandler
     public async Task<ErrorOr<IReadOnlyList<AppointmentResponse>>> Handle(GetMyAppointmentsQuery request, CancellationToken cancellationToken)
     {
         var user = await _users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user is null) return UserErrors.NotFound;
+        if (user is null)
+        {
+            return UserErrors.NotFound;
+        }
 
         var list = user.Role switch
         {
-            UserRole.Doctor => await _appointments.GetForDoctorAsync(request.UserId, cancellationToken),
-            _ => await _appointments.GetForPatientAsync(request.UserId, cancellationToken),
+            UserRole.Doctor => await _appointments.GetForDoctorWithDetailsAsync(request.UserId, cancellationToken),
+            _ => await _appointments.GetForPatientWithDetailsAsync(request.UserId, cancellationToken),
         };
 
         var result = list.Select(a => new AppointmentResponse(
@@ -36,7 +39,12 @@ internal sealed class GetMyAppointmentsQueryHandler
             StartUtc: a.StartUtc,
             EndUtc: a.EndUtc,
             Status: a.Status,
-            Notes: a.Notes)).ToList().AsReadOnly();
+            Notes: a.Notes,
+            DoctorName: $"{a.DoctorFirstName} {a.DoctorLastName}",
+            DoctorSpecialization: a.DoctorSpecialization,
+            PatientName: $"{a.PatientFirstName} {a.PatientLastName}",
+            PatientSex: a.PatientSex,
+            PatientAge: a.PatientAge)).ToList().AsReadOnly();
 
         return result;
     }
