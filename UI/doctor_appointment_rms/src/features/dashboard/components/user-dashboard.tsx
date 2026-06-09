@@ -10,6 +10,13 @@ import { HealthAlerts } from "./health-alerts";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
+import {
+  RiCalendarLine,
+  RiCheckLine,
+  RiCapsuleLine,
+  RiFileListLine,
+  RiCalendar2Line,
+} from "@remixicon/react";
 
 export function UserDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -42,26 +49,26 @@ export function UserDashboard() {
         <StatCard
           title="Upcoming Appointments"
           value={upcoming}
-          icon="📅"
+          icon={<RiCalendarLine />}
           backgroundColor="bg-blue-50"
         />
         <StatCard
           title="Completed Appointments"
           value={completed}
-          icon="✅"
+          icon={<RiCheckLine />}
           trend={12}
           backgroundColor="bg-green-50"
         />
         <StatCard
           title="Active Prescriptions"
           value={3}
-          icon="💊"
+          icon={<RiCapsuleLine />}
           backgroundColor="bg-purple-50"
         />
         <StatCard
           title="Medical Reports"
           value={8}
-          icon="📋"
+          icon={<RiFileListLine />}
           backgroundColor="bg-orange-50"
         />
       </div>
@@ -125,13 +132,13 @@ export function UserDashboard() {
           <div className="space-y-3">
             <h3 className="font-semibold text-lg">Quick Actions</h3>
             <Button className="w-full bg-gray-900 hover:bg-gray-800" variant="default">
-              📅 Book Appointment
+              <RiCalendar2Line className="mr-2" /> Book Appointment
             </Button>
             <Button variant="outline" className="w-full">
-              📋 View Medical Records
+              <RiFileListLine className="mr-2" /> View Medical Records
             </Button>
             <Button variant="outline" className="w-full">
-              💊 View Prescriptions
+              <RiCapsuleLine className="mr-2" /> View Prescriptions
             </Button>
           </div>
         </div>

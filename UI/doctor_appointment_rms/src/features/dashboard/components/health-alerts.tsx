@@ -1,10 +1,14 @@
 "use client";
+import {
+  RiAlarmWarningLine,
+  RiHeartPulseLine,
+} from "@remixicon/react";
 
 interface HealthAlert {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  icon: React.ReactNode;
   type: "reminder" | "alert" | "action";
 }
 
@@ -18,14 +22,14 @@ export function HealthAlerts({
       id: "1",
       title: "Prescription Reminder",
       description: "Your Lisinopril prescription expires in 3 days",
-      icon: "⏰",
+      icon: <RiAlarmWarningLine size={20} className="text-yellow-600" />,
       type: "reminder"
     },
     {
       id: "2",
       title: "Follow-up Due",
       description: "Time for your annual health checkup",
-      icon: "❤️",
+      icon: <RiHeartPulseLine size={20} className="text-blue-600" />,
       type: "action"
     }
   ]
@@ -45,7 +49,9 @@ export function HealthAlerts({
           className={`rounded-lg border bg-white p-4 ${borderColor[alert.type]}`}
         >
           <div className="flex gap-3">
-            <span className="text-xl">{alert.icon}</span>
+            <div className="mt-0.5">
+  {alert.icon}
+</div>
             <div>
               <p className="font-medium text-sm">{alert.title}</p>
               <p className="text-xs text-muted-foreground mt-1">{alert.description}</p>
