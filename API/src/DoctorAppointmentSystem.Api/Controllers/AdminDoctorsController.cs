@@ -1,7 +1,6 @@
 ﻿using DoctorAppointmentSystem.Application.Features.Admin.Doctor.ApproveDoctor;
 using DoctorAppointmentSystem.Application.Features.Admin.Doctor.GetAllDoctors;
 using DoctorAppointmentSystem.Application.Features.Admin.Doctor.SuspendDoctor;
-using DoctorAppointmentSystem.Application.Features.Doctors.GetDoctors;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
