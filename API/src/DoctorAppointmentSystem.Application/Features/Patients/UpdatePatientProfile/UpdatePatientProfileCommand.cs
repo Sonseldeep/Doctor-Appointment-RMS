@@ -7,5 +7,6 @@ public sealed record UpdatePatientProfileCommand(
     Guid UserId,
     string? PhoneNumber,
     string? Address,
-    Sex Sex
+    Sex Sex,
+    DateOnly DateOfBirth
 ) : ICommand;

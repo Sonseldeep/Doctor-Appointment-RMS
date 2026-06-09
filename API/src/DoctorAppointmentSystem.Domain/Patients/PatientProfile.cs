@@ -20,14 +20,16 @@ public sealed class PatientProfile : Entity
 
     public Sex Sex { get; private set; }
 
+    public DateOnly DateOfBirth { get; private set; }
     public DateTimeOffset CreatedAtUtc { get; private set; }
 
     public static PatientProfile Create(Guid userId) => new(userId);
 
-    public void Update(string? phoneNumber, string? address, Sex sex)
+    public void Update(string? phoneNumber, string? address, Sex sex, DateOnly dateOfBirth)
     {
         PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber.Trim();
         Address = string.IsNullOrWhiteSpace(address) ? null : address.Trim();
         Sex = sex;
+        DateOfBirth = dateOfBirth;
     }
 }
