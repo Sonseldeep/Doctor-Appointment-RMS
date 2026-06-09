@@ -1,6 +1,7 @@
 ﻿using DoctorAppointmentSystem.Application.Features.Admin.Doctor.ApproveDoctor;
 using DoctorAppointmentSystem.Application.Features.Admin.Doctor.GetAllDoctors;
 using DoctorAppointmentSystem.Application.Features.Admin.Doctor.SuspendDoctor;
+using DoctorAppointmentSystem.Application.Features.Doctors.GetDoctors;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +18,14 @@ public sealed class AdminDoctorsController : ApiController
     {
         _sender = sender;
     }
+    
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] GetAllDoctorsRequest request, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetAllDoctorsQuery(), cancellationToken);
+        var result = await _sender.Send(request.ToQuery(), cancellationToken);
         return result.Match(Ok, Problem);
     }
-
     [HttpPost("{doctorUserId:guid}/approve")]
     public async Task<IActionResult> Approve(Guid doctorUserId, CancellationToken cancellationToken)
     {

@@ -2,6 +2,7 @@
 using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Features.Doctors.Common;
+using DoctorAppointmentSystem.Application.Features.Doctors.Contract;
 using DoctorAppointmentSystem.Domain.Doctor;
 using DoctorAppointmentSystem.Domain.Users;
 using ErrorOr;
