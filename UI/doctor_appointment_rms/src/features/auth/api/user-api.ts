@@ -1,6 +1,6 @@
 import axiosClient from "@/lib/axios";
 
-import {
+import type {
   CurrentUser,
   DoctorProfile,
   PatientProfile,
@@ -10,45 +10,33 @@ import {
 export const userApi = {
   /**
    * Fetch doctor profile
-   * Once backend implements /doctors/me, use this
    */
   meDoctor: async (): Promise<DoctorProfile> => {
-    const res = await axiosClient.get<DoctorProfile>("/doctors/me");
+    const res = await axiosClient.get<DoctorProfile>("/api/doctors/me");
     return res.data;
   },
 
   /**
    * Fetch patient profile
-   * Once backend implements /patients/me, use this
    */
   mePatient: async (): Promise<PatientProfile> => {
-    const res = await axiosClient.get<PatientProfile>("/patients/me");
+    const res = await axiosClient.get<PatientProfile>("/api/patients/me");
     return res.data;
   },
 
   /**
    * Generic profile fetch - calls appropriate endpoint based on role
-   * TEMPORARY: Uses /users/me until backend implements role-specific endpoints
    */
   me: async (role?: string): Promise<CurrentUser> => {
     try {
-      // If role is provided, try the role-specific endpoints first
       if (role === "Doctor") {
-        try {
-          return await userApi.meDoctor();
-        } catch (error) {
-          console.warn("[userApi] /doctors/me not available, falling back to /users/me");
-        }
-      } else if (role === "User" || role === "Patient") {
-        try {
-          return await userApi.mePatient();
-        } catch (error) {
-          console.warn("[userApi] /patients/me not available, falling back to /users/me");
-        }
+        return await userApi.meDoctor();
       }
 
-      // TEMPORARY FALLBACK: Use old endpoint until backend is updated
-      // Once backend has /doctors/me and /patients/me, remove this
+      if (role === "Registered") {
+        return await userApi.mePatient();
+      }
+
       const res = await axiosClient.get<CurrentUser>("/users/me");
       return res.data;
     } catch (error) {
@@ -62,7 +50,7 @@ export const userApi = {
    * Works the same for all user types
    */
   uploadProfilePhoto: async (
-    file: File
+    file: File,
   ): Promise<UploadProfilePhotoResponse> => {
     const formData = new FormData();
     formData.append("file", file);
@@ -74,7 +62,7 @@ export const userApi = {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
 
     return res.data;
