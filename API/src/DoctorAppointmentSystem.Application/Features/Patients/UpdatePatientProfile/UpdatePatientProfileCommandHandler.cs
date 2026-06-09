@@ -29,16 +29,23 @@ internal sealed class UpdatePatientProfileCommandHandler
     public async Task<ErrorOr<Success>> Handle(UpdatePatientProfileCommand request, CancellationToken cancellationToken)
     {
         var user = await _users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user is null) return UserErrors.NotFound;
+        if (user is null)
+        {
+            return UserErrors.NotFound;
+        }
 
         if (user.Role != UserRole.Registered)
+        {
             return PatientErrors.UserIsNotPatient;
+        }
 
         var profile = await _patients.GetByUserIdAsync(request.UserId, cancellationToken);
         if (profile is null)
+        {
             return PatientErrors.ProfileNotFound;
+        }
 
-        profile.Update(request.PhoneNumber, request.Address, request.Sex);
+        profile.Update(request.PhoneNumber, request.Address, request.Sex, request.DateOfBirth);
 
         await _uow.SaveChangesAsync(cancellationToken);
         return Result.Success;
