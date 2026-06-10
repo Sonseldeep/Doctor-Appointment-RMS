@@ -8,6 +8,7 @@ public sealed record DoctorResponse(
     string FirstName,
     string LastName,
     string? ProfilePhotoUrl,
+    string NmcNumber,
     Specialization Specialization,
     decimal ConsultationFee,
     string Bio
