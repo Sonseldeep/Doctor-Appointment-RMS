@@ -32,9 +32,20 @@ public interface IDoctorAvailabilityRepository
     Task<DoctorAvailabilitySlot?> GetSlotByAppointmentIdAsync(
         Guid appointmentId,
         CancellationToken cancellationToken);
+    
+    Task ReplaceAvailabilityAsync(
+        Guid availabilityId,
+        TimeOnly startTime,
+        TimeOnly endTime,
+        int slotDurationMinutes,
+        CancellationToken cancellationToken);
 
 
     Task AddAsync(DoctorAvailability availability, CancellationToken cancellationToken);
 
     void Remove(DoctorAvailability availability);
+    
+    void RemoveSlots(IReadOnlyList<DoctorAvailabilitySlot> slots);
+    
+    void DetachSlots(IReadOnlyList<DoctorAvailabilitySlot> slots); 
 }

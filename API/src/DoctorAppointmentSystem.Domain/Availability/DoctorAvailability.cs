@@ -1,11 +1,12 @@
 ﻿using DoctorAppointmentSystem.Domain.Abstractions;
+using ErrorOr;
 
 namespace DoctorAppointmentSystem.Domain.Availability;
 
 
 public sealed class DoctorAvailability : Entity
 {
-    private readonly List<DoctorAvailabilitySlot> _slots = new();
+    private readonly List<DoctorAvailabilitySlot> _slots = [];
 
     private DoctorAvailability() { }
 
@@ -85,7 +86,7 @@ public sealed class DoctorAvailability : Entity
     }
 
 
-    public ErrorOr.ErrorOr<ErrorOr.Success> Update(
+    public ErrorOr<Success> Update(
         TimeOnly startTime,
         TimeOnly endTime,
         int slotDurationMinutes)
@@ -117,11 +118,11 @@ public sealed class DoctorAvailability : Entity
         _slots.Clear();
         GenerateSlots();
 
-        return ErrorOr.Result.Success;
+        return Result.Success;
     }
 
 
-    public ErrorOr.ErrorOr<ErrorOr.Success> EnsureCanDelete()
+    public ErrorOr<Success> EnsureCanDelete()
     {
         if (_slots.Any(s => s.IsBooked))
         {
@@ -130,4 +131,5 @@ public sealed class DoctorAvailability : Entity
 
         return ErrorOr.Result.Success;
     }
+    
 }

@@ -68,6 +68,30 @@ internal sealed class DoctorAvailabilityRepository : IDoctorAvailabilityReposito
         => await _db.DoctorAvailabilitySlots
             .SingleOrDefaultAsync(s => s.AppointmentId == appointmentId, cancellationToken);
 
+    public async Task ReplaceAvailabilityAsync(
+        Guid availabilityId,
+        TimeOnly startTime,
+        TimeOnly endTime,
+        int slotDurationMinutes,
+        CancellationToken cancellationToken)
+    {
+        // Step 1: delete old slots via raw SQL — completely bypasses change tracker
+        await _db.Database.ExecuteSqlRawAsync(
+            "DELETE FROM [hospital_management].[doctor_availability_slots] WHERE [AvailabilityId] = {0}",
+            availabilityId);
+
+        // Step 2: update parent columns directly via raw SQL
+        await _db.Database.ExecuteSqlRawAsync(
+            "UPDATE [hospital_management].[doctor_availabilities] SET [StartTime] = {0}, [EndTime] = {1}, [SlotDurationMinutes] = {2} WHERE [Id] = {3}",
+            startTime, endTime, slotDurationMinutes, availabilityId);
+
+        // Step 3: generate and insert fresh slots
+        var newSlots = GenerateSlots(availabilityId, startTime, endTime, slotDurationMinutes);
+
+        await _db.DoctorAvailabilitySlots.AddRangeAsync(newSlots, cancellationToken);
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task AddAsync(
         DoctorAvailability availability,
         CancellationToken cancellationToken)
@@ -75,7 +99,42 @@ internal sealed class DoctorAvailabilityRepository : IDoctorAvailabilityReposito
 
     public void Remove(DoctorAvailability availability)
         => _db.DoctorAvailabilities.Remove(availability);
+
+    public void RemoveSlots(IReadOnlyList<DoctorAvailabilitySlot> slots)
+        => _db.DoctorAvailabilitySlots.RemoveRange(slots);
     
     
+    public void DetachSlots(IReadOnlyList<DoctorAvailabilitySlot> slots)
+    {
+        foreach (var slot in slots)
+        {
+            var entry = _db.Entry(slot);
+            if (entry.State != EntityState.Detached)
+            {
+                entry.State = EntityState.Detached;
+            }
+        }
+    }
+    
+    
+    private static List<DoctorAvailabilitySlot> GenerateSlots(
+        Guid availabilityId,
+        TimeOnly startTime,
+        TimeOnly endTime,
+        int slotDurationMinutes)
+    {
+        var slots = new List<DoctorAvailabilitySlot>();
+        var current = startTime;
+
+        while (true)
+        {
+            var next = current.Add(TimeSpan.FromMinutes(slotDurationMinutes));
+            if (next > endTime) break;
+            slots.Add(DoctorAvailabilitySlot.Create(availabilityId, current, next));
+            current = next;
+        }
+
+        return slots;
+    }
     
 }

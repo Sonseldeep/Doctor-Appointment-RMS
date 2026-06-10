@@ -30,12 +30,7 @@ public sealed class AvailabilityController : ApiController
             return Unauthorized();
         }
 
-        var command = new CreateAvailabilityCommand(
-            DoctorUserId: doctorUserId,
-            Date: request.Date,
-            StartTime: request.StartTime,
-            EndTime: request.EndTime,
-            SlotDurationMinutes: request.SlotDurationMinutes);
+        var command = new CreateAvailabilityCommand(doctorUserId, request.Date, request.StartTime, request.EndTime, request.SlotDurationMinutes);
 
         var result = await _sender.Send(command, cancellationToken);
         return result.Match(
@@ -53,12 +48,7 @@ public sealed class AvailabilityController : ApiController
             return Unauthorized();
         }
 
-        var command = new UpdateAvailabilityCommand(
-            DoctorUserId: doctorUserId,
-            AvailabilityId: availabilityId,
-            StartTime: request.StartTime,
-            EndTime: request.EndTime,
-            SlotDurationMinutes: request.SlotDurationMinutes);
+        var command = new UpdateAvailabilityCommand(doctorUserId, availabilityId, request.StartTime, request.EndTime, request.SlotDurationMinutes);
 
         var result = await _sender.Send(command, cancellationToken);
         return result.Match(_ => NoContent(), Problem);

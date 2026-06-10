@@ -32,7 +32,7 @@ public sealed class DoctorAvailabilitySlot : Entity
     public DoctorAvailability Availability { get; private set; } = null!;
 
 
-    internal static DoctorAvailabilitySlot Create(
+    public static DoctorAvailabilitySlot Create(
         Guid availabilityId,
         TimeOnly startTime,
         TimeOnly endTime)
