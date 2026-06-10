@@ -3,6 +3,7 @@ using DoctorAppointmentSystem.Api.Extensions;
 using DoctorAppointmentSystem.Application;
 using DoctorAppointmentSystem.Infrastructure;
 using Hangfire;
+using Scalar.AspNetCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,7 @@ app.UseHttpsRedirection();
 
 if (app.Environment.IsDevelopment())
 {
+    app.MapScalarApiReference();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
