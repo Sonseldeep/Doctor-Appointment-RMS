@@ -34,13 +34,13 @@ public sealed class DoctorsController : ApiController
     public async Task<IActionResult> GetMe(CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var userId))
+        {
             return Unauthorized();
+        }
 
         var result = await _sender.Send(new GetDoctorMeQuery(userId), cancellationToken);
 
-        return result.Match(
-            Ok,
-            Problem);
+        return result.Match(Ok, Problem);
     }
     
     
@@ -50,17 +50,13 @@ public sealed class DoctorsController : ApiController
     {
         var result = await _sender.Send(new GetDoctorByUserIdQuery(userId), cancellationToken);
 
-        return result.Match(
-            Ok,
-            Problem);
+        return result.Match(Ok, Problem);
     }
 
 
     [HttpPost("profile")]
     [Authorize]
-    public async Task<IActionResult> CreateProfile(
-        [FromBody] CreateDoctorProfileRequest request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProfile([FromBody] CreateDoctorProfileRequest request, CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var userId))
         {
@@ -68,11 +64,7 @@ public sealed class DoctorsController : ApiController
         }
            
 
-        var command = new CreateDoctorProfileCommand(
-            UserId: userId,
-            Bio: request.Bio,
-            Specialization: request.Specialization,
-            ConsultationFee: request.ConsultationFee);
+        var command = new CreateDoctorProfileCommand(userId, request.Bio, request.Specialization, request.ConsultationFee);
 
         var result = await _sender.Send(command, cancellationToken);
 
@@ -93,11 +85,7 @@ public sealed class DoctorsController : ApiController
         }
           
 
-        var command = new UpdateDoctorProfileCommand(
-            UserId: userId,
-            Bio: request.Bio,
-            Specialization: request.Specialization,
-            ConsultationFee: request.ConsultationFee);
+        var command = new UpdateDoctorProfileCommand(userId, request.Bio, request.Specialization, request.ConsultationFee);
 
         var result = await _sender.Send(command, cancellationToken);
 

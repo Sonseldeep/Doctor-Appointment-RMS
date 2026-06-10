@@ -22,9 +22,12 @@ public sealed class PatientsController : ApiController
     public async Task<IActionResult> GetMe(CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var userId))
+        {
             return Unauthorized();
+        }
 
         var result = await _sender.Send(new GetPatientMeQuery(userId), cancellationToken);
+        
         return result.Match(Ok, Problem);
     }
 
@@ -34,16 +37,13 @@ public sealed class PatientsController : ApiController
         CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var userId))
+        {
             return Unauthorized();
+        }
 
-        var cmd = new UpdatePatientProfileCommand(
-            UserId: userId,
-            PhoneNumber: request.PhoneNumber,
-            Address: request.Address,
-            Sex: request.Sex,
-            DateOfBirth: request.DateOfBirth);
+        var command = new UpdatePatientProfileCommand(userId, request.PhoneNumber, request.Address, request.Sex, request.DateOfBirth);
 
-        var result = await _sender.Send(cmd, cancellationToken);
+        var result = await _sender.Send(command, cancellationToken);
         return result.Match(_ => NoContent(), Problem);
     }
 }

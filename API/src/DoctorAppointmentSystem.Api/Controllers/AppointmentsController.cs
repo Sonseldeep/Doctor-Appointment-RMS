@@ -45,19 +45,18 @@ public sealed class AppointmentsController : ApiController
         {
             return Unauthorized();
         }
-            
 
         var command = new BookAppointmentCommand(
             PatientUserId: patientUserId,
             DoctorUserId: request.DoctorUserId,
-            StartUtc: request.StartUtc,
-            EndUtc: request.EndUtc,
+            SlotId: request.SlotId,       
             Notes: request.Notes);
 
         var result = await _sender.Send(command, cancellationToken);
 
         return result.Match(
-            response => Ok(new   {
+            response => Ok(new
+            {
                 appointmentId = response.AppointmentId,
                 status = response.Status,
                 message = response.Message

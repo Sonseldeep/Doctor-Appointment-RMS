@@ -16,23 +16,9 @@ internal sealed class BookAppointmentCommandValidator : AbstractValidator<BookAp
             .NotEqual(x => x.PatientUserId)
             .WithMessage("Patient and doctor cannot be the same person.");
 
-        RuleFor(x => x.StartUtc)
+        RuleFor(x => x.SlotId)
             .NotEmpty()
-            .WithMessage("Start time is required.")
-            .GreaterThan(DateTimeOffset.UtcNow)
-            .WithMessage("Cannot book appointments in the past.");
-
-        RuleFor(x => x.EndUtc)
-            .NotEmpty()
-            .WithMessage("End time is required.")
-            .GreaterThan(x => x.StartUtc)
-            .WithMessage("End time must be after start time.")
-            .Must((command, endUtc) =>
-            {
-                var duration = endUtc - command.StartUtc;
-                return duration.TotalMinutes is >= 15 and <= 60;
-            })
-            .WithMessage("Appointment duration must be between 15 minutes and 1 hours.");
+            .WithMessage("A time slot must be selected.");
 
         RuleFor(x => x.Notes)
             .MaximumLength(1000)
