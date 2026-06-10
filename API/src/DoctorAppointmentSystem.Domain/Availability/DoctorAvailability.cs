@@ -3,10 +3,12 @@ using ErrorOr;
 
 namespace DoctorAppointmentSystem.Domain.Availability;
 
-
 public sealed class DoctorAvailability : Entity
 {
     private readonly List<DoctorAvailabilitySlot> _slots = [];
+
+    private const int MinSlotDurationMinutes = 15;
+    private const int MaxSlotDurationMinutes = 120;
 
     private DoctorAvailability() { }
 
@@ -29,60 +31,34 @@ public sealed class DoctorAvailability : Entity
     }
 
     public Guid DoctorUserId { get; private set; }
-
     public DateOnly Date { get; private set; }
-
     public TimeOnly StartTime { get; private set; }
-
     public TimeOnly EndTime { get; private set; }
-
     public int SlotDurationMinutes { get; private set; }
-
     public DateTimeOffset CreatedAtUtc { get; private set; }
 
     public IReadOnlyList<DoctorAvailabilitySlot> Slots => _slots.AsReadOnly();
 
 
-    public static ErrorOr.ErrorOr<DoctorAvailability> Create(
+    public static ErrorOr<DoctorAvailability> Create(
         Guid doctorUserId,
         DateOnly date,
         TimeOnly startTime,
         TimeOnly endTime,
         int slotDurationMinutes)
     {
-        if (endTime <= startTime)
+        var validation = ValidateWindow(startTime, endTime, slotDurationMinutes);
+        if (validation.IsError)
         {
-            return AvailabilityErrors.EndBeforeStart;
+            return validation.Errors;
         }
 
-        if (slotDurationMinutes is < 15 or > 120)
-        {
-            return AvailabilityErrors.InvalidSlotDuration;
-        }
-        var totalMinutes = (endTime.ToTimeSpan() - startTime.ToTimeSpan()).TotalMinutes;
-        if (totalMinutes < slotDurationMinutes)
-        {
-            return AvailabilityErrors.WindowTooShort;
-        }
-
-        return new DoctorAvailability(doctorUserId, date, startTime, endTime, slotDurationMinutes);
-    }
-
-
-    private void GenerateSlots()
-    {
-        var current = StartTime;
-        while (true)
-        {
-            var next = current.Add(TimeSpan.FromMinutes(SlotDurationMinutes));
-            if (next > EndTime)
-            {
-                break;
-            }
-
-            _slots.Add(DoctorAvailabilitySlot.Create(Id, current, next));
-            current = next;
-        }
+        return new DoctorAvailability(
+            doctorUserId,
+            date,
+            startTime,
+            endTime,
+            slotDurationMinutes);
     }
 
 
@@ -96,19 +72,10 @@ public sealed class DoctorAvailability : Entity
             return AvailabilityErrors.CannotUpdateWithBookedSlots;
         }
 
-        if (endTime <= startTime)
+        var validation = ValidateWindow(startTime, endTime, slotDurationMinutes);
+        if (validation.IsError)
         {
-            return AvailabilityErrors.EndBeforeStart;
-        }
-
-        if (slotDurationMinutes is < 15 or > 120)
-        {
-            return AvailabilityErrors.InvalidSlotDuration;
-        }
-        var totalMinutes = (endTime.ToTimeSpan() - startTime.ToTimeSpan()).TotalMinutes;
-        if (totalMinutes < slotDurationMinutes)
-        {
-            return AvailabilityErrors.WindowTooShort;
+            return validation.Errors;
         }
 
         StartTime = startTime;
@@ -124,12 +91,54 @@ public sealed class DoctorAvailability : Entity
 
     public ErrorOr<Success> EnsureCanDelete()
     {
-        if (_slots.Any(s => s.IsBooked))
+        return _slots.Any(s => s.IsBooked)
+            ? AvailabilityErrors.CannotDeleteWithBookedSlots
+            : Result.Success;
+    }
+
+
+    public static ErrorOr<Success> ValidateWindow(
+        TimeOnly startTime,
+        TimeOnly endTime,
+        int slotDurationMinutes)
+    {
+        if (endTime <= startTime)
         {
-            return AvailabilityErrors.CannotDeleteWithBookedSlots;
+            return AvailabilityErrors.EndBeforeStart;
         }
 
-        return ErrorOr.Result.Success;
+        if (slotDurationMinutes < MinSlotDurationMinutes ||
+            slotDurationMinutes > MaxSlotDurationMinutes)
+        {
+            return AvailabilityErrors.InvalidSlotDuration;
+        }
+
+        var totalMinutes =
+            (endTime.ToTimeSpan() - startTime.ToTimeSpan()).TotalMinutes;
+
+        if (totalMinutes < slotDurationMinutes)
+        {
+            return AvailabilityErrors.WindowTooShort;
+        }
+
+        return Result.Success;
     }
-    
+
+
+    private void GenerateSlots()
+    {
+        var current = StartTime;
+        var step = TimeSpan.FromMinutes(SlotDurationMinutes);
+
+        while (current.Add(step) <= EndTime)
+        {
+            var next = current.Add(step);
+
+            _slots.Add(
+                DoctorAvailabilitySlot.Create(Id, current, next)
+            );
+
+            current = next;
+        }
+    }
 }

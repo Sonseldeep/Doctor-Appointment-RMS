@@ -23,28 +23,31 @@ internal sealed class UpdateAvailabilityCommandHandler : ICommandHandler<UpdateA
         UpdateAvailabilityCommand request,
         CancellationToken cancellationToken)
     {
-        // Load WITH slots to run domain validation only
         var availability = await _availability.GetByIdWithSlotsAsync(
             request.AvailabilityId, cancellationToken);
 
         if (availability is null || availability.DoctorUserId != request.DoctorUserId)
+        {
             return AvailabilityErrors.NotFound;
+        }
 
         if (availability.Date < DateOnly.FromDateTime(DateTime.UtcNow))
+        {
             return AvailabilityErrors.CannotModifyPast;
+        }
 
         if (availability.Slots.Any(s => s.IsBooked))
+        {
             return AvailabilityErrors.CannotUpdateWithBookedSlots;
+        }
 
-        // Validate the new time window via domain before touching the DB
         var validation = DoctorAvailability.ValidateWindow(
             request.StartTime, request.EndTime, request.SlotDurationMinutes);
         if (validation.IsError)
+        {
             return validation.Errors;
+        }
 
-        // Delete old slots and update parent directly via repository
-        // bypassing the change tracker entirely — this is the only reliable approach
-        // when EF Core is confused about owned collection state after Include()
         await _availability.ReplaceAvailabilityAsync(
             request.AvailabilityId,
             request.StartTime,
