@@ -38,6 +38,11 @@ public static class DoctorErrors
         description: "Doctor is already suspended.");
     
     
+    public static Error NmcNumberAlreadyRegistered => Error.Conflict(
+        code: "DoctorProfile.NmcNumberAlreadyRegistered",
+        description: "This NMC number is already registered to another doctor.");
+    
+    
     
 
 }

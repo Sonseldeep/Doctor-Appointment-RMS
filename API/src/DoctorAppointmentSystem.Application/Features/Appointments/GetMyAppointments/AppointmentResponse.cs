@@ -13,6 +13,7 @@ public sealed record AppointmentResponse(
     AppointmentStatus Status,
     string? Notes,
     string DoctorName,
+    string DoctorNmcNumber,
     Specialization DoctorSpecialization,
     string PatientName,
     Sex? PatientSex,

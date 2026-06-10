@@ -64,7 +64,7 @@ public sealed class DoctorsController : ApiController
         }
            
 
-        var command = new CreateDoctorProfileCommand(userId, request.Bio, request.Specialization, request.ConsultationFee);
+        var command = new CreateDoctorProfileCommand(userId,request.NmcNumber, request.Bio, request.Specialization, request.ConsultationFee);
 
         var result = await _sender.Send(command, cancellationToken);
 

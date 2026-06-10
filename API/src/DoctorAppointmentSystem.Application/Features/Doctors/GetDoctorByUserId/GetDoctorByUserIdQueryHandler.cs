@@ -49,6 +49,7 @@ internal sealed class GetDoctorByUserIdQueryHandler
             Email: user.Email,
             Role: user.Role.ToString(),
             ProfilePhotoUrl: user.ProfilePhotoUrl,
+            NmcNumber: profile.NmcNumber,
             Specialization: profile.Specialization,
             ConsultationFee: profile.ConsultationFee,
             Status: profile.Status,
