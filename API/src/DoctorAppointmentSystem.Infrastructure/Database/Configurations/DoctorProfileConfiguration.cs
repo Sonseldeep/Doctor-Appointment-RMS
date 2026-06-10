@@ -14,6 +14,11 @@ internal sealed class DoctorProfileConfiguration : IEntityTypeConfiguration<Doct
 
         builder.Property(x => x.UserId).IsRequired();
         builder.HasIndex(x => x.UserId).IsUnique();
+        
+        builder.Property(x => x.NmcNumber)
+            .HasMaxLength(20)
+            .IsRequired();
+        builder.HasIndex(x => x.NmcNumber).IsUnique();
 
         builder.Property(x => x.Bio)
             .HasMaxLength(2000)

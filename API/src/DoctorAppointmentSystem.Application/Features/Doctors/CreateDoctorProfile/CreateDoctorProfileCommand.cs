@@ -5,6 +5,7 @@ namespace DoctorAppointmentSystem.Application.Features.Doctors.CreateDoctorProfi
 
 public sealed record CreateDoctorProfileCommand(
     Guid UserId,
+    string NmcNumber,
     string Bio,
     Specialization Specialization,
     decimal ConsultationFee

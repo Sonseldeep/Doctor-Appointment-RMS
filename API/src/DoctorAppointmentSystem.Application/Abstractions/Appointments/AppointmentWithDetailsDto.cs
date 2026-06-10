@@ -14,6 +14,7 @@ public sealed record AppointmentWithDetailsDto(
     string? Notes,
     string DoctorFirstName,
     string DoctorLastName,
+    string DoctorNmcNumber,
     Specialization DoctorSpecialization,
     string PatientFirstName,
     string PatientLastName,
