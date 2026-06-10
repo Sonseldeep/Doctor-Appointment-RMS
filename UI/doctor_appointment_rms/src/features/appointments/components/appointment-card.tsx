@@ -105,10 +105,23 @@ import { Appointment } from "../types/appointments.types";
 import { Button } from "@/components/ui/button";
 import { RiUserHeartLine, RiCalendarLine, RiMapPinLine } from "@remixicon/react";
 
+// EXTENDED INTERFACE: Combines flat types and nested API shapes to clear all TS compiler errors
+interface ExtendedAppointment extends Appointment {
+  patientName?: string;
+  patientSex?: string;
+  patientAge?: number;
+  patient?: {
+    firstName?: string;
+    lastName?: string;
+    sex?: string;
+    age?: number;
+  };
+}
+
 interface AppointmentCardProps {
-  appointment: Appointment;
+  appointment: ExtendedAppointment; // Swapped to use our extended interface
   onCancel?: (id: string) => void;
-  onClick?: () => void; // NEW: Callback hook parameter mapping
+  onClick?: () => void;
 }
 
 export function AppointmentCard({ appointment, onCancel, onClick }: AppointmentCardProps) {
@@ -131,6 +144,16 @@ export function AppointmentCard({ appointment, onCancel, onClick }: AppointmentC
     Cancelled: "bg-red-100 text-red-800",
   }[appointment.status] || "bg-gray-100 text-gray-800";
 
+  // DEFENSIVE FALLBACKS: Resolves data variations from the backend responses cleanly
+  const displayName = appointment.patientName 
+    ? appointment.patientName 
+    : appointment.patient 
+      ? `${appointment.patient.firstName || ""} ${appointment.patient.lastName || ""}`.trim()
+      : `Dr. ${appointment.doctorName || "Practitioner"}`;
+
+  const displaySex = appointment.patientSex || appointment.patient?.sex;
+  const displayAge = appointment.patientAge || appointment.patient?.age;
+
   return (
     <div 
       onClick={onClick}
@@ -141,13 +164,12 @@ export function AppointmentCard({ appointment, onCancel, onClick }: AppointmentC
           <div className="flex items-center gap-2">
             <RiUserHeartLine size={20} className="text-blue-600" />
             <div>
-              {/* Professionally dynamic title text display tailored to role layouts */}
               <p className="font-semibold text-lg">
-                {appointment.patientName ? appointment.patientName : `Dr. ${appointment.doctorName || "Practitioner"}`}
+                {displayName}
               </p>
-              {appointment.patientSex && (
-                <p className="text-sm text-muted-foreground">
-                  {appointment.patientSex} • Age {appointment.patientAge}
+              {displaySex && (
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  {displaySex} {displayAge ? `• Age ${displayAge}` : ""}
                 </p>
               )}
             </div>
