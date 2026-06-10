@@ -193,21 +193,21 @@ export function AppointmentCard({ appointment, onCancel, onClick }: AppointmentC
         )}
       </div>
 
-      {appointment.status === "Scheduled" && (
-        <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
-          <Button variant="outline" size="sm" className="flex-1">
-            Reschedule
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex-1 text-red-600 hover:text-red-700"
-            onClick={() => onCancel?.(appointment.id)}
-          >
-            Cancel
-          </Button>
-        </div>
-      )}
+      {["Scheduled", "Confirmed", "Pending"].includes(appointment.status) && (
+  <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
+    <Button variant="outline" size="sm" className="flex-1">
+      Reschedule
+    </Button>
+    <Button 
+      variant="outline" 
+      size="sm" 
+      className="flex-1 text-red-600 hover:text-red-700"
+      onClick={() => onCancel?.(appointment.id)}
+    >
+      Cancel
+    </Button>
+  </div>
+)}
     </div>
   );
 }
