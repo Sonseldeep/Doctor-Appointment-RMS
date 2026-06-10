@@ -22,6 +22,10 @@ export const appointmentsApi = {
     return res.data;
   },
 
+  confirmAppointment: async (appointmentId: string): Promise<void> => {
+    await axiosClient.post(`/api/appointments/${appointmentId}/confirm`);
+  },
+
   cancelAppointment: async (appointmentId: string): Promise<void> => {
     await axiosClient.delete(`/api/appointments/${appointmentId}`);
   },
