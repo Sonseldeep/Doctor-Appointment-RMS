@@ -1,5 +1,6 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Domain.Appointments;
+using DoctorAppointmentSystem.Domain.Availability;
 using DoctorAppointmentSystem.Domain.Doctor;
 using DoctorAppointmentSystem.Domain.Patients;
 using DoctorAppointmentSystem.Domain.Users;
@@ -20,6 +21,13 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<Appointment> Appointments => Set<Appointment>();
     
     public DbSet<PatientProfile> PatientProfiles => Set<PatientProfile>();
+    
+    public DbSet<DoctorAvailability> DoctorAvailabilities => Set<DoctorAvailability>();
+
+    public DbSet<DoctorAvailabilitySlot> DoctorAvailabilitySlots => Set<DoctorAvailabilitySlot>();
+
+    
+    
 
 
 
