@@ -3,6 +3,5 @@
 
 public sealed record BookAppointmentRequest(
     Guid DoctorUserId,
-    DateTimeOffset StartUtc,
-    DateTimeOffset EndUtc,
+    Guid SlotId,
     string? Notes);
