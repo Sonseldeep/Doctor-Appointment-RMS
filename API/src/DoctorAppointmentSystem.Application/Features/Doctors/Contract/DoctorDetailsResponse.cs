@@ -10,6 +10,7 @@ public sealed record DoctorDetailsResponse(
     string Email,
     string Role,
     string? ProfilePhotoUrl,
+    string NmcNumber,
     Specialization Specialization,
     decimal ConsultationFee,
     DoctorStatus Status,

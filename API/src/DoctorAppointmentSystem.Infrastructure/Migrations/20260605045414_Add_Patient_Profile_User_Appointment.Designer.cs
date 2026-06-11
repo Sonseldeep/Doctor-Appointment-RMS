@@ -4,6 +4,7 @@ using DoctorAppointmentSystem.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoctorAppointmentSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260605045414_Add_Patient_Profile_User_Appointment")]
+    partial class Add_Patient_Profile_User_Appointment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,70 +72,6 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                     b.ToTable("appointments", "hospital_management");
                 });
 
-            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Availability.DoctorAvailability", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<Guid>("DoctorUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<int>("SlotDurationMinutes")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DoctorUserId", "Date")
-                        .IsUnique();
-
-                    b.ToTable("doctor_availabilities", "hospital_management");
-                });
-
-            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Availability.DoctorAvailabilitySlot", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("AppointmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AvailabilityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<bool>("IsBooked")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId");
-
-                    b.HasIndex("AvailabilityId");
-
-                    b.ToTable("doctor_availability_slots", "hospital_management");
-                });
-
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Doctor.DoctorProfile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -150,11 +89,6 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("NmcNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<int>("Specialization")
                         .HasColumnType("int");
 
@@ -166,55 +100,10 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NmcNumber")
-                        .IsUnique();
-
                     b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("doctor_profiles", "hospital_management");
-                });
-
-            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Notifications.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("AppointmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsRead")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId");
-
-                    b.HasIndex("UserId", "IsRead");
-
-                    b.ToTable("notifications", "hospital_management");
                 });
 
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Patients.PatientProfile", b =>
@@ -229,9 +118,6 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<DateOnly>("DateOfBirth")
-                        .HasColumnType("date");
 
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(30)
@@ -395,28 +281,6 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                     b.ToTable("user_refresh_tokens", "hospital_management");
                 });
 
-            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Availability.DoctorAvailabilitySlot", b =>
-                {
-                    b.HasOne("DoctorAppointmentSystem.Domain.Availability.DoctorAvailability", "Availability")
-                        .WithMany("Slots")
-                        .HasForeignKey("AvailabilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Availability");
-                });
-
-            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Doctor.DoctorProfile", b =>
-                {
-                    b.HasOne("DoctorAppointmentSystem.Domain.Users.User", "User")
-                        .WithOne()
-                        .HasForeignKey("DoctorAppointmentSystem.Domain.Doctor.DoctorProfile", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.UserRefreshToken", b =>
                 {
                     b.HasOne("DoctorAppointmentSystem.Domain.Users.User", null)
@@ -424,11 +288,6 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                         .HasForeignKey("DoctorAppointmentSystem.Domain.Users.UserRefreshToken", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Availability.DoctorAvailability", b =>
-                {
-                    b.Navigation("Slots");
                 });
 #pragma warning restore 612, 618
         }

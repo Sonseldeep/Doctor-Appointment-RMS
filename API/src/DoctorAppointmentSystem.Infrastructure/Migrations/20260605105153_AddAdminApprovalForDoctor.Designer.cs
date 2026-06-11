@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoctorAppointmentSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260605075755_AddAdminApprovalForDoctor")]
+    [Migration("20260605105153_AddAdminApprovalForDoctor")]
     partial class AddAdminApprovalForDoctor
     {
         /// <inheritdoc />

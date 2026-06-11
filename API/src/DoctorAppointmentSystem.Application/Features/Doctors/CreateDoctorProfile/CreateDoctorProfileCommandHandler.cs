@@ -28,17 +28,34 @@ internal sealed class CreateDoctorProfileCommandHandler
     public async Task<ErrorOr<Guid>> Handle(CreateDoctorProfileCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
-        if (user is null) return UserErrors.NotFound;
+        if (user is null)
+        {
+            return UserErrors.NotFound;
+        }
 
         if (user.Role != UserRole.Doctor)
+        {
             return DoctorErrors.UserIsNotDoctor;
+        }
 
         var existing = await _doctorProfileRepository.GetByUserIdAsync(request.UserId, cancellationToken);
         if (existing is not null)
+        {
             return DoctorErrors.AlreadyExists;
+        }
+        
+        
+        var nmcTaken = await _doctorProfileRepository.NmcNumberExistsAsync(
+            request.NmcNumber, cancellationToken);
+        
+        if (nmcTaken)
+        {
+            return DoctorErrors.NmcNumberAlreadyRegistered;
+        }
 
         var profile = DoctorProfile.Create(
             userId: request.UserId,
+            nmcNumber:request.NmcNumber,
             bio: request.Bio,
             specialization: request.Specialization,
             consultationFee: request.ConsultationFee);

@@ -41,6 +41,7 @@ internal sealed class GetMyAppointmentsQueryHandler
             Status: a.Status,
             Notes: a.Notes,
             DoctorName: $"{a.DoctorFirstName} {a.DoctorLastName}",
+            DoctorNmcNumber: a.DoctorNmcNumber,
             DoctorSpecialization: a.DoctorSpecialization,
             PatientName: $"{a.PatientFirstName} {a.PatientLastName}",
             PatientSex: a.PatientSex,

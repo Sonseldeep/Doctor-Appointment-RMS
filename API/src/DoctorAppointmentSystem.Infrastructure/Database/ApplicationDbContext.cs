@@ -2,6 +2,7 @@
 using DoctorAppointmentSystem.Domain.Appointments;
 using DoctorAppointmentSystem.Domain.Availability;
 using DoctorAppointmentSystem.Domain.Doctor;
+using DoctorAppointmentSystem.Domain.Notifications;
 using DoctorAppointmentSystem.Domain.Patients;
 using DoctorAppointmentSystem.Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,9 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<DoctorAvailability> DoctorAvailabilities => Set<DoctorAvailability>();
 
     public DbSet<DoctorAvailabilitySlot> DoctorAvailabilitySlots => Set<DoctorAvailabilitySlot>();
+    
+    public DbSet<Notification> Notifications => Set<Notification>();
+
 
     
     

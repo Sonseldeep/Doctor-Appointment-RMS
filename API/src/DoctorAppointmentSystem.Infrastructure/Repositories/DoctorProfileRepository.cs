@@ -46,7 +46,9 @@ internal sealed class DoctorProfileRepository : IDoctorProfileRepository
             .OrderByDescending(x => x.CreatedAtUtc)
             .ToListAsync(cancellationToken);
 
-
+    public async Task<bool> NmcNumberExistsAsync(string nmcNumber, CancellationToken cancellationToken)
+        => await _db.DoctorProfiles.AnyAsync(x => x.NmcNumber == nmcNumber, cancellationToken);
+    
     public async Task<PagedResult<DoctorResponse>> GetActivePagedAsync(
         GetDoctorsQuery filters,
         CancellationToken cancellationToken)
@@ -83,6 +85,7 @@ internal sealed class DoctorProfileRepository : IDoctorProfileRepository
                 x.u.FirstName,
                 x.u.LastName,
                 x.u.ProfilePhotoUrl,
+                x.d.NmcNumber,
                 x.d.Specialization,
                 x.d.ConsultationFee,
                  x.d.Bio))
@@ -136,6 +139,7 @@ internal sealed class DoctorProfileRepository : IDoctorProfileRepository
                 x.u.LastName,
                 x.u.Email,
                 x.u.ProfilePhotoUrl,
+                x.d.NmcNumber,
                 x.d.Specialization,
                 x.d.ConsultationFee,
                 x.d.Status,

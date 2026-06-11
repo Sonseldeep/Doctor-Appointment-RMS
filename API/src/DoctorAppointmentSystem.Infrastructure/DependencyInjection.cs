@@ -6,6 +6,7 @@ using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Email;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Jobs;
+using DoctorAppointmentSystem.Application.Abstractions.Notifications;
 using DoctorAppointmentSystem.Application.Abstractions.Otp;
 using DoctorAppointmentSystem.Application.Abstractions.Patients;
 using DoctorAppointmentSystem.Application.Abstractions.Storage;
@@ -13,6 +14,7 @@ using DoctorAppointmentSystem.Infrastructure.Abstractions.Authentication;
 using DoctorAppointmentSystem.Infrastructure.Database;
 using DoctorAppointmentSystem.Infrastructure.Email;
 using DoctorAppointmentSystem.Infrastructure.Jobs;
+using DoctorAppointmentSystem.Infrastructure.Notifications;
 using DoctorAppointmentSystem.Infrastructure.Otp;
 using DoctorAppointmentSystem.Infrastructure.Repositories;
 using DoctorAppointmentSystem.Infrastructure.Storage;
@@ -42,6 +44,8 @@ public static class DependencyInjection
         services.AddAuthenticationInfrastructure(configuration);
         services.AddStorageInfrastructure(configuration);
         services.AddHangfireInfrastructure(connectionString);
+        services.AddNotificationInfrastructure();
+
         
 
 
@@ -82,12 +86,27 @@ public static class DependencyInjection
                 };
                 options.Events = new JwtBearerEvents
                 {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments("/hubs/notifications"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                    
                     OnTokenValidated = async context =>
                     {
                         var validator = context.HttpContext.RequestServices.GetRequiredService<TokenVersionValidator>();
                         await validator.ValidateAsync(context);
                     }
                 };
+                
             });
 
         services.AddAuthorization();
@@ -145,6 +164,15 @@ public static class DependencyInjection
         // Job registrations
         services.AddScoped<IAppointmentReminderJob, AppointmentReminderJob>();
         services.AddScoped<IAppointmentScheduler, HangfireAppointmentScheduler>();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddNotificationInfrastructure(this IServiceCollection services)
+    {
+        
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<INotificationService, SignalRNotificationService>();
 
         return services;
     }

@@ -16,6 +16,9 @@ public interface IDoctorProfileRepository
     Task<IReadOnlyList<DoctorProfile>> GetAllWithUserAsync(CancellationToken cancellationToken);
     Task<IReadOnlyList<DoctorProfile>> GetActiveWithUserAsync(CancellationToken cancellationToken);
     
+    Task<bool> NmcNumberExistsAsync(string nmcNumber, CancellationToken cancellationToken);
+
+    
     
     
     Task<PagedResult<DoctorResponse>> GetActivePagedAsync(
