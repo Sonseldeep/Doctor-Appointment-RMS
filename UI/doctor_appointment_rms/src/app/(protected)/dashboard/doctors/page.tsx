@@ -8,10 +8,11 @@ export default function FindADoctorPage() {
   const router = useRouter();
 
   const handleSelectDoctor = (doctor: Doctor) => {
-    console.log("Successfully selected doctor profile instance:", doctor.doctorProfileId);
+    // FIX: Changed from doctorProfileId to userId to match the database foreign key context
+    console.log("Successfully selected doctor user instance ID:", doctor.userId);
     
-    // Redirects the user to your booking screen, passing the selected doctor's ID in the URL
-    router.push(`/dashboard/appointments/book?doctorId=${doctor.doctorProfileId}`);
+    // Redirects the user to your booking screen, passing the selected doctor's User ID in the URL
+    router.push(`/dashboard/appointments/book?doctorId=${doctor.userId}`);
   };
 
   return (

@@ -1,109 +1,8 @@
-// "use client";
-
-// import { Appointment } from "../types/appointments.types";
-// import { Button } from "@/components/ui/button";
-// import {
-//   RiUserHeartLine,
-//   RiCalendarLine,
-//   RiMapPinLine,
-// } from "@remixicon/react";
-
-// interface AppointmentCardProps {
-//   appointment: Appointment;
-//   onCancel?: (id: string) => void;
-// }
-
-// export function AppointmentCard({ appointment, onCancel }: AppointmentCardProps) {
-//   const date = new Date(appointment.startUtc);
-//   const formattedDate = date.toLocaleDateString("en-US", { 
-//     month: "short", 
-//     day: "numeric", 
-//     year: "numeric" 
-//   });
-//   const formattedTime = date.toLocaleTimeString([], { 
-//     hour: "2-digit", 
-//     minute: "2-digit" 
-//   });
-
-//   const statusColor = {
-//     Scheduled: "bg-blue-100 text-blue-800",
-//     Confirmed: "bg-blue-100 text-blue-800",
-//     Pending: "bg-yellow-100 text-yellow-800",
-//     Completed: "bg-green-100 text-green-800",
-//     Cancelled: "bg-red-100 text-red-800",
-//   }[appointment.status] || "bg-gray-100 text-gray-800";
-
-//   return (
-//     <div className="rounded-xl border bg-white p-5 hover:shadow-md transition">
-//       <div className="flex items-start justify-between mb-3">
-//         <div className="flex-1">
-//           <div className="flex items-center gap-2">
-//             <RiUserHeartLine size={20} className="text-blue-600" />
-//             <div>
-//               <p className="font-semibold text-lg">Dr. {appointment.doctorName || appointment.doctorUserId}</p>
-//               {appointment.specialty && (
-//                 <p className="text-sm text-muted-foreground">{appointment.specialty}</p>
-//               )}
-//             </div>
-//           </div>
-//         </div>
-//         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor}`}>
-//           {appointment.status}
-//         </span>
-//       </div>
-
-//       <div className="space-y-2 text-sm">
-//         <div className="flex items-center gap-2">
-//           <RiCalendarLine size={16} className="text-muted-foreground" />
-//           <span>{formattedDate} at {formattedTime}</span>
-//         </div>
-
-//         {appointment.location && (
-//           <div className="flex items-center gap-2">
-//             <RiMapPinLine size={16} className="text-muted-foreground" />
-//             <span>{appointment.location}</span>
-//           </div>
-//         )}
-
-//         {appointment.appointmentType && (
-//           <div className="flex items-center gap-2">
-//             <span className="inline-block px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded">
-//               {appointment.appointmentType}
-//             </span>
-//           </div>
-//         )}
-
-//         {appointment.notes && (
-//           <div className="mt-3 p-2 bg-gray-50 rounded text-sm">
-//             <p><strong>Notes:</strong> {appointment.notes}</p>
-//           </div>
-//         )}
-//       </div>
-
-//       {appointment.status === "Scheduled" && (
-//         <div className="flex gap-2 mt-4">
-//           <Button variant="outline" size="sm" className="flex-1">
-//             Reschedule
-//           </Button>
-//           <Button 
-//             variant="outline" 
-//             size="sm" 
-//             className="flex-1 text-red-600 hover:text-red-700"
-//             onClick={() => onCancel?.(appointment.id)}
-//           >
-//             Cancel
-//           </Button>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { Appointment } from "../types/appointments.types";
 import { Button } from "@/components/ui/button";
-import { RiUserHeartLine, RiCalendarLine, RiMapPinLine } from "@remixicon/react";
+import { RiUserHeartLine, RiCalendarLine } from "@remixicon/react";
 
 // EXTENDED INTERFACE: Combines flat types and nested API shapes to clear all TS compiler errors
 interface ExtendedAppointment extends Appointment {
@@ -119,21 +18,27 @@ interface ExtendedAppointment extends Appointment {
 }
 
 interface AppointmentCardProps {
-  appointment: ExtendedAppointment; // Swapped to use our extended interface
+  appointment: ExtendedAppointment;
   onCancel?: (id: string) => void;
   onClick?: () => void;
 }
 
 export function AppointmentCard({ appointment, onCancel, onClick }: AppointmentCardProps) {
+  // FIX: Parse as UTC to prevent browser-based timezone shifting
   const date = new Date(appointment.startUtc);
+  
   const formattedDate = date.toLocaleDateString("en-US", { 
     month: "short", 
     day: "numeric", 
-    year: "numeric" 
+    year: "numeric",
+    timeZone: "UTC" 
   });
-  const formattedTime = date.toLocaleTimeString([], { 
+  
+  const formattedTime = date.toLocaleTimeString("en-US", { 
     hour: "2-digit", 
-    minute: "2-digit" 
+    minute: "2-digit",
+    timeZone: "UTC",
+    hour12: true
   });
 
   const statusColor = {
@@ -144,15 +49,9 @@ export function AppointmentCard({ appointment, onCancel, onClick }: AppointmentC
     Cancelled: "bg-red-100 text-red-800",
   }[appointment.status] || "bg-gray-100 text-gray-800";
 
-  // DEFENSIVE FALLBACKS: Resolves data variations from the backend responses cleanly
-  const displayName = appointment.patientName 
-    ? appointment.patientName 
-    : appointment.patient 
-      ? `${appointment.patient.firstName || ""} ${appointment.patient.lastName || ""}`.trim()
-      : `Dr. ${appointment.doctorName || "Practitioner"}`;
-
-  const displaySex = appointment.patientSex || appointment.patient?.sex;
-  const displayAge = appointment.patientAge || appointment.patient?.age;
+  // PRIORITIZE DOCTOR INFO FOR PATIENT DASHBOARD
+  const doctorDisplayName = appointment.doctorName ? `Dr. ${appointment.doctorName}` : "Practitioner";
+  const doctorSpecialization = appointment.doctorSpecialization || "General";
 
   return (
     <div 
@@ -161,17 +60,13 @@ export function AppointmentCard({ appointment, onCancel, onClick }: AppointmentC
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <RiUserHeartLine size={20} className="text-blue-600" />
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <RiUserHeartLine size={20} className="text-blue-600" />
+            </div>
             <div>
-              <p className="font-semibold text-lg">
-                {displayName}
-              </p>
-              {displaySex && (
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  {displaySex} {displayAge ? `• Age ${displayAge}` : ""}
-                </p>
-              )}
+              <p className="font-semibold text-lg">{doctorDisplayName}</p>
+              <p className="text-sm text-muted-foreground">{doctorSpecialization}</p>
             </div>
           </div>
         </div>
@@ -180,34 +75,35 @@ export function AppointmentCard({ appointment, onCancel, onClick }: AppointmentC
         </span>
       </div>
 
-      <div className="space-y-2 text-sm">
-        <div className="flex items-center gap-2">
-          <RiCalendarLine size={16} className="text-muted-foreground" />
-          <span>{formattedDate} at {formattedTime}</span>
+      <div className="space-y-3 text-sm mt-4">
+        <div className="flex items-center gap-2 text-slate-600">
+          <RiCalendarLine size={16} />
+          <span className="font-medium">{formattedDate} at {formattedTime}</span>
         </div>
 
         {appointment.notes && (
-          <div className="mt-3 p-3 bg-gray-50 border border-gray-100 rounded-lg text-sm text-gray-700 italic">
+          <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-lg text-sm text-blue-900 italic">
+            <span className="font-bold text-blue-700 block mb-1 not-italic text-xs uppercase tracking-wider">
+              Your notes:
+            </span>
             "{appointment.notes}"
           </div>
         )}
       </div>
 
       {["Scheduled", "Confirmed", "Pending"].includes(appointment.status) && (
-  <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
-    <Button variant="outline" size="sm" className="flex-1">
-      Reschedule
-    </Button>
-    <Button 
-      variant="outline" 
-      size="sm" 
-      className="flex-1 text-red-600 hover:text-red-700"
-      onClick={() => onCancel?.(appointment.id)}
-    >
-      Cancel
-    </Button>
-  </div>
-)}
+        <div className="flex gap-2 mt-5" onClick={(e) => e.stopPropagation()}>
+          <Button variant="outline" size="sm" className="flex-1">Reschedule</Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
+            onClick={() => onCancel?.(appointment.id)}
+          >
+            Cancel
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
