@@ -247,7 +247,7 @@ function BookingWizard() {
 
                 {apiError && (
                   <div className="p-3.5 bg-red-50 border border-red-200 text-red-700 font-medium text-xs rounded-xl text-left max-h-40 overflow-y-auto font-mono">
-                    ⚠️ {apiError}
+                     {apiError}
                   </div>
                 )}
 
@@ -287,7 +287,7 @@ function BookingWizard() {
 }
 
 /**
- * 🗓️ DATE & TIME PICKER Component
+ *  DATE & TIME PICKER Component
  */
 function DateTimePicker({ 
   doctorId, 
