@@ -119,6 +119,7 @@ export function Sidebar() {
     { label: "Medical Records", href: "/dashboard/medical-records", icon: <RiFileListLine /> },
     { label: "Prescriptions", href: "/dashboard/prescriptions", icon: <RiCapsuleLine /> },
     { label: "Notifications", href: "/dashboard/notifications", icon: <RiNotificationLine /> },
+    { label: "Doctors", href: "/dashboard/doctors", icon: <RiStethoscopeLine /> },
   ];
 
   const adminNavItems = [
@@ -126,6 +127,7 @@ export function Sidebar() {
     { label: "Doctor Management", href: "/dashboard/admin/doctors", icon: <RiStethoscopeLine /> },
     { label: "Users", href: "/dashboard/admin/users", icon: <RiGroupLine /> },
     { label: "Reports", href: "/dashboard/admin/reports", icon: <RiBarChart2Line /> },
+    
   ];
 
   const navItems = user?.role === "Admin" ? adminNavItems : userNavItems;

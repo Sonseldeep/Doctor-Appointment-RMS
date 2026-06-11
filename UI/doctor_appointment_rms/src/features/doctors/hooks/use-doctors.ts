@@ -1,17 +1,55 @@
+// "use client";
+
+// import { useQuery } from "@tanstack/react-query";
+// import { doctorsApi } from "../api/doctors-api";
+
+// export function useDoctors() {
+//   return useQuery({
+//     queryKey: ["doctors"],
+//     queryFn: doctorsApi.getAllDoctors,
+//   });
+// }
+
+// export function useSearchDoctors(specialization: string) {
+//   return useQuery({
+//     queryKey: ["doctors", "search", specialization],
+//     queryFn: () => doctorsApi.searchDoctors(specialization),
+//     enabled: !!specialization,
+//   });
+// }
+
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
 import { doctorsApi } from "../api/doctors-api";
+import { DoctorsResponse } from "../types/doctor.types";
 
-export function useDoctors() {
-  return useQuery({
-    queryKey: ["doctors"],
-    queryFn: doctorsApi.getAllDoctors,
+interface UseDoctorsParams {
+  searchTerm?: string;
+  specialization?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export function useDoctors({ 
+  searchTerm = "", 
+  specialization = "", 
+  page = 1, 
+  pageSize = 20 
+}: UseDoctorsParams = {}) {
+  return useQuery<DoctorsResponse>({
+    queryKey: ["doctors", { searchTerm, specialization, page, pageSize }],
+    queryFn: () => doctorsApi.getAllDoctors({
+      SearchTerm: searchTerm || undefined,
+      Specialization: specialization || undefined,
+      Page: page,
+      PageSize: pageSize,
+    }),
   });
 }
 
 export function useSearchDoctors(specialization: string) {
-  return useQuery({
+  return useQuery<DoctorsResponse>({
     queryKey: ["doctors", "search", specialization],
     queryFn: () => doctorsApi.searchDoctors(specialization),
     enabled: !!specialization,
