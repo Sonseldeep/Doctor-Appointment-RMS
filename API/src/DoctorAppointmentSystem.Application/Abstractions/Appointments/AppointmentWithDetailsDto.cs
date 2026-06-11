@@ -15,9 +15,11 @@ public sealed record AppointmentWithDetailsDto(
     string DoctorFirstName,
     string DoctorLastName,
     string DoctorNmcNumber,
+    string? DoctorPhotoUrl,
     Specialization DoctorSpecialization,
     string PatientFirstName,
     string PatientLastName,
     Sex PatientSex,
-    int PatientAge
+    int PatientAge,
+    string? PatientPhotoUrl 
 );

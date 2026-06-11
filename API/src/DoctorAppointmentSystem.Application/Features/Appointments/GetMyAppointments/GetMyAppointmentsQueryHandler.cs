@@ -42,10 +42,12 @@ internal sealed class GetMyAppointmentsQueryHandler
             Notes: a.Notes,
             DoctorName: $"{a.DoctorFirstName} {a.DoctorLastName}",
             DoctorNmcNumber: a.DoctorNmcNumber,
+            DoctorPhotoUrl: a.DoctorPhotoUrl,
             DoctorSpecialization: a.DoctorSpecialization,
             PatientName: $"{a.PatientFirstName} {a.PatientLastName}",
             PatientSex: a.PatientSex,
-            PatientAge: a.PatientAge)).ToList().AsReadOnly();
+            PatientAge: a.PatientAge,
+            PatientPhotoUrl: a.PatientPhotoUrl)).ToList().AsReadOnly();
 
         return result;
     }

@@ -14,8 +14,10 @@ public sealed record AppointmentResponse(
     string? Notes,
     string DoctorName,
     string DoctorNmcNumber,
+    string? DoctorPhotoUrl,
     Specialization DoctorSpecialization,
     string PatientName,
     Sex? PatientSex,
-    int? PatientAge
+    int? PatientAge,
+    string? PatientPhotoUrl
 );
