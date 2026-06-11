@@ -56,8 +56,9 @@ export interface Appointment {
 
 // Data Transfer Object for creating new appointments
 export interface CreateAppointmentDto {
+  slotId?: string; // Add this line to accept the database key reference
   doctorUserId: string;
   startUtc: string;
   endUtc: string;
-  notes?: string;
+  notes: string;
 }

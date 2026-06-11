@@ -51,8 +51,13 @@ import { Appointment } from "../types/appointments.types";
 export function useGetMyAppointments() {
   return useQuery<Appointment[], Error>({
     queryKey: ["appointments", "me"],
-    // FIXED: Swapped raw fetch to appointmentsApi to ensure token injection and clear 401s
     queryFn: appointmentsApi.getMyAppointments,
+    select: (data) => {
+      // Sort: Pending/Confirmed first, then by date ascending
+      return [...data].sort((a, b) => {
+        return new Date(a.startUtc).getTime() - new Date(b.startUtc).getTime();
+      });
+    },
     retry: 1,
   });
 }
