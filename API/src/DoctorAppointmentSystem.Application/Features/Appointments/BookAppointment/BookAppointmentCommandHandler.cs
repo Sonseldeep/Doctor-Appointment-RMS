@@ -5,10 +5,12 @@ using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Jobs;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
+using DoctorAppointmentSystem.Application.Abstractions.Notifications;
 using DoctorAppointmentSystem.Application.Features.Appointments.Contracts;
 using DoctorAppointmentSystem.Application.Features.Doctors.Common;
 using DoctorAppointmentSystem.Domain.Appointments;
 using DoctorAppointmentSystem.Domain.Availability;
+using DoctorAppointmentSystem.Domain.Notifications;
 using DoctorAppointmentSystem.Domain.Users;
 using ErrorOr;
 
@@ -23,6 +25,10 @@ internal sealed class BookAppointmentCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDoctorProfileRepository _doctorProfiles;
     private readonly IAppointmentScheduler _scheduler;
+    private readonly INotificationRepository _notificationRepository;
+    private readonly INotificationService _notificationService;
+
+
 
     public BookAppointmentCommandHandler(
         IUserRepository userRepository,
@@ -30,7 +36,9 @@ internal sealed class BookAppointmentCommandHandler
         IDoctorAvailabilityRepository availability,
         IUnitOfWork unitOfWork,
         IDoctorProfileRepository doctorProfiles,
-        IAppointmentScheduler scheduler)
+        IAppointmentScheduler scheduler,
+        INotificationRepository notificationRepository,
+        INotificationService notificationService)
     {
         _userRepository = userRepository;
         _appointmentRepository = appointmentRepository;
@@ -38,6 +46,8 @@ internal sealed class BookAppointmentCommandHandler
         _unitOfWork = unitOfWork;
         _doctorProfiles = doctorProfiles;
         _scheduler = scheduler;
+        _notificationRepository = notificationRepository;
+        _notificationService = notificationService;
     }
 
     public async Task<ErrorOr<BookAppointmentResponse>> Handle(
@@ -126,6 +136,29 @@ internal sealed class BookAppointmentCommandHandler
 
        
         slot.Book(appointment.Id); 
+        
+        var doctorName = $"Dr. {doctorUser.FirstName} {doctorUser.LastName}";
+        var patientName = $"{patient.FirstName} {patient.LastName}";
+        var appointmentDate = $"{date:dd MMM yyyy} at {slot.StartTime:HH:mm}";
+
+        var patientNotification = Notification.Create(
+            userId: request.PatientUserId,
+            title: "Appointment Booked",
+            message: $"Your appointment with {doctorName} on {appointmentDate} has been booked and is pending confirmation.",
+            type: NotificationType.AppointmentBooked,
+            appointmentId: appointment.Id);
+
+        var doctorNotification = Notification.Create(
+            userId: request.DoctorUserId,
+            title: "New Appointment Request",
+            message: $"{patientName} has booked an appointment on {appointmentDate}. Please confirm or cancel.",
+            type: NotificationType.AppointmentBooked,
+            appointmentId: appointment.Id);
+
+        await _notificationRepository.AddAsync(patientNotification, cancellationToken);
+        await _notificationRepository.AddAsync(doctorNotification, cancellationToken);
+        
+        
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

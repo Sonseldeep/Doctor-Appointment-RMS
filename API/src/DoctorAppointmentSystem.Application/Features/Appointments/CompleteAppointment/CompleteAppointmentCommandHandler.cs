@@ -3,8 +3,10 @@ using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
+using DoctorAppointmentSystem.Application.Abstractions.Notifications;
 using DoctorAppointmentSystem.Application.Features.Doctors.Common;
 using DoctorAppointmentSystem.Domain.Appointments;
+using DoctorAppointmentSystem.Domain.Notifications;
 using DoctorAppointmentSystem.Domain.Users;
 using ErrorOr;
 
@@ -18,6 +20,8 @@ internal sealed class CompleteAppointmentCommandHandler
     private readonly IUnitOfWork _uow;
     private readonly IDateTimeProvider _clock;
     private readonly IDoctorProfileRepository _doctorProfiles;
+    private readonly INotificationRepository _notificationRepository;
+    private readonly INotificationService _notificationService;
 
 
     public CompleteAppointmentCommandHandler(
@@ -25,13 +29,17 @@ internal sealed class CompleteAppointmentCommandHandler
         IUserRepository users,
         IUnitOfWork uow,
         IDateTimeProvider clock,
-        IDoctorProfileRepository doctorProfiles)
+        IDoctorProfileRepository doctorProfiles, 
+        INotificationRepository notificationRepository,
+        INotificationService notificationService)
     {
         _appointments = appointments;
         _users = users;
         _uow = uow;
         _clock = clock;
         _doctorProfiles = doctorProfiles;
+        _notificationRepository = notificationRepository;
+        _notificationService = notificationService;
     }
 
     public async Task<ErrorOr<Success>> Handle(CompleteAppointmentCommand request, CancellationToken cancellationToken)
@@ -72,8 +80,23 @@ internal sealed class CompleteAppointmentCommandHandler
         {
             return AppointmentErrors.InvalidStatus;
         }
+        
+
+        var doctorName = $"Dr. {doctor.FirstName} {doctor.LastName}";
+        var appointmentDate = $"{appointment.StartUtc:dd MMM yyyy} at {appointment.StartUtc:HH:mm} UTC";
+
+        var patientNotification = Notification.Create(
+            userId: appointment.PatientUserId,
+            title: "Appointment Completed",
+            message: $"Your appointment with {doctorName} on {appointmentDate} has been marked as completed.",
+            type: NotificationType.AppointmentCompleted,
+            appointmentId: appointment.Id);
+
+        await _notificationRepository.AddAsync(patientNotification, cancellationToken);
 
         await _uow.SaveChangesAsync(cancellationToken);
+
+        await _notificationService.SendToUserAsync(appointment.PatientUserId, patientNotification, cancellationToken);
         return Result.Success;
     }
 }

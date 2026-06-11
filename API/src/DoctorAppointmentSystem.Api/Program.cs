@@ -2,6 +2,7 @@ using DoctorAppointmentSystem.Api;
 using DoctorAppointmentSystem.Api.Extensions;
 using DoctorAppointmentSystem.Application;
 using DoctorAppointmentSystem.Infrastructure;
+using DoctorAppointmentSystem.Infrastructure.Hubs;
 using Hangfire;
 using Scalar.AspNetCore;
 using Serilog;
@@ -47,7 +48,8 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseHangfireDashboard("/hangfire");
+app.UseHangfireDashboard();
 app.MapControllers();
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();
