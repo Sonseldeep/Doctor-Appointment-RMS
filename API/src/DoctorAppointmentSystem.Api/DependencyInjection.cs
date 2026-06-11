@@ -21,6 +21,8 @@ public static class DependencyInjection
 
         services.AddRateLimiting();
         services.AddCorsCollection(config);
+        services.AddSignalR();
+
 
         return services;
     }
