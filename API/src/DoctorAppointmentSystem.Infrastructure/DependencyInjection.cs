@@ -9,6 +9,7 @@ using DoctorAppointmentSystem.Application.Abstractions.Jobs;
 using DoctorAppointmentSystem.Application.Abstractions.Notifications;
 using DoctorAppointmentSystem.Application.Abstractions.Otp;
 using DoctorAppointmentSystem.Application.Abstractions.Patients;
+using DoctorAppointmentSystem.Application.Abstractions.Ratings;
 using DoctorAppointmentSystem.Application.Abstractions.Storage;
 using DoctorAppointmentSystem.Infrastructure.Abstractions.Authentication;
 using DoctorAppointmentSystem.Infrastructure.Database;
@@ -45,11 +46,8 @@ public static class DependencyInjection
         services.AddStorageInfrastructure(configuration);
         services.AddHangfireInfrastructure(connectionString);
         services.AddNotificationInfrastructure();
-
+        services.AddRatingInfrastructure();
         
-
-
-           
         return services;
     }
     
@@ -174,6 +172,13 @@ public static class DependencyInjection
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<INotificationService, SignalRNotificationService>();
 
+        return services;
+    }
+    
+    private static IServiceCollection AddRatingInfrastructure(this IServiceCollection services)
+    {
+        services.AddScoped<IRatingRepository, RatingRepository>();
+        services.AddScoped<IRatingSummaryRepository, RatingSummaryRepository>();
         return services;
     }
 }

@@ -164,11 +164,23 @@ internal sealed class AppointmentRepository : IAppointmentRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<bool> HasCompletedAppointmentAsync(
+        Guid patientUserId,
+        Guid doctorUserId,
+        CancellationToken cancellationToken)
+        => await _db.Appointments.AnyAsync(
+            a => a.PatientUserId == patientUserId
+                 && a.DoctorUserId == doctorUserId
+                 && a.Status == AppointmentStatus.Completed,
+            cancellationToken);
+
     private static int CalculateAge(DateOnly dateOfBirth, DateOnly today)
     {
         var age = today.Year - dateOfBirth.Year;
         if (dateOfBirth > today.AddYears(-age))
+        {
             age--;
+        }
         return age;
     }
 }
