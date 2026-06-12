@@ -60,7 +60,15 @@ internal sealed class DoctorProfileRepository : IDoctorProfileRepository
                 _db.Users.AsNoTracking(),
                 d => d.UserId,
                 u => u.Id,
-                (d, u) => new { d, u });
+                (d, u) => new { d, u })
+            .GroupJoin(
+                _db.DoctorRatingSummaries.AsNoTracking(),
+                x => x.d.UserId,
+                s => s.DoctorUserId,
+                (x, summaries) => new { x.d, x.u, summaries })
+            .SelectMany(
+                x => x.summaries.DefaultIfEmpty(),
+                (x, summary) => new { x.d, x.u, summary });
 
         if (!string.IsNullOrWhiteSpace(filters.SearchTerm))
         {
@@ -88,7 +96,11 @@ internal sealed class DoctorProfileRepository : IDoctorProfileRepository
                 x.d.NmcNumber,
                 x.d.Specialization,
                 x.d.ConsultationFee,
-                 x.d.Bio))
+                 x.d.Bio,
+                x.summary != null && x.summary.TotalRatings > 0
+                    ? Math.Round((decimal)x.summary.RatingSum / x.summary.TotalRatings, 1)
+                    : 0m,
+                x.summary != null ? x.summary.TotalRatings : 0))
             .ToListAsync(cancellationToken);
 
         return new PagedResult<DoctorResponse>(

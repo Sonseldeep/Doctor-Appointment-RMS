@@ -11,5 +11,7 @@ public sealed record DoctorResponse(
     string NmcNumber,
     Specialization Specialization,
     decimal ConsultationFee,
-    string Bio
+    string Bio,
+    decimal AverageRating,
+    int TotalRatings  
 );
