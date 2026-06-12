@@ -161,6 +161,10 @@ internal sealed class BookAppointmentCommandHandler
         
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _notificationService.SendToUserAsync(request.PatientUserId, patientNotification, cancellationToken);
+        await _notificationService.SendToUserAsync(request.DoctorUserId, doctorNotification, cancellationToken);
+
+
 
         _scheduler.ScheduleReminders(appointment.Id, appointment.StartUtc);
 
@@ -168,6 +172,8 @@ internal sealed class BookAppointmentCommandHandler
             AppointmentId: appointment.Id,
             Status: appointment.Status.ToString(),
             Message: $"Appointment booked successfully for {date:dd MMM yyyy} at {slot.StartTime:HH:mm}.");
+        
+
 
         return response;
     }
