@@ -25,6 +25,7 @@ public sealed class AdminDoctorsController : ApiController
         var result = await _sender.Send(request.ToQuery(), cancellationToken);
         return result.Match(Ok, Problem);
     }
+    
     [HttpPost("{doctorUserId:guid}/approve")]
     public async Task<IActionResult> Approve(Guid doctorUserId, CancellationToken cancellationToken)
     {

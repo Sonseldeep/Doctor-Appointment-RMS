@@ -4,8 +4,7 @@ namespace DoctorAppointmentSystem.Api.Extensions;
 
 public static class RateLimitingExtensions
 {
-    public static IServiceCollection AddRateLimiting(
-        this IServiceCollection services)
+    public static void AddRateLimiting(this IServiceCollection services)
     {
         services.AddRateLimiter(options =>
         {
@@ -57,7 +56,5 @@ public static class RateLimitingExtensions
                     });
             });
         });
-
-        return services;
     }
 }

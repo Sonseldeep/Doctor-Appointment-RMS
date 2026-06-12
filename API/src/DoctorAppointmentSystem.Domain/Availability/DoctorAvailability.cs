@@ -48,6 +48,7 @@ public sealed class DoctorAvailability : Entity
         int slotDurationMinutes)
     {
         var validation = ValidateWindow(startTime, endTime, slotDurationMinutes);
+        
         if (validation.IsError)
         {
             return validation.Errors;
@@ -73,6 +74,7 @@ public sealed class DoctorAvailability : Entity
         }
 
         var validation = ValidateWindow(startTime, endTime, slotDurationMinutes);
+        
         if (validation.IsError)
         {
             return validation.Errors;

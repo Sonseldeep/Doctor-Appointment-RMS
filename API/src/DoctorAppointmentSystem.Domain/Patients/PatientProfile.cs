@@ -27,8 +27,14 @@ public sealed class PatientProfile : Entity
 
     public void Update(string? phoneNumber, string? address, Sex sex, DateOnly dateOfBirth)
     {
-        PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber.Trim();
-        Address = string.IsNullOrWhiteSpace(address) ? null : address.Trim();
+        PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) 
+            ? null 
+            : phoneNumber.Trim();
+        
+        Address = string.IsNullOrWhiteSpace(address) 
+            ? null 
+            : address.Trim();
+        
         Sex = sex;
         DateOfBirth = dateOfBirth;
     }
