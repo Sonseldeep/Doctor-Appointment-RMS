@@ -224,9 +224,9 @@ function BookingWizard() {
                   <p className="text-slate-600">
                     <span className="font-semibold text-slate-800">Time Selected:</span> {confirmedSlot?.startTime.slice(0, 5)} - {confirmedSlot?.endTime.slice(0, 5)}
                   </p>
-                  <p className="text-xs font-mono text-slate-400 mt-3 pt-2 border-t border-slate-200/60 overflow-hidden text-ellipsis whitespace-nowrap">
+                  {/* <p className="text-xs font-mono text-slate-400 mt-3 pt-2 border-t border-slate-200/60 overflow-hidden text-ellipsis whitespace-nowrap">
                     Slot Verification Code: {confirmedSlot?.slotId}
-                  </p>
+                  </p> */}
                 </div>
 
                 {/* Check-up Notes Text Input Workspace */}
