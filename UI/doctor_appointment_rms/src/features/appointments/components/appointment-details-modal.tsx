@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useConfirmAppointment } from "../hooks/use-my-appointment";
 import { Appointment } from "../types/appointments.types";
 import { useState, useEffect } from "react";
+import {toast} from "sonner";
 
 interface AppointmentDetailsModalProps {
   appointment: Appointment | null;
@@ -31,8 +32,10 @@ export function AppointmentDetailsModal({ appointment, isOpen, onClose, isDoctor
       setLocalStatus("Confirmed");
       try {
         await confirmMutation.mutateAsync(appointment.id);
+        toast.success("Appointment confirmed successfully.");
         onClose(); // Cleanly close modal window viewport context on operation completion
       } catch (error) {
+        toast.error("Failed to confirm appointment.");
         setLocalStatus(appointment.status); // Fallback on mutation error
       }
     }

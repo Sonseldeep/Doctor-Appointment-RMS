@@ -24,7 +24,7 @@ export function useUploadProfilePhoto() {
         queryKey: ["me"],
       });
 
-      toast.success("Profile photo updated");
+      // toast.success("Profile photo updated");
     },
 
     onError: (error) => {
