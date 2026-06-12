@@ -33,6 +33,7 @@ export interface DoctorProfile {
   email: string;
   role: "Doctor";
   profilePhotoUrl: string | null;
+  nmcNumber?: string;
   specialization: string;
   consultationFee: number;
   status: string;
