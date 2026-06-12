@@ -251,6 +251,70 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                     b.ToTable("patient_profiles", "hospital_management");
                 });
 
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Ratings.DoctorRating", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("DoctorUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PatientUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Stars")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorUserId")
+                        .HasDatabaseName("IX_doctor_ratings_doctor");
+
+                    b.HasIndex("PatientUserId", "DoctorUserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_doctor_ratings_patient_doctor_unique");
+
+                    b.ToTable("doctor_ratings", "hospital_management");
+                });
+
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Ratings.DoctorRatingSummary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DoctorUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("LastUpdatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("RatingSum")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalRatings")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorUserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_doctor_rating_summaries_doctor_unique");
+
+                    b.ToTable("doctor_rating_summaries", "hospital_management");
+                });
+
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.OtpRequestLimit", b =>
                 {
                     b.Property<Guid>("Id")

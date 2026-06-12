@@ -31,5 +31,11 @@ public interface IAppointmentRepository
         CancellationToken cancellationToken);
     
     
+    Task<bool> HasCompletedAppointmentAsync(
+        Guid patientUserId,
+        Guid doctorUserId,
+        CancellationToken cancellationToken);
+    
+    
 
 }
