@@ -33,7 +33,9 @@ internal sealed class ApproveDoctorCommandHandler : ICommandHandler<ApproveDocto
     {
         var profile = await _doctorProfiles.GetByUserIdAsync(request.DoctorUserId, cancellationToken);
         if (profile is null)
+        {
             return DoctorErrors.ProfileMissing;
+        }
 
         profile.Activate();
         
