@@ -78,7 +78,8 @@ export function DoctorDashboard() {
             ) : appointments?.length ? (
               <div className="space-y-2">
                 {appointments.map(apt => (
-                  <AppointmentCard key={apt.id} appointment={apt} />
+                  <AppointmentCard key={apt.id} appointment={apt} 
+                    isDoctorView={true}/>
                 ))}
               </div>
             ) : (
