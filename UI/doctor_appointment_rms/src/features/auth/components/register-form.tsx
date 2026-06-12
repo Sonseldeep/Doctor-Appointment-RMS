@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,20 +21,29 @@ import { useRegister } from "../hooks/use-register";
 
 export function RegisterForm() {
   const registerMutation = useRegister();
+  
+  // Visibility states for the two password fields
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
-  const form = useForm<RegisterDto>({
+  const form = useForm<any>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
       password: "",
+      confirmPassword: "", // Added for local validation
       role: "User",
     },
   });
 
-  const onSubmit = (values: RegisterDto) => {
-    registerMutation.mutate(values);
+  const onSubmit = (values: any) => {
+    // We destructure to separate the frontend-only field from the payload
+    const { confirmPassword, ...payload } = values;
+    
+    // Only send the payload that matches your backend requirements
+    registerMutation.mutate(payload);
   };
 
   return (
@@ -44,56 +55,62 @@ export function RegisterForm() {
 
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          
-          {/* First Name */}
           <Input placeholder="First Name" {...form.register("firstName")} />
           {form.formState.errors.firstName && (
-            <p className="text-sm text-red-500">
-              {form.formState.errors.firstName.message}
-            </p>
+            <p className="text-sm text-red-500">{form.formState.errors.firstName.message?.toString()}</p>
           )}
 
-          {/* Last Name */}
           <Input placeholder="Last Name" {...form.register("lastName")} />
           {form.formState.errors.lastName && (
-            <p className="text-sm text-red-500">
-              {form.formState.errors.lastName.message}
-            </p>
+            <p className="text-sm text-red-500">{form.formState.errors.lastName.message?.toString()}</p>
           )}
 
-          {/* Email */}
           <Input placeholder="Email" {...form.register("email")} />
           {form.formState.errors.email && (
-            <p className="text-sm text-red-500">
-              {form.formState.errors.email.message}
-            </p>
+            <p className="text-sm text-red-500">{form.formState.errors.email.message?.toString()}</p>
           )}
 
-          {/* Password */}
-          <Input
-            type="password"
-            placeholder="Password"
-            {...form.register("password")}
-          />
+          {/* Password Field */}
+          <div className="relative">
+            <Input
+              type={showPass ? "text" : "password"}
+              placeholder="Password"
+              {...form.register("password")}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPass(!showPass)}
+              className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+            >
+              {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           {form.formState.errors.password && (
-            <p className="text-sm text-red-500">
-              {form.formState.errors.password.message}
-            </p>
+            <p className="text-sm text-red-500">{form.formState.errors.password.message?.toString()}</p>
           )}
 
-          {/* Role */}
+          {/* Confirm Password Field (Frontend Only) */}
+          <div className="relative">
+            <Input
+              type={showConfirm ? "text" : "password"}
+              placeholder="Confirm Password"
+              {...form.register("confirmPassword")}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm(!showConfirm)}
+              className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+            >
+              {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+          {form.formState.errors.confirmPassword && (
+            <p className="text-sm text-red-500">{form.formState.errors.confirmPassword.message?.toString()}</p>
+          )}
+
           <Input placeholder="Role (User/Admin/Doctor)" {...form.register("role")} />
-          {form.formState.errors.role && (
-            <p className="text-sm text-red-500">
-              {form.formState.errors.role.message}
-            </p>
-          )}
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={registerMutation.isPending}
-          >
+          
+          <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
             {registerMutation.isPending ? "Creating..." : "Register"}
           </Button>
 
