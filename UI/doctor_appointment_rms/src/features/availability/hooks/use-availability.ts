@@ -39,3 +39,21 @@ export function useDeleteAvailability() {
     },
   });
 }
+
+// Add this hook to fetch any specific doctor's slots using their userId
+export function useDoctorAvailability(doctorId: string | null) {
+  return useQuery({
+    queryKey: ["availability", doctorId],
+    queryFn: async () => {
+      if (!doctorId) return null;
+      
+      // Hits your backend endpoint passing the userId: 2210c755-6201-4299-ac8d-1b8a7b2fd92a
+      const res = await fetch(`https://localhost:5001/api/doctors/${doctorId}/availabilities`);
+      if (!res.ok) {
+        throw new Error("Doctor availability not found.");
+      }
+      return res.json();
+    },
+    enabled: !!doctorId, // Only run the network request if a doctorId is present
+  });
+}

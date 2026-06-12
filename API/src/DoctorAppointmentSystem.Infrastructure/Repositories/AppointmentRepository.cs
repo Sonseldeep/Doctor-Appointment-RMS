@@ -101,12 +101,15 @@ internal sealed class AppointmentRepository : IAppointmentRepository
                 x.a.Notes,
                 x.doctorUser.FirstName,
                 x.doctorUser.LastName,
+                x.doctorUser.ProfilePhotoUrl, 
                 x.dp.NmcNumber,
                 x.dp.Specialization,
                 x.patientUser.FirstName,
                 x.patientUser.LastName,
                 x.pp != null ? x.pp.Sex : Sex.Unknown,
-                x.pp != null ? CalculateAge(x.pp.DateOfBirth, today) : 0))
+                x.pp != null ? CalculateAge(x.pp.DateOfBirth, today) : 0,
+                x.patientUser.ProfilePhotoUrl
+                ))
             .ToListAsync(cancellationToken);
     }
 
@@ -151,11 +154,13 @@ internal sealed class AppointmentRepository : IAppointmentRepository
                 x.doctorUser.FirstName,
                 x.doctorUser.LastName,
                 x.dp.NmcNumber,
+                x.doctorUser.ProfilePhotoUrl, 
                 x.dp.Specialization,
                 x.patientUser.FirstName,
                 x.patientUser.LastName,
                 x.pp != null ? x.pp.Sex : Sex.Unknown,
-                x.pp != null ? CalculateAge(x.pp.DateOfBirth, today) : 0))
+                x.pp != null ? CalculateAge(x.pp.DateOfBirth, today) : 0,
+                x.patientUser.ProfilePhotoUrl))
             .ToListAsync(cancellationToken);
     }
 
