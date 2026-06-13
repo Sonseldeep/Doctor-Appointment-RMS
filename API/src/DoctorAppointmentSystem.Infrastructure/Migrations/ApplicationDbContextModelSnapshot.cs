@@ -133,6 +133,97 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                     b.ToTable("doctor_availability_slots", "hospital_management");
                 });
 
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.ClinicalNotes.ClinicalNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AppointmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Diagnosis")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("DoctorUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("FollowUpDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("FollowUpInstructions")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Observations")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<Guid>("PatientUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TreatmentSummary")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
+
+                    b.HasIndex("DoctorUserId");
+
+                    b.HasIndex("PatientUserId");
+
+                    b.ToTable("clinical_notes", "hospital_management");
+                });
+
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.ClinicalNotes.Medication", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicalNoteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Dosage")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("DurationInDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Frequency")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Instructions")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicalNoteId");
+
+                    b.ToTable("clinical_note_medications", "hospital_management");
+                });
+
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Doctor.DoctorProfile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -470,6 +561,15 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                     b.Navigation("Availability");
                 });
 
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.ClinicalNotes.Medication", b =>
+                {
+                    b.HasOne("DoctorAppointmentSystem.Domain.ClinicalNotes.ClinicalNote", null)
+                        .WithMany("Medications")
+                        .HasForeignKey("ClinicalNoteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Doctor.DoctorProfile", b =>
                 {
                     b.HasOne("DoctorAppointmentSystem.Domain.Users.User", "User")
@@ -493,6 +593,11 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Availability.DoctorAvailability", b =>
                 {
                     b.Navigation("Slots");
+                });
+
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.ClinicalNotes.ClinicalNote", b =>
+                {
+                    b.Navigation("Medications");
                 });
 #pragma warning restore 612, 618
         }
