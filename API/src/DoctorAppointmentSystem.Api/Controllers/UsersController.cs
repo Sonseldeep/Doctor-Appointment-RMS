@@ -32,9 +32,7 @@ public sealed class UsersController : ApiController
 
         var result = await _sender.Send(query, cancellationToken);
 
-        return result.Match(
-            Ok,
-            Problem);
+        return result.Match(Ok, Problem);
     }
 
 

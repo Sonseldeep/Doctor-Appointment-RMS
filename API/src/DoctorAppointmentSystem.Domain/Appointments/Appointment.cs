@@ -49,7 +49,9 @@ public sealed class Appointment : Entity
     public void Confirm(DateTimeOffset utcNow)
     {
         if (Status != AppointmentStatus.Pending)
+        {
             throw new InvalidOperationException("Only pending appointments can be confirmed.");
+        }
 
         Status = AppointmentStatus.Confirmed;
         ConfirmedAtUtc = utcNow;
@@ -58,8 +60,9 @@ public sealed class Appointment : Entity
     public void Cancel(DateTimeOffset utcNow)
     {
         if (Status is AppointmentStatus.Cancelled or AppointmentStatus.Completed)
+        {
             throw new InvalidOperationException("Appointment cannot be cancelled.");
-
+        }
         Status = AppointmentStatus.Cancelled;
         CancelledAtUtc = utcNow;
     }
@@ -67,7 +70,9 @@ public sealed class Appointment : Entity
     public void Complete(DateTimeOffset utcNow)
     {
         if (Status != AppointmentStatus.Confirmed)
+        {
             throw new InvalidOperationException("Only confirmed appointments can be completed.");
+        }
 
         Status = AppointmentStatus.Completed;
         CompletedAtUtc = utcNow;

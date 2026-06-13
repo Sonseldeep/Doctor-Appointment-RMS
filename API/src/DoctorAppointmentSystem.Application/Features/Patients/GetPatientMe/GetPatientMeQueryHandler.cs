@@ -22,13 +22,22 @@ internal sealed class GetPatientMeQueryHandler
     public async Task<ErrorOr<PatientMeResponse>> Handle(GetPatientMeQuery request, CancellationToken cancellationToken)
     {
         var user = await _users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user is null) return UserErrors.NotFound;
+        
+        if (user is null)
+        {
+            return UserErrors.NotFound;
+        }
 
         if (user.Role != UserRole.Registered)
+        {
             return PatientErrors.UserIsNotPatient;
+        }
 
         var profile = await _patients.GetByUserIdAsync(request.UserId, cancellationToken);
-        if (profile is null) return PatientErrors.ProfileNotFound;
+        if (profile is null)
+        {
+            return PatientErrors.ProfileNotFound;
+        }
 
         return new PatientMeResponse(
             UserId: user.Id,

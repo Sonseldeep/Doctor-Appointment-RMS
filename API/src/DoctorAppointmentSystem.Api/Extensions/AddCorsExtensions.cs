@@ -1,9 +1,8 @@
-﻿
-namespace DoctorAppointmentSystem.Api.Extensions;
+﻿namespace DoctorAppointmentSystem.Api.Extensions;
 
 public static class AddCorsExtensions
 {
-    public static IServiceCollection AddCorsCollection(this IServiceCollection services, IConfiguration config)
+    public static void AddCorsCollection(this IServiceCollection services, IConfiguration config)
     {
         var origins = config.GetSection("Cors:AllowedOrigins").Get<string[]>();
 
@@ -19,7 +18,5 @@ public static class AddCorsExtensions
                     .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
             });
         });
-
-        return services;
     }
 }

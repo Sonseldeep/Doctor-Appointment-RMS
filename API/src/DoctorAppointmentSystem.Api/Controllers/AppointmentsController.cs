@@ -29,28 +29,22 @@ public sealed class AppointmentsController : ApiController
         {
             return Unauthorized();
         }
-            
-
-        var result = await _sender.Send(new GetMyAppointmentsQuery(userId), cancellationToken);
+        
+        var result = await _sender.Send(
+            new GetMyAppointmentsQuery(userId), cancellationToken);
 
         return result.Match(Ok, Problem);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Book(
-        [FromBody] BookAppointmentRequest request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> Book([FromBody] BookAppointmentRequest request, CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var patientUserId))
         {
             return Unauthorized();
         }
 
-        var command = new BookAppointmentCommand(
-            PatientUserId: patientUserId,
-            DoctorUserId: request.DoctorUserId,
-            SlotId: request.SlotId,       
-            Notes: request.Notes);
+        var command = new BookAppointmentCommand(patientUserId, request.DoctorUserId, request.SlotId, request.Notes);
 
         var result = await _sender.Send(command, cancellationToken);
 

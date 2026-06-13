@@ -1,7 +1,5 @@
 ﻿using DoctorAppointmentSystem.Domain.Abstractions;
 
-
-
 namespace DoctorAppointmentSystem.Domain.Notifications;
 
 public sealed class Notification : Entity
