@@ -1,6 +1,7 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Domain.Appointments;
 using DoctorAppointmentSystem.Domain.Availability;
+using DoctorAppointmentSystem.Domain.ClinicalNotes;
 using DoctorAppointmentSystem.Domain.Doctor;
 using DoctorAppointmentSystem.Domain.Notifications;
 using DoctorAppointmentSystem.Domain.Patients;
@@ -34,6 +35,8 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<DoctorRatingSummary> DoctorRatingSummaries => Set<DoctorRatingSummary>();
 
 
+    public DbSet<ClinicalNote> ClinicalNotes => Set<ClinicalNote>();
+    public DbSet<Medication> Medications => Set<Medication>();
     
     
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
