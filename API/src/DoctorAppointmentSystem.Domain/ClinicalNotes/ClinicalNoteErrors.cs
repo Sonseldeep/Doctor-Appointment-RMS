@@ -18,5 +18,5 @@ public static class ClinicalNoteErrors
 
     public static Error AppointmentNotCompleted => Error.Validation(
         code: "ClinicalNote.AppointmentNotCompleted",
-        description: "Clinical notes can only be added for completed appointments.");
+        description: "Clinical notes can only be added for confirmed or completed appointments.");
 }

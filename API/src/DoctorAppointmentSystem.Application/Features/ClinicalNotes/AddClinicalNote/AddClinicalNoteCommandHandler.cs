@@ -74,7 +74,8 @@ internal sealed class AddClinicalNoteCommandHandler
             return AppointmentErrors.Forbidden;
         }
 
-        if (appointment.Status != AppointmentStatus.Completed)
+        if (appointment.Status != AppointmentStatus.Completed &&
+            appointment.Status != AppointmentStatus.Confirmed)
         {
             return ClinicalNoteErrors.AppointmentNotCompleted;
         }
