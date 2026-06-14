@@ -27,16 +27,15 @@ public sealed class NotificationsController : ApiController
             return Unauthorized();
         }
 
-        var result = await _sender.Send(new GetMyNotificationsQuery(userId), cancellationToken);
+        var result = await _sender.Send(
+            new GetMyNotificationsQuery(userId), cancellationToken);
 
         return result.Match(Ok, Problem);
     }
 
   
     [HttpPut("{notificationId:guid}/read")]
-    public async Task<IActionResult> MarkRead(
-        Guid notificationId,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> MarkRead(Guid notificationId, CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var userId))
         {

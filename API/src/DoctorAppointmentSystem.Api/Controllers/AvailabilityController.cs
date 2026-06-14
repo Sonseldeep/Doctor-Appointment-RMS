@@ -1,4 +1,5 @@
-﻿using DoctorAppointmentSystem.Application.Features.Availability.CreateAvailability;
+﻿using DoctorAppointmentSystem.Api.Common.Request;
+using DoctorAppointmentSystem.Application.Features.Availability.CreateAvailability;
 using DoctorAppointmentSystem.Application.Features.Availability.DeleteAvailability;
 using DoctorAppointmentSystem.Application.Features.Availability.GetDoctoreSlots;
 using DoctorAppointmentSystem.Application.Features.Availability.GetMyAvailability;
@@ -105,13 +106,4 @@ public sealed class AvailabilityController : ApiController
 }
 
 
-public sealed record CreateAvailabilityRequest(
-    DateOnly Date,
-    TimeOnly StartTime,
-    TimeOnly EndTime,
-    int SlotDurationMinutes);
 
-public sealed record UpdateAvailabilityRequest(
-    TimeOnly StartTime,
-    TimeOnly EndTime,
-    int SlotDurationMinutes);

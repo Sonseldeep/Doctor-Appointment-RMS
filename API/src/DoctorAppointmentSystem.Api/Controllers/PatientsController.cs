@@ -32,9 +32,7 @@ public sealed class PatientsController : ApiController
     }
 
     [HttpPut("profile")]
-    public async Task<IActionResult> UpdateProfile(
-        [FromBody] UpdatePatientProfileRequest request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdatePatientProfileRequest request, CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var userId))
         {

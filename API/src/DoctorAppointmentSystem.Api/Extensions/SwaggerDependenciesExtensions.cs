@@ -4,7 +4,7 @@ namespace DoctorAppointmentSystem.Api.Extensions;
 
 public static class SwaggerDependenciesExtensions
 {
-    public static IServiceCollection AddSwaggerDependencies(this IServiceCollection services)
+    public static void AddSwaggerDependencies(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
@@ -27,7 +27,5 @@ public static class SwaggerDependenciesExtensions
             });
             
         });
-
-        return services;
     }
 }

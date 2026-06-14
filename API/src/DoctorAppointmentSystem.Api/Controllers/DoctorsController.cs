@@ -24,7 +24,8 @@ public sealed class DoctorsController : ApiController
     [AllowAnonymous]
     public async Task<IActionResult> GetDoctors([FromQuery] GetDoctorsRequest request, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(request.ToQuery(), cancellationToken);
+        var result = await _sender.Send(
+            request.ToQuery(), cancellationToken);
         return result.Match(Ok, Problem);
     }
     
@@ -38,7 +39,8 @@ public sealed class DoctorsController : ApiController
             return Unauthorized();
         }
 
-        var result = await _sender.Send(new GetDoctorMeQuery(userId), cancellationToken);
+        var result = await _sender.Send(
+            new GetDoctorMeQuery(userId), cancellationToken);
 
         return result.Match(Ok, Problem);
     }
@@ -48,7 +50,8 @@ public sealed class DoctorsController : ApiController
     [AllowAnonymous]
     public async Task<IActionResult> GetByUserId(Guid userId, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetDoctorByUserIdQuery(userId), cancellationToken);
+        var result = await _sender.Send(
+            new GetDoctorByUserIdQuery(userId), cancellationToken);
 
         return result.Match(Ok, Problem);
     }
@@ -75,9 +78,7 @@ public sealed class DoctorsController : ApiController
 
     [HttpPut("profile")]
     [Authorize]
-    public async Task<IActionResult> UpdateProfile(
-        [FromBody] UpdateDoctorProfileRequest request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateDoctorProfileRequest request, CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var userId))
         {

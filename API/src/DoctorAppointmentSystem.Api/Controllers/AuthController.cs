@@ -36,12 +36,7 @@ public sealed class AuthController : ApiController
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
-        var command = new RegisterCommand(
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            request.Password,
-            request.Role);
+        var command = new RegisterCommand(request.FirstName, request.LastName, request.Email, request.Password, request.Role);
 
         var result = await _sender.Send(command, cancellationToken);
 
@@ -52,8 +47,7 @@ public sealed class AuthController : ApiController
 
     [HttpPost("verify-email")]
     [AllowAnonymous]
-    public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequest request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequest request, CancellationToken cancellationToken)
     {
         var command = new VerifyEmailCommand(request.Email, request.Otp);
         var result = await _sender.Send(command, cancellationToken);

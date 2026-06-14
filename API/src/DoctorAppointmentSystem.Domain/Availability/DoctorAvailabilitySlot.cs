@@ -1,4 +1,5 @@
 ﻿using DoctorAppointmentSystem.Domain.Abstractions;
+using ErrorOr;
 
 namespace DoctorAppointmentSystem.Domain.Availability;
 
@@ -39,7 +40,7 @@ public sealed class DoctorAvailabilitySlot : Entity
         => new(availabilityId, startTime, endTime);
 
 
-    public ErrorOr.ErrorOr<ErrorOr.Success> Book(Guid appointmentId)
+    public ErrorOr<Success> Book(Guid appointmentId)
     {
         if (IsBooked)
         {
@@ -48,7 +49,7 @@ public sealed class DoctorAvailabilitySlot : Entity
 
         IsBooked = true;
         AppointmentId = appointmentId;
-        return ErrorOr.Result.Success;
+        return Result.Success;
     }
 
   
