@@ -9,8 +9,9 @@ public class OtpGenerator : IOtpGenerator
 
     public string Generate()
     {
-        var randomNumber = RandomNumberGenerator.GetInt32(0, 1_000_000);
-        return randomNumber.ToString("D6");
+        var max = (int)Math.Pow(10, OtpLength); 
+        var randomNumber = RandomNumberGenerator.GetInt32(0, max);
+        return randomNumber.ToString($"D{OtpLength}");
         
     }
 }
