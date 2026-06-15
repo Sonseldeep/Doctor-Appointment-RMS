@@ -9,8 +9,9 @@ internal static class RefreshTokenCookieOptions
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = expiresAt.UtcDateTime
+            SameSite = SameSiteMode.None,
+            Expires = expiresAt.UtcDateTime,
+            Path = "/auth"
         };
 
         return options;
@@ -22,8 +23,9 @@ internal static class RefreshTokenCookieOptions
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UnixEpoch.UtcDateTime
+            SameSite = SameSiteMode.None,
+            Expires = DateTimeOffset.UnixEpoch.UtcDateTime,
+            Path = "/auth"
         };
 
         return options;
