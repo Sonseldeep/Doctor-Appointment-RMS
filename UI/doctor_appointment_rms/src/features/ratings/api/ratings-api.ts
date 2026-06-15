@@ -10,6 +10,14 @@ export const ratingsApi = {
    * Submits a rating/review for a specific medical practitioner (Patient Only)
    */
   submitDoctorRating: async (doctorUserId: string, data: CreateRatingDto): Promise<void> => {
+
+    console.log("Attempting to call URL:", `/api/ratings/doctors/${doctorUserId}`);
+    console.log("Payload:", data);
+
+    if (!doctorUserId) {
+        throw new Error("Doctor ID is missing!");
+    }
+    
     await axiosClient.post(`/api/ratings/doctors/${doctorUserId}`, data);
   },
 

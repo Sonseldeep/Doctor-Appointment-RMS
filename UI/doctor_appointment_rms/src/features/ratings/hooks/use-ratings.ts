@@ -20,15 +20,18 @@ export function useGetDoctorRatings(doctorUserId: string) {
 /**
  * Hook to execute a rating submission after an completed consultation workflow (Patient Only)
  */
-export function useSubmitDoctorRating(doctorUserId: string) {
+export function useSubmitDoctorRating() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateRatingDto) => ratingsApi.submitDoctorRating(doctorUserId, data),
-    onSuccess: () => {
+    // Accept doctorUserId as part of the variables passed to mutate()
+    mutationFn: ({ doctorUserId, data }: { doctorUserId: string; data: CreateRatingDto }) => 
+      ratingsApi.submitDoctorRating(doctorUserId, data),
+    
+    onSuccess: (_, variables) => {
       toast.success("Thank you! Your feedback has been published.");
-      // Invalidate the public profile view for this practitioner
-      queryClient.invalidateQueries({ queryKey: ["doctor-ratings", doctorUserId] });
+      // Invalidate the public profile view for this practitioner using the ID we just submitted
+      queryClient.invalidateQueries({ queryKey: ["doctor-ratings", variables.doctorUserId] });
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
     onError: (error: any) => {
@@ -38,9 +41,7 @@ export function useSubmitDoctorRating(doctorUserId: string) {
   });
 }
 
-/**
- * Hook to allow modification of a submitted rating instance (Patient Only)
- */
+
 export function useUpdateRating(doctorUserId?: string) {
   const queryClient = useQueryClient();
 
