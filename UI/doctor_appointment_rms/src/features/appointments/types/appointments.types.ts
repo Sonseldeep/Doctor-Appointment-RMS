@@ -1,3 +1,4 @@
+
 export type AppointmentStatus = "Pending" | "Confirmed" | "Completed" | "Cancelled" | "Scheduled" | string;
 
 export interface Appointment {
@@ -14,7 +15,7 @@ export interface Appointment {
   doctorSpecialization?: string;
   specialty?: string; 
 
-  // Patient Profile Meta Context (Resolves the TS compilation errors)
+  // Patient Profile Meta Context
   patientName?: string;
   patientSex?: string;
   patientAge?: number;
@@ -26,9 +27,26 @@ export interface Appointment {
 
 // Data Transfer Object for creating new appointments
 export interface CreateAppointmentDto {
-  slotId?: string; // Add this line to accept the database key reference
+  slotId?: string;
   doctorUserId: string;
   startUtc: string;
   endUtc: string;
   notes: string;
+}
+
+// ADD THIS INTERFACE HERE
+export interface CompleteAppointmentDto {
+  appointmentId: string;
+  diagnosis: string;
+  observations: string;
+  treatmentSummary: string;
+  followUpDate: string;
+  followUpInstructions: string;
+  medications: Array<{
+    name: string;
+    dosage: string;
+    frequency: string;
+    durationInDays: number;
+    instructions: string;
+  }>;
 }

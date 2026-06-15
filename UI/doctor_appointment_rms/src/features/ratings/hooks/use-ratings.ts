@@ -1,0 +1,65 @@
+"use client";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { ratingsApi } from "../api/ratings-api";
+import type { CreateRatingDto, UpdateRatingDto } from "../types/ratings.types";
+
+/**
+ * Hook to retrieve doctor performance evaluation metrics, average scores, and public reviews
+ */
+export function useGetDoctorRatings(doctorUserId: string) {
+  return useQuery({
+    queryKey: ["doctor-ratings", doctorUserId],
+    queryFn: () => ratingsApi.getDoctorRatings(doctorUserId),
+    enabled: !!doctorUserId,
+    staleTime: 1000 * 60 * 10, // Ratings stay fresh for 10 minutes
+  });
+}
+
+/**
+ * Hook to execute a rating submission after an completed consultation workflow (Patient Only)
+ */
+export function useSubmitDoctorRating() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    // Accept doctorUserId as part of the variables passed to mutate()
+    mutationFn: ({ doctorUserId, data }: { doctorUserId: string; data: CreateRatingDto }) => 
+      ratingsApi.submitDoctorRating(doctorUserId, data),
+    
+    onSuccess: (_, variables) => {
+      toast.success("Thank you! Your feedback has been published.");
+      // Invalidate the public profile view for this practitioner using the ID we just submitted
+      queryClient.invalidateQueries({ queryKey: ["doctor-ratings", variables.doctorUserId] });
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || "Failed to submit evaluation profile";
+      toast.error(message);
+    },
+  });
+}
+
+
+export function useUpdateRating(doctorUserId?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ ratingId, data }: { ratingId: string; data: UpdateRatingDto }) =>
+      ratingsApi.updateRating(ratingId, data),
+    onSuccess: () => {
+      toast.success("Your review was modified successfully.");
+      
+      if (doctorUserId) {
+        queryClient.invalidateQueries({ queryKey: ["doctor-ratings", doctorUserId] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["doctor-ratings"] });
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || "Failed to save changed feedback information";
+      toast.error(message);
+    },
+  });
+}
