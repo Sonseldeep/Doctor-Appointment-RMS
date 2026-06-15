@@ -677,7 +677,7 @@ export default function ProfilePage() {
             </Avatar>
             <div className="text-center sm:text-left space-y-1.5">
               <h2 className="text-xl font-bold text-gray-900">{user?.firstName} {user?.lastName}</h2>
-              <p className="text-sm font-medium text-slate-500 capitalize">{user?.role} Account Registry</p>
+              <p className="text-sm font-medium text-slate-500 capitalize">{user?.role}</p>
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
               <Button type="button" variant="outline" size="sm" disabled={isPhotoUploading} onClick={() => fileInputRef.current?.click()}>
                 {isPhotoUploading ? "Uploading..." : "Change Photo"}
@@ -687,7 +687,7 @@ export default function ProfilePage() {
 
           <div className="grid gap-4 border-t pt-5 md:grid-cols-2 text-sm">
             <div>
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">System Account Access Email</p>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Access Email</p>
               <p className="font-medium text-gray-900 mt-1">{user?.email || "—"}</p>
             </div>
           </div>
@@ -774,7 +774,7 @@ export default function ProfilePage() {
           <CardContent className="pt-6 space-y-5">
             <div className="grid gap-5 md:grid-cols-2">
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Assigned Gender</label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Gender</label>
                 {!isEditing ? (
                   <p className="font-semibold text-gray-800 mt-1.5 capitalize">{user.sex || "Unknown"}</p>
                 ) : (

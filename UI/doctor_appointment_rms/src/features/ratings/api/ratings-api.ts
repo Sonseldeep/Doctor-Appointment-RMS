@@ -17,7 +17,7 @@ export const ratingsApi = {
     if (!doctorUserId) {
         throw new Error("Doctor ID is missing!");
     }
-    
+
     await axiosClient.post(`/api/ratings/doctors/${doctorUserId}`, data);
   },
 
