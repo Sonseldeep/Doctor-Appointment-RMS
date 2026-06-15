@@ -100,7 +100,10 @@ internal sealed partial class CloudinaryFileStorageService : IFileStorageService
 
             const string uploadSegment = "/upload/";
             var uploadIndex = path.IndexOf(uploadSegment, StringComparison.Ordinal);
-            if (uploadIndex < 0) return string.Empty;
+            if (uploadIndex < 0)
+            {
+                return string.Empty;
+            }
 
             var afterUpload = path[(uploadIndex + uploadSegment.Length)..];
 

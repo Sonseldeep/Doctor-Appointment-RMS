@@ -75,17 +75,14 @@ internal sealed class DoctorAvailabilityRepository : IDoctorAvailabilityReposito
         int slotDurationMinutes,
         CancellationToken cancellationToken)
     {
-        // Step 1: delete old slots via raw SQL — completely bypasses change tracker
         await _db.Database.ExecuteSqlRawAsync(
             "DELETE FROM [hospital_management].[doctor_availability_slots] WHERE [AvailabilityId] = {0}",
             availabilityId);
 
-        // Step 2: update parent columns directly via raw SQL
         await _db.Database.ExecuteSqlRawAsync(
             "UPDATE [hospital_management].[doctor_availabilities] SET [StartTime] = {0}, [EndTime] = {1}, [SlotDurationMinutes] = {2} WHERE [Id] = {3}",
             startTime, endTime, slotDurationMinutes, availabilityId);
 
-        // Step 3: generate and insert fresh slots
         var newSlots = GenerateSlots(availabilityId, startTime, endTime, slotDurationMinutes);
 
         await _db.DoctorAvailabilitySlots.AddRangeAsync(newSlots, cancellationToken);
@@ -129,7 +126,10 @@ internal sealed class DoctorAvailabilityRepository : IDoctorAvailabilityReposito
         while (true)
         {
             var next = current.Add(TimeSpan.FromMinutes(slotDurationMinutes));
-            if (next > endTime) break;
+            if (next > endTime)
+            {
+                break;
+            }
             slots.Add(DoctorAvailabilitySlot.Create(availabilityId, current, next));
             current = next;
         }
