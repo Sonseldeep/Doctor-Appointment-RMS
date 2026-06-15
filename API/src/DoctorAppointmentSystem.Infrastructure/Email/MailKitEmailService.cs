@@ -31,7 +31,9 @@ public class MailKitEmailService : IEmailService
         try
         {
             if (string.IsNullOrWhiteSpace(toEmail))
+            {
                 throw new ArgumentException("Recipient email is required", nameof(toEmail));
+            }       
             
             var (subject, htmlBody) = purpose switch
             {
@@ -131,9 +133,12 @@ public class MailKitEmailService : IEmailService
         try
         {
             if (string.IsNullOrWhiteSpace(toEmail))
+            {
                 throw new ArgumentException("Recipient email is required.", nameof(toEmail));
-
+            }
+            
             var message = new MimeMessage();
+            
             message.From.Add(new MailboxAddress(_options.FromName, _options.FromEmail.Trim()));
             message.To.Add(new MailboxAddress(toName, toEmail.Trim()));
             message.Subject = subject;
