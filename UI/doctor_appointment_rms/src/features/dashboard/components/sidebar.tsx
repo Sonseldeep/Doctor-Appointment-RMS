@@ -283,14 +283,14 @@ export function Sidebar() {
           onClose={() => setIsPrescriptionModalOpen(false)} 
         />
 
-        {/* <Button
+        <Button
           onClick={handleLogout}
           variant="outline"
           className="w-full justify-start gap-3 text-red-500 hover:text-red-600 hover:bg-red-50/70 border-slate-200/80 rounded-xl font-semibold text-sm shadow-sm transition-all duration-200 mt-4"
         >
           <RiLogoutBoxLine className="text-lg" />
           Logout
-        </Button> */}
+        </Button>
       </div>
     </aside>
   );
