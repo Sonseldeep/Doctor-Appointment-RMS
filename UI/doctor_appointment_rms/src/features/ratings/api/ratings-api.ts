@@ -37,4 +37,8 @@ export const ratingsApi = {
   updateRating: async (ratingId: string, data: UpdateRatingDto): Promise<void> => {
     await axiosClient.put(`/api/ratings/${ratingId}`, data);
   },
+
+  deleteRating: async (ratingId: string): Promise<void> => {
+    await axiosClient.delete(`/api/ratings/${ratingId}`);
+  },
 };
