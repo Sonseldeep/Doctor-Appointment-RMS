@@ -54,7 +54,7 @@ export function AppointmentDetailsModal({ appointment, isOpen, onClose, isDoctor
           <div className="space-y-5 pt-2">
             <div className="grid grid-cols-2 gap-4 bg-slate-50 border border-slate-100 p-4 rounded-xl">
               <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Subject Actor</p>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Patient Name</p>
                 <p className="font-bold text-gray-900 text-sm">
                   {appointment.patientName ? appointment.patientName : `Dr. ${appointment.doctorName}`}
                 </p>
@@ -67,7 +67,7 @@ export function AppointmentDetailsModal({ appointment, isOpen, onClose, isDoctor
             </div>
 
             <div>
-              <h4 className="text-sm font-semibold text-gray-900 mb-1.5">Intake Notes</h4>
+              <h4 className="text-sm font-semibold text-gray-900 mb-1.5">Patient Notes</h4>
               <div className="bg-slate-50/50 border rounded-lg p-3 text-sm text-gray-600 min-h-[60px]">
                 {appointment.notes || "No extra system diagnostic intake ledger arguments filed."}
               </div>
