@@ -6,7 +6,7 @@ import type {
 } from "../types/admin-doctor.types";
 
 export const adminDoctorsApi = {
-  // Fetch all doctors. Backend may return either AdminDoctorResponse or AdminDoctor[].
+  // Fetch all docto$Backend may return either AdminDoctorResponse or AdminDoctor[].
   getAllDoctors: async (
     pageNumber: number = 1,
     pageSize: number = 10,
