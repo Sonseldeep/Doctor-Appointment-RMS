@@ -34,7 +34,7 @@ export function Navbar() {
       {/* LEFT */}
       <div>
         <h1 className="text-xl font-bold text-blue-600">
-          MediLink
+          
         </h1>
       </div>
 
