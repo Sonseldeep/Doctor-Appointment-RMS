@@ -47,21 +47,21 @@ internal sealed class ClinicalNoteRepository : IClinicalNoteRepository
                 [UpdatedAtUtc] = {5}
             WHERE [Id] = {6}
             """,
-            parameters: new object[]
+            parameters: new object?[]
             {
                 note.Diagnosis,
-                (object?)note.Observations ?? DBNull.Value,
-                (object?)note.TreatmentSummary ?? DBNull.Value,
-                (object?)note.FollowUpDate ?? DBNull.Value,
-                (object?)note.FollowUpInstructions ?? DBNull.Value,
+                note.Observations,
+                note.TreatmentSummary,
+                note.FollowUpDate,
+                note.FollowUpInstructions,
                 note.UpdatedAtUtc,
                 note.Id
-            },
+            }!,
             cancellationToken: cancellationToken);
 
         await _db.Database.ExecuteSqlRawAsync(
             "DELETE FROM [hospital_management].[clinical_note_medications] WHERE [ClinicalNoteId] = {0}",
-            parameters: new object[] { note.Id },
+            parameters: new object?[] { note.Id }!,
             cancellationToken: cancellationToken);
 
         foreach (var m in medications)
@@ -72,16 +72,16 @@ internal sealed class ClinicalNoteRepository : IClinicalNoteRepository
                     ([Id], [ClinicalNoteId], [Name], [Dosage], [Frequency], [DurationInDays], [Instructions])
                 VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})
                 """,
-                parameters: new object[]
+                parameters: new object?[]
                 {
                     Guid.NewGuid(),
                     note.Id,
                     m.Name,
                     m.Dosage,
                     m.Frequency,
-                    (object?)m.DurationInDays ?? DBNull.Value,
-                    (object?)m.Instructions ?? DBNull.Value
-                },
+                    m.DurationInDays,
+                    m.Instructions
+                }!,
                 cancellationToken: cancellationToken);
         }
     }
