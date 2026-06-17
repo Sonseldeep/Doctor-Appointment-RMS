@@ -14,7 +14,7 @@
 //   const { data: user } = useCurrentUser();
 //   const [selectedNote, setSelectedNote] = useState<any>(null);
 
-//   const isDoctor = user?.role?.toLowerCase() === "doctor";
+// //   const isDoctor = user?.role?.toLowerCase() === "doctor";
   
 //   const handleClose = () => {
 //     setSelectedNote(null);
@@ -38,7 +38,7 @@
 //               </div>
 //             )}
 //             <DialogTitle className="text-xl font-bold">
-//               {selectedNote ? "Consultation Details" : "Prescription History"}
+//               {selectedNote ? "Consultation Details" : "Medical Records"}
 //             </DialogTitle>
 //           </div>
 //         </DialogHeader>
