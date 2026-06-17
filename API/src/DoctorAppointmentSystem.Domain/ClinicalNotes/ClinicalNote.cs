@@ -4,7 +4,7 @@ namespace DoctorAppointmentSystem.Domain.ClinicalNotes;
 
 public sealed class ClinicalNote : Entity
 {
-    private readonly List<Medication> _medications = new();
+    private readonly List<Medication> _medications = [];
 
     private ClinicalNote() { }
 
