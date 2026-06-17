@@ -141,14 +141,12 @@
 
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
-import { PrescriptionHistoryModal } from "@/features/appointments/components/prescription-history-modal";
 import {
   RiDashboardLine,
   RiCalendarLine,
