@@ -40,4 +40,9 @@ public static class AppointmentErrors
         Error.Validation(
             code: "Appointment.InvalidDuration",
             description: "Appointment end time must be after start time.");
+
+    public static Error PatientSlotConflict => 
+        Error.Conflict(
+            code: "Appointment.PatientSlotConflict",
+            description: "You already have an appointment booked during this time slot.");
 }
