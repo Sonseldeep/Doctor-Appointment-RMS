@@ -329,6 +329,40 @@ export default function PrescriptionHistoryPage() {
                   {selectedNote.treatmentSummary}
                 </p>
               </div>
+              <div className="pt-2">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
+                  <Activity size={14} className="text-slate-400" /> Treatment Protocol
+                </h4>
+                <p className="text-sm text-slate-800 font-semibold pl-1">
+                  {selectedNote.treatmentSummary}
+                </p>
+              </div>
+            </div>
+
+            {/* Follow-up Tracking Module */}
+            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                <Clock size={14} className="text-slate-400" /> Follow-up Parameters
+              </h4>
+              {selectedNote.followUpDate ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/50 border border-slate-100 p-4 rounded-xl">
+                  <div>
+                    <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Target Window</p>
+                    <p className="text-sm font-bold text-slate-800 mt-0.5 flex items-center gap-1.5">
+                      <Calendar size={13} className="text-slate-500" />
+                      {new Date(selectedNote.followUpDate).toLocaleDateString("en-US", { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">Directives</p>
+                    <p className="text-sm text-slate-700 font-semibold mt-0.5">{selectedNote.followUpInstructions || "Standard clinical surveillance"}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-xs text-slate-500 font-medium italic py-1 pl-1">
+                  Discharged — No subsequent follow-up matrix scheduled.
+                </div>
+              )}
             </div>
 
             {/* Follow-up Tracking Module */}
