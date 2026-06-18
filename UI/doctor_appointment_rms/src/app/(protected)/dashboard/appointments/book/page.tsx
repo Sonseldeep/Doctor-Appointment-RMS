@@ -555,7 +555,6 @@ function BookingWizard() {
       const localStart = `${confirmedSlot.dateStr}T${confirmedSlot.startTime}`;
       const localEnd = `${confirmedSlot.dateStr}T${confirmedSlot.endTime}`;
 
-      // Cleaned payload structure mapping straight to BookAppointmentCommand.cs
       const payload = {
         patientUserId: user?.userId,
         doctorUserId: selectedDoctorId,
@@ -565,26 +564,48 @@ function BookingWizard() {
         notes: notes.trim()
       };
 
-      // Uses your built-in Axios instance to cleanly attach auth cookies/headers
       await appointmentsApi.createAppointment(payload as any);
-
       setIsSuccess(true);
+
     } catch (err: any) {
-      // Unpack raw response dictionary fields if validation boundaries collapse
       let errorMessage = "An unresolved network transmission error occurred.";
+      
       if (err?.response?.data) {
-        if (typeof err.response.data === "string") {
-          errorMessage = err.response.data;
-        } else if (err.response.data.errors) {
-          errorMessage = JSON.stringify(err.response.data.errors);
-        } else if (err.response.data.message) {
-          errorMessage = err.response.data.message;
+        const data = err.response.data;
+        
+        //Convert the error object to a string to detect our domain error keys
+        const rawErrorString = JSON.stringify(data);
+
+        if (rawErrorString.includes("PatientSlotConflict") || rawErrorString.includes("PatientHasConflict")) {
+          errorMessage = "You already have another appointment scheduled during this exact time slot. Please choose a different time.";
+        } else if (rawErrorString.includes("SlotNotAvailable")) {
+          errorMessage = " This time slot was just booked by another patient. Please pick a different slot.";
+        } else if (rawErrorString.includes("CannotBookInPast")) {
+          errorMessage = "You cannot schedule appointments in the past. Please select an upcoming date.";
+        } 
+        // 🔍 Fallbacks: If it's a completely different error, try to extract the backend's raw message
+        else if (data.errors) {
+          if (Array.isArray(data.errors)) {
+            errorMessage = data.errors[0]?.description || data.errors[0]?.message || JSON.stringify(data.errors);
+          } else if (typeof data.errors === "object") {
+            // Handles ASP.NET dictionary format: {"Error.Code": ["Error description string"]}
+            const firstKey = Object.keys(data.errors)[0];
+            const firstErrorVal = data.errors[firstKey];
+            errorMessage = Array.isArray(firstErrorVal) ? firstErrorVal[0] : String(firstErrorVal);
+          }
+        } else if (data.detail) {
+          errorMessage = data.detail;
+        } else if (data.message) {
+          errorMessage = data.message;
+        } else if (typeof data === "string") {
+          errorMessage = data;
         } else {
-          errorMessage = JSON.stringify(err.response.data);
+          errorMessage = "Something went wrong while confirming your booking. Please try again.";
         }
       } else if (err?.message) {
         errorMessage = err.message;
       }
+
       setApiError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -594,7 +615,7 @@ function BookingWizard() {
   return (
     <div className="space-y-8 max-w-6xl mx-auto p-6">
       
-      {/* 🧭 Stepper Progress Indicator */}
+      {/*  Stepper Progress Indicator */}
       <div className="flex items-center justify-center max-w-xl mx-auto relative mb-12">
         <div className="absolute left-0 right-0 h-0.5 bg-slate-200 -z-10" />
         <div 
