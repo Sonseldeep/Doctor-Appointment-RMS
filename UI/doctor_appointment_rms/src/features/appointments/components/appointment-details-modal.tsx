@@ -6,6 +6,7 @@ import { Appointment } from "../types/appointments.types";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ClinicalNotesModal } from "./clinical-notes-modal";
+import { CheckCircle2 } from "lucide-react";
 
 interface AppointmentDetailsModalProps {
   appointment: Appointment | null;
@@ -75,28 +76,35 @@ export function AppointmentDetailsModal({ appointment, isOpen, onClose, isDoctor
 
             {isDoctor && (
               <div className="pt-4 border-t border-gray-100 space-y-4">
-                {/* 1. Status Update Section */}
-                {(appointment.status as string) !== "Confirmed" ? (
+                {/* 1. Consultation Completed State */}
+                {appointment.status === "Completed" ? (
+                  <div className="w-full py-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shadow-sm">
+                    <CheckCircle2 size={18} className="text-green-600" />
+                    Consultation Completed
+                  </div>
+                ) : appointment.status === "Confirmed" ? (
+                  /* 2. Add Notes Button (Shown only when Confirmed) */
+                  <button
+                    type="button"
+                    onClick={() => setIsNotesModalOpen(true)}
+                    className="w-full py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
+                  >
+                    Add Clinical Notes & Prescription
+                  </button>
+                ) : (
+                  /* 3. Dropdown Update Section (Shown only when Pending) */
                   <div>
                     <label className="block text-sm font-semibold text-gray-900 mb-2">Workflow Process</label>
                     <select
                       value={localStatus}
                       disabled={confirmMutation.isPending}
                       onChange={(e) => handleStatusUpdate(e.target.value)}
-                      className="w-full p-2.5 border border-gray-200 rounded-xl text-sm"
+                      className="w-full p-2.5 border border-gray-200 rounded-xl text-sm bg-white"
                     >
                       <option value="Pending">Pending</option>
                       <option value="Confirmed">Confirmed</option>
                     </select>
                   </div>
-                ) : (
-                  /* 2. Add Notes Button (Shown only when Confirmed) */
-                  <button
-                    onClick={() => setIsNotesModalOpen(true)}
-                    className="w-full py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
-                  >
-                    Add Clinical Notes & Prescription
-                  </button>
                 )}
               </div>
             )}
