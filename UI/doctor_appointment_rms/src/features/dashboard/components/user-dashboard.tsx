@@ -281,7 +281,7 @@ export function UserDashboard() {
             <div className="rounded-xl border border-dashed p-12 text-center bg-slate-50/20">
               <p className="text-muted-foreground text-sm font-medium">No upcoming or pending appointments active.</p>
               <Button
-                onClick={() => router.push("/doctors")} // Redirects directly to the doctors page
+                onClick={() => router.push("dashboard/doctors")} // Redirects directly to the doctors page
                 variant="outline"
                 className="mt-4 border-slate-200 hover:bg-slate-50 shadow-sm"
               >

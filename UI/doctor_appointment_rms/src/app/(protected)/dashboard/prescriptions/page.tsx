@@ -22,6 +22,7 @@ import {
   User
 } from "lucide-react";
 
+
 export default function PrescriptionHistoryPage() {
   const { data: history, isLoading } = useGetClinicalNotesHistory();
   const { data: user } = useCurrentUser();
