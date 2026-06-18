@@ -164,14 +164,12 @@
 
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation"; // Added for routing to the doctors page
 import { appointmentsApi } from "@/features/appointments/api/appointments-api";
 import { AppointmentCard } from "@/features/appointments/components/appointment-card";
-import { BookAppointmentForm } from "@/features/appointments/components/book-appointment-form";
 import { StatCard } from "./stat-card";
 import { HealthAlerts } from "./health-alerts";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import {
@@ -185,7 +183,7 @@ import {
 } from "@remixicon/react";
 
 export function UserDashboard() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const router = useRouter();
   const { data: user } = useCurrentUser();
   const { data: appointments, isLoading, refetch } = useQuery({
     queryKey: ["appointments", "user"],
@@ -220,32 +218,32 @@ export function UserDashboard() {
       </div>
 
       {/* 🏎️ Dynamic Stat Cards Grid */}
-<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-  <StatCard
-    title="Upcoming Bookings"
-    value={upcomingCount}
-    icon={<RiCalendarLine />}
-    backgroundColor="bg-blue-50/70"
-  />
-  <StatCard
-    title="Awaiting Approval"
-    value={pendingCount}
-    icon={<RiTimeLine className="text-amber-600" />}
-    backgroundColor="bg-amber-50/70"
-  />
-  <StatCard
-    title="Completed Consults"
-    value={completedCount}
-    icon={<RiCheckLine className="text-emerald-600" />}
-    backgroundColor="bg-emerald-50/70"
-  />
-  <StatCard
-    title="Total Consultations"
-    value={totalLifetimeCount}
-    icon={<RiHistoryLine className="text-indigo-600" />}
-    backgroundColor="bg-indigo-50/70"
-  />
-</div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          title="Upcoming Bookings"
+          value={upcomingCount}
+          icon={<RiCalendarLine />}
+          backgroundColor="bg-blue-50/70"
+        />
+        <StatCard
+          title="Awaiting Approval"
+          value={pendingCount}
+          icon={<RiTimeLine className="text-amber-600" />}
+          backgroundColor="bg-amber-50/70"
+        />
+        <StatCard
+          title="Completed Consults"
+          value={completedCount}
+          icon={<RiCheckLine className="text-emerald-600" />}
+          backgroundColor="bg-emerald-50/70"
+        />
+        <StatCard
+          title="Total Consultations"
+          value={totalLifetimeCount}
+          icon={<RiHistoryLine className="text-indigo-600" />}
+          backgroundColor="bg-indigo-50/70"
+        />
+      </div>
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
@@ -253,12 +251,7 @@ export function UserDashboard() {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold tracking-tight">Active Consultations</h2>
-            <Button
-              onClick={() => setIsDialogOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 shadow-sm"
-            >
-              Book New
-            </Button>
+            {/* "Book New" button removed from here */}
           </div>
 
           {isLoading ? (
@@ -288,7 +281,7 @@ export function UserDashboard() {
             <div className="rounded-xl border border-dashed p-12 text-center bg-slate-50/20">
               <p className="text-muted-foreground text-sm font-medium">No upcoming or pending appointments active.</p>
               <Button
-                onClick={() => setIsDialogOpen(true)}
+                onClick={() => router.push("dashboard/doctors")} // Redirects directly to the doctors page
                 variant="outline"
                 className="mt-4 border-slate-200 hover:bg-slate-50 shadow-sm"
               >
@@ -305,7 +298,7 @@ export function UserDashboard() {
           <div className="space-y-3">
             <h3 className="font-semibold text-lg tracking-tight">Quick Dashboard Actions</h3>
             <Button 
-              onClick={() => setIsDialogOpen(true)} 
+              onClick={() => router.push("dashboard/doctors")} // Redirects directly to the doctors page
               className="w-full bg-slate-950 hover:bg-slate-900 shadow-sm transition-all" 
               variant="default"
             >
@@ -320,21 +313,6 @@ export function UserDashboard() {
           </div>
         </div>
       </div>
-
-      {/* Booking Input Dialog Window Overlay */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold">Book New Appointment</DialogTitle>
-          </DialogHeader>
-          <BookAppointmentForm
-            onSuccess={() => {
-              setIsDialogOpen(false);
-              refetch();
-            }}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

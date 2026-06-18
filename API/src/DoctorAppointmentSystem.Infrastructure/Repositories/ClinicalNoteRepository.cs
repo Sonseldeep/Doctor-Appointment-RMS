@@ -152,4 +152,15 @@ internal sealed class ClinicalNoteRepository : IClinicalNoteRepository
                 note.Medications);
         }).ToList();
     }
+
+    // Ensure the return type is Task<IReadOnlyList<ClinicalNote>> 
+    // and parameters match exactly: (Guid patientId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<ClinicalNote>> GetByPatientIdAsync(Guid patientId, CancellationToken cancellationToken)
+    {
+        return await _db.ClinicalNotes
+            .Include(n => n.Medications)
+            .Where(n => n.PatientUserId == patientId)
+            .OrderByDescending(n => n.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+    }
 }

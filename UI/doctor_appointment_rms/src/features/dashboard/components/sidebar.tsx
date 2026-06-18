@@ -250,7 +250,7 @@ export function Sidebar() {
           <RiLogoutBoxLine className="text-lg" />
           Logout
         </Button>
-      </div> */}
+      </div> 
     </aside>
   );
 }

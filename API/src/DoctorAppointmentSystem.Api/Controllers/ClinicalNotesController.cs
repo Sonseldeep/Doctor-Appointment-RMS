@@ -1,11 +1,13 @@
 ﻿using DoctorAppointmentSystem.Application.Features.ClinicalNotes.AddClinicalNote;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.Contracts;
+using DoctorAppointmentSystem.Application.Features.ClinicalNotes.ExportClinicalNotes;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetClinicalNoteByAppointment;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetMyClinicalNotes;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.UpdateClinicalNote;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DoctorAppointmentSystem.Application.Features.ClinicalNotes.ExportClinicalNotes;
 
 namespace DoctorAppointmentSystem.Api.Controllers;
 
@@ -100,5 +102,18 @@ public sealed class ClinicalNotesController : ApiController
         var result = await _sender.Send(new GetMyClinicalNotesQuery(userId), cancellationToken);
 
         return result.Match(Ok, Problem);
+    }
+
+    [HttpGet("appointment/{appointmentId:guid}/export-pdf")]
+    [Authorize]
+    public async Task<IActionResult> ExportPdf(Guid appointmentId, CancellationToken cancellationToken)
+    {
+        // Send the specific appointmentId down to the handler
+        var result = await _sender.Send(new ExportClinicalNotesQuery(appointmentId), cancellationToken);
+
+        return result.Match<IActionResult>(
+            pdfData => File(pdfData, "application/pdf", $"Prescription_{appointmentId}_{DateTime.UtcNow:yyyyMMdd}.pdf"),
+            errors => Problem(errors.First().Description)
+        );
     }
 }
