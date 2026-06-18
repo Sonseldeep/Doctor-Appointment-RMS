@@ -1061,9 +1061,7 @@ export default function PrescriptionHistoryPage() {
           </div>
         ) : isEditing ? (
           
-          /* ========================================================================= */
-          /* --- DESIGN OVERHAUL: EDIT VIEW ---                                       */
-          /* ========================================================================= */
+          
           <div className="space-y-6 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 animate-fade-in max-w-3xl mx-auto">
             
             {/* Core Diagnosis Card */}
@@ -1218,9 +1216,7 @@ export default function PrescriptionHistoryPage() {
           </div>
         ) : selectedNote ? (
           
-          /* ========================================================================= */
-          /* --- DESIGN OVERHAUL: READ VIEW ---                                       */
-          /* ========================================================================= */
+  
           <div className="space-y-5 animate-fade-in max-w-3xl mx-auto">
             
             {/* Diagnosis Module */}
@@ -1279,8 +1275,28 @@ export default function PrescriptionHistoryPage() {
                 </div>
               )}
             </div>
+
+            <div className="bg-white p-6 rounded-2xl border shadow-sm">
+              <h4 className="text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider">Follow-up Details</h4>
+              {selectedNote.followUpDate ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-gray-500 font-semibold uppercase">Date</p>
+                      <p className="text-sm text-gray-800 mt-1">
+                        {new Date(selectedNote.followUpDate).toLocaleDateString("en-US", { month: 'long', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 font-semibold uppercase">Instructions</p>
+                      <p className="text-sm text-gray-800 mt-1">{selectedNote.followUpInstructions || "None provided"}</p>
+                    </div>
+                  </div>
+              ) : (
+                  <p className="text-sm text-slate-500 italic">No follow-up scheduled.</p>
+              )}
+            </div>
             
-            {/* Clean, Premium Prescription Ledger (Goodbye high-contrast dark box) */}
+            
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
                 <h4 className="flex items-center gap-2 font-bold text-sm text-slate-800">
@@ -1329,9 +1345,7 @@ export default function PrescriptionHistoryPage() {
           </div>
         ) : (
           
-          /* ========================================================================= */
-          /* --- DESIGN OVERHAUL: LIST VIEW ---                                       */
-          /* ========================================================================= */
+      
           <div className="space-y-6 max-w-3xl mx-auto">
             
             {/* Modern Control Filter Header */}
