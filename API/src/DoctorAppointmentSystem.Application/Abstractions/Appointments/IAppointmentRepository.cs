@@ -35,7 +35,13 @@ public interface IAppointmentRepository
         Guid patientUserId,
         Guid doctorUserId,
         CancellationToken cancellationToken);
-    
-    
+
+    Task<bool> PatientHasOverlapAsync(
+        Guid patientUserId,
+        DateTimeOffset startUtc,
+        DateTimeOffset endUtc,
+        CancellationToken cancellationToken);
+
+
 
 }

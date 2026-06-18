@@ -13,9 +13,9 @@ export function Navbar() {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white font-bold text-sm">
-              DF
+              ML
             </div>
-            <span className="text-lg font-semibold text-foreground">DocFlow</span>
+            <span className="text-lg font-semibold text-foreground">MediLink</span>
           </div>
 
           {/* Desktop Navigation */}

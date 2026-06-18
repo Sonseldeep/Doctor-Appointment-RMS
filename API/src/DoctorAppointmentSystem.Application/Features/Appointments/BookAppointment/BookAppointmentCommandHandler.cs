@@ -111,13 +111,6 @@ internal sealed class BookAppointmentCommandHandler
             return AppointmentErrors.CannotBookInPast;
         }
 
-     
-        var bookResult = slot.Book(Guid.Empty); 
-        if (bookResult.IsError)
-        {
-            return bookResult.Errors;
-        }
-
         var overlap = await _appointmentRepository.DoctorHasOverlapAsync(
             request.DoctorUserId, startUtc, endUtc, cancellationToken);
         if (overlap)
@@ -125,12 +118,26 @@ internal sealed class BookAppointmentCommandHandler
             return AppointmentErrors.SlotNotAvailable;
         }
 
+        var patientOverlap = await _appointmentRepository.PatientHasOverlapAsync(
+            request.PatientUserId, startUtc, endUtc, cancellationToken);
+        if (patientOverlap)
+        {
+            return AppointmentErrors.PatientSlotConflict;
+        }
+
+        
         var appointment = Appointment.Create(
             request.PatientUserId,
             request.DoctorUserId,
             startUtc,
             endUtc,
             request.Notes);
+
+        var bookResult = slot.Book(Guid.Empty);
+        if (bookResult.IsError)
+        {
+            return bookResult.Errors;
+        }
 
         await _appointmentRepository.AddAsync(appointment, cancellationToken);
 
