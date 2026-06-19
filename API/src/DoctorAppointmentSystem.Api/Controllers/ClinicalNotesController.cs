@@ -123,11 +123,7 @@ public sealed class ClinicalNotesController : ApiController
     public async Task<IActionResult> GetUpcomingFollowUps(CancellationToken cancellationToken)
     {
 
-        // DEBUG: Log all claims to the output console to see what the API detects
-        foreach (var claim in User.Claims)
-        {
-            System.Diagnostics.Debug.WriteLine($"Type: {claim.Type}, Value: {claim.Value}");
-        }
+        
         // 1. Use the pattern your controller already uses to get the ID
         if (!TryGetCurrentUserId(out var userId))
         {

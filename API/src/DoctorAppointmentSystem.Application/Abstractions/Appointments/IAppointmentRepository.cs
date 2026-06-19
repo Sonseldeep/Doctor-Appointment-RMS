@@ -1,5 +1,5 @@
 ﻿using DoctorAppointmentSystem.Domain.Appointments;
-
+using DoctorAppointmentSystem.Application.Common;
 namespace DoctorAppointmentSystem.Application.Abstractions.Appointments;
 
 public interface IAppointmentRepository
@@ -20,17 +20,21 @@ public interface IAppointmentRepository
         Guid doctorUserId,
         DateTime appointmentDate,
         CancellationToken cancellationToken);
-    
-    
-    Task<IReadOnlyList<AppointmentWithDetailsDto>> GetForPatientWithDetailsAsync(
+
+
+    Task<PagedResult<AppointmentWithDetailsDto>> GetForPatientWithDetailsAsync(
         Guid patientUserId,
+        int page,
+        int pageSize,
         CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<AppointmentWithDetailsDto>> GetForDoctorWithDetailsAsync(
+    Task<PagedResult<AppointmentWithDetailsDto>> GetForDoctorWithDetailsAsync(
         Guid doctorUserId,
+        int page,
+        int pageSize,
         CancellationToken cancellationToken);
-    
-    
+
+
     Task<bool> HasCompletedAppointmentAsync(
         Guid patientUserId,
         Guid doctorUserId,
