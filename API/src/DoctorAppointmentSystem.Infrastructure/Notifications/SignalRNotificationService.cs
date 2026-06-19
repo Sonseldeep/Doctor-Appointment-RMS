@@ -1,4 +1,6 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Notifications;
+using DoctorAppointmentSystem.Application.Features.Appointments.GetMyAppointments;
+using DoctorAppointmentSystem.Application.Features.ClinicalNotes.Contracts;
 using DoctorAppointmentSystem.Application.Features.Notifications.Contracts;
 using DoctorAppointmentSystem.Domain.Notifications;
 using DoctorAppointmentSystem.Infrastructure.Hubs;
@@ -34,5 +36,45 @@ internal sealed class SignalRNotificationService : INotificationService
         await _hubContext.Clients
             .Group(groupName)
             .SendAsync("ReceiveNotification", payload, cancellationToken);
+    }
+    
+    
+    
+    public async Task SendAppointmentBookedToDoctorAsync(
+        Guid doctorUserId,
+        AppointmentResponse appointment,
+        CancellationToken cancellationToken = default)
+    {
+        var group = NotificationHub.GetGroupName(doctorUserId.ToString());
+
+        await _hubContext.Clients
+            .Group(group)
+            .SendAsync("AppointmentBooked", appointment, cancellationToken);
+    }
+    
+    
+    public async Task SendAppointmentStatusChangedAsync(
+        Guid userId,
+        Guid appointmentId,
+        string newStatus,
+        CancellationToken cancellationToken = default)
+    {
+        var group = NotificationHub.GetGroupName(userId.ToString());
+
+        await _hubContext.Clients
+            .Group(group)
+            .SendAsync("AppointmentStatusChanged", new { appointmentId, newStatus }, cancellationToken);
+    }
+    
+    public async Task SendClinicalNoteAddedToPatientAsync(
+        Guid patientUserId,
+        ClinicalNoteResponse clinicalNote,
+        CancellationToken cancellationToken = default)
+    {
+        var group = NotificationHub.GetGroupName(patientUserId.ToString());
+
+        await _hubContext.Clients
+            .Group(group)
+            .SendAsync("ClinicalNoteAdded", clinicalNote, cancellationToken);
     }
 }

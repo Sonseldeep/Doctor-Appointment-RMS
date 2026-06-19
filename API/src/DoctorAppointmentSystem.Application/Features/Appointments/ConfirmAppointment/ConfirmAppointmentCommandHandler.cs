@@ -93,6 +93,15 @@ internal sealed class ConfirmAppointmentCommandHandler
         await _uow.SaveChangesAsync(cancellationToken);
 
         await _notificationService.SendToUserAsync(appointment.PatientUserId, patientNotification, cancellationToken);
+
+
+        const string newStatus = nameof(AppointmentStatus.Confirmed);
+        
+        await _notificationService.SendAppointmentStatusChangedAsync(
+            appointment.PatientUserId, appointment.Id, newStatus, cancellationToken);
+        await _notificationService.SendAppointmentStatusChangedAsync(
+            appointment.DoctorUserId, appointment.Id, newStatus, cancellationToken);
+        
         return Result.Success;
     }
 }

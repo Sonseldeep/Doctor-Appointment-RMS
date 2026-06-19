@@ -69,6 +69,8 @@ internal sealed class CancelAppointmentCommandHandler : ICommandHandler<CancelAp
         slot?.Release();
 
         var appointmentDate = $"{appointment.StartUtc:dd MMM yyyy} at {appointment.StartUtc:HH:mm} UTC";
+        const string newStatus = nameof(AppointmentStatus.Cancelled);
+
 
         // Notify the OTHER party about the cancellation
         if (cancelledByDoctor)
@@ -84,6 +86,7 @@ internal sealed class CancelAppointmentCommandHandler : ICommandHandler<CancelAp
 
             await _notificationRepository.AddAsync(patientNotification, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);
+            
             await _notificationService.SendToUserAsync(appointment.PatientUserId, patientNotification, cancellationToken);
         }
         else
@@ -99,8 +102,15 @@ internal sealed class CancelAppointmentCommandHandler : ICommandHandler<CancelAp
 
             await _notificationRepository.AddAsync(doctorNotification, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);
+            
             await _notificationService.SendToUserAsync(appointment.DoctorUserId, doctorNotification, cancellationToken);
         }
+        
+        await _notificationService.SendAppointmentStatusChangedAsync(
+            appointment.PatientUserId, appointment.Id, newStatus, cancellationToken);
+        await _notificationService.SendAppointmentStatusChangedAsync(
+            appointment.DoctorUserId, appointment.Id, newStatus, cancellationToken);
+        
         return Result.Success;
     }
 }
