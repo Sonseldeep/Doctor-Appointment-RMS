@@ -6,17 +6,13 @@ import type {
 } from "../types/clinical-notes.types";
 
 export const clinicalNotesApi = {
-  /**
-   * Creates a new clinical note for an appointment (Doctor Only)
-   */
+
   createClinicalNote: async (data: CreateClinicalNoteDto): Promise<ClinicalNote> => {
     const response = await axiosClient.post<ClinicalNote>("/api/clinical-notes", data);
     return response.data;
   },
 
-  /**
-   * Updates an existing clinical note by ID (Doctor Only)
-   */
+
   updateClinicalNote: async (
     clinicalNoteId: string, 
     data: UpdateClinicalNoteDto
@@ -28,12 +24,14 @@ export const clinicalNotesApi = {
     return response.data;
   },
 
-  /**
-   * Retrieves professional clinical notes for the authenticated session (Context-Aware)
-   * Returns patient notes if authenticated as Patient, or written notes if authenticated as Doctor.
-   */
+
   getMyClinicalNotes: async (): Promise<ClinicalNote[]> => {
     const response = await axiosClient.get<ClinicalNote[]>("/api/clinical-notes/me");
     return response.data;
   },
+
+  getUpcomingFollowUps: async (): Promise<any[]> => {
+  const response = await axiosClient.get<any[]>("/api/clinical-notes/upcoming-followups");
+  return response.data;
+},
 };
