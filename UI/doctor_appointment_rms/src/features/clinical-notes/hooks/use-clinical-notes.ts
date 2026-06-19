@@ -62,3 +62,11 @@ export function useUpdateClinicalNote() {
     },
   });
 }
+
+export function useGetUpcomingFollowUps() {
+  return useQuery({
+    queryKey: ["clinical-notes", "upcoming-followups"],
+    queryFn: clinicalNotesApi.getUpcomingFollowUps,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+  });
+}

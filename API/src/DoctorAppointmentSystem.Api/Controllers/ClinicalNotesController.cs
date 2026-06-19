@@ -1,13 +1,14 @@
 ﻿using DoctorAppointmentSystem.Application.Features.ClinicalNotes.AddClinicalNote;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.Contracts;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.ExportClinicalNotes;
+using DoctorAppointmentSystem.Application.Features.ClinicalNotes.ExportClinicalNotes;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetClinicalNoteByAppointment;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetMyClinicalNotes;
+using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetUpcomingFollowUps;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.UpdateClinicalNote;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using DoctorAppointmentSystem.Application.Features.ClinicalNotes.ExportClinicalNotes;
 
 namespace DoctorAppointmentSystem.Api.Controllers;
 
@@ -115,5 +116,29 @@ public sealed class ClinicalNotesController : ApiController
             pdfData => File(pdfData, "application/pdf", $"Prescription_{appointmentId}_{DateTime.UtcNow:yyyyMMdd}.pdf"),
             errors => Problem(errors.First().Description)
         );
+    }
+
+    [HttpGet("upcoming-followups")]
+    [Authorize(Roles = "Registered")]
+    public async Task<IActionResult> GetUpcomingFollowUps(CancellationToken cancellationToken)
+    {
+
+        // DEBUG: Log all claims to the output console to see what the API detects
+        foreach (var claim in User.Claims)
+        {
+            System.Diagnostics.Debug.WriteLine($"Type: {claim.Type}, Value: {claim.Value}");
+        }
+        // 1. Use the pattern your controller already uses to get the ID
+        if (!TryGetCurrentUserId(out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var query = new GetUpcomingFollowUpsQuery(userId);
+
+        // 2. Use the injected _sender field instead of the undefined 'Sender' property
+        var result = await _sender.Send(query, cancellationToken);
+
+        return result.Match(Ok, Problem);
     }
 }

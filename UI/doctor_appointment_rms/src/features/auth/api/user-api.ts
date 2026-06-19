@@ -8,25 +8,19 @@ import {
 } from "../types/auth.types";
 
 export const userApi = {
-  /**
-   * Fetch doctor profile
-   */
+
   meDoctor: async (): Promise<DoctorProfile> => {
     const res = await axiosClient.get<DoctorProfile>("/api/doctors/me");
     return res.data;
   },
 
-  /**
-   * Fetch patient profile
-   */
+
   mePatient: async (): Promise<PatientProfile> => {
     const res = await axiosClient.get<PatientProfile>("/api/patients/me");
     return res.data;
   },
 
-  /**
-   * Generic profile fetch - verifies role with backend before calling extra sub-endpoints
-   */
+ 
   me: async (role?: any): Promise<CurrentUser> => {
     try {
       // 1. Always fetch the core authenticated account profile first
@@ -66,10 +60,7 @@ export const userApi = {
     }
   },
 
-  /**
-   * Upload profile photo for any role
-   * Works the same for all user types
-   */
+  
   uploadProfilePhoto: async (
     file: File
   ): Promise<UploadProfilePhotoResponse> => {
