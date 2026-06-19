@@ -38,7 +38,7 @@ export function HowItWorks() {
             Simple 4-step process
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get started with DocFlow in minutes
+            Get started with MediLink in minutes
           </p>
         </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Loader2, Eye, EyeOff, AlertCircle, ArrowLeft } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
@@ -75,7 +75,16 @@ export function LoginForm() {
   const isAuthError = loginMutation.isError;
 
   return (
-    <Card className="w-full max-w-md shadow-xl border bg-background/95 backdrop-blur">
+    <Card className="relative w-full max-w-md shadow-xl border bg-background/95 backdrop-blur">
+      
+      <Link
+        href="/"
+        className="absolute left-4 top-4 p-2 hover:bg-muted text-muted-foreground hover:text-foreground active:scale-95 rounded-xl transition-all border border-border shadow-sm bg-background flex items-center justify-center group"
+        aria-label="Back to home"
+      >
+        <ArrowLeft className="size-4 group-hover:-translate-x-0.5 transition-transform stroke-[2.5]" />
+      </Link>
+
       <CardHeader className="space-y-2 text-center">
         <CardTitle className="text-3xl font-bold tracking-tight">
           Welcome Back

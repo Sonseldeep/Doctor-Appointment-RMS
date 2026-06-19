@@ -183,4 +183,19 @@ internal sealed class AppointmentRepository : IAppointmentRepository
         }
         return age;
     }
+
+    public async Task<bool> PatientHasOverlapAsync(
+    Guid patientUserId,
+    DateTimeOffset startUtc,
+    DateTimeOffset endUtc,
+    CancellationToken cancellationToken)
+    {
+        return await _db.Appointments.AsNoTracking().AnyAsync(x =>
+                x.PatientUserId == patientUserId
+                && x.Status != AppointmentStatus.Cancelled
+                && x.Status != AppointmentStatus.Completed
+                && x.StartUtc < endUtc
+                && x.EndUtc > startUtc,
+            cancellationToken);
+    }
 }
