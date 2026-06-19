@@ -23,15 +23,24 @@ public sealed class AppointmentsController : ApiController
 
 
     [HttpGet("me")]
-    public async Task<IActionResult> GetMine(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMine(
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10,
+    CancellationToken cancellationToken = default)
     {
         if (!TryGetCurrentUserId(out var userId))
         {
             return Unauthorized();
         }
-        
+
+        // Optional: Add simple validation to prevent invalid pagination values
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 50) pageSize = 50; // Optional cap to prevent large memory usage
+
         var result = await _sender.Send(
-            new GetMyAppointmentsQuery(userId), cancellationToken);
+            new GetMyAppointmentsQuery(userId, page, pageSize),
+            cancellationToken);
 
         return result.Match(Ok, Problem);
     }

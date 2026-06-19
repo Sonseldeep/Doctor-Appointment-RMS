@@ -32,7 +32,7 @@
 // };
 
 import axiosClient from "@/lib/axios";
-import { CreateAppointmentDto, Appointment, CompleteAppointmentDto } from "../types/appointments.types";
+import { CreateAppointmentDto, Appointment, CompleteAppointmentDto, PagedResult } from "../types/appointments.types";
 
 export const appointmentsApi = {
   createAppointment: async (payload: CreateAppointmentDto): Promise<Appointment> => {
@@ -40,8 +40,10 @@ export const appointmentsApi = {
     return res.data;
   },
 
-  getMyAppointments: async (): Promise<Appointment[]> => {
-    const res = await axiosClient.get<Appointment[]>("/api/appointments/me");
+  getMyAppointments: async (page: number, pageSize: number): Promise<PagedResult<Appointment>> => {
+    const res = await axiosClient.get<PagedResult<Appointment>>(`/api/appointments/me`, {
+      params: { page, pageSize }
+    });
     return res.data;
   },
 
