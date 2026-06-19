@@ -130,9 +130,15 @@ internal sealed class AddClinicalNoteCommandHandler
         await _notificationRepository.AddAsync(notification, cancellationToken);
 
         await _uow.SaveChangesAsync(cancellationToken);
-
+        
         await _notificationService.SendToUserAsync(appointment.PatientUserId, notification, cancellationToken);
+        var noteResponse = ClinicalNoteMapper.ToResponse(clinicalNote, appointment.StartUtc, doctor, patient);
+        
+        
+        await _notificationService.SendClinicalNoteAddedToPatientAsync(
+            appointment.PatientUserId, noteResponse, cancellationToken);
 
-        return ClinicalNoteMapper.ToResponse(clinicalNote, appointment.StartUtc, doctor, patient);
+
+        return noteResponse;
     }
 }

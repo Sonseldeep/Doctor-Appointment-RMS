@@ -7,6 +7,7 @@ using DoctorAppointmentSystem.Application.Abstractions.Jobs;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Abstractions.Notifications;
 using DoctorAppointmentSystem.Application.Features.Appointments.Contracts;
+using DoctorAppointmentSystem.Application.Features.Appointments.GetMyAppointments;
 using DoctorAppointmentSystem.Application.Features.Doctors.Common;
 using DoctorAppointmentSystem.Domain.Appointments;
 using DoctorAppointmentSystem.Domain.Availability;
@@ -168,8 +169,29 @@ internal sealed class BookAppointmentCommandHandler
         
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
         await _notificationService.SendToUserAsync(request.PatientUserId, patientNotification, cancellationToken);
         await _notificationService.SendToUserAsync(request.DoctorUserId, doctorNotification, cancellationToken);
+
+        var appointmentPayload = new AppointmentResponse(
+            appointment.Id,
+            appointment.PatientUserId,
+            appointment.DoctorUserId,
+            appointment.StartUtc,
+            appointment.EndUtc,
+            appointment.Status,
+            appointment.Notes,
+            doctorName,
+            doctorProfile!.NmcNumber,
+            doctorUser.ProfilePhotoUrl,
+            doctorProfile.Specialization,
+            patientName,
+            null,
+            null,
+            patient.ProfilePhotoUrl);
+
+        await _notificationService.SendAppointmentBookedToDoctorAsync(
+            request.DoctorUserId, appointmentPayload, cancellationToken);
 
 
 
