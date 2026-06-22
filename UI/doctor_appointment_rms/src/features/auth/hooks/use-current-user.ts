@@ -33,8 +33,9 @@ export function useCurrentUser() {
     enabled: hasToken,
     retry: false,
     
-    
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime:5000,
+    refetchInterval: 5000,   // Poll (refetch) every 30 seconds
+    refetchOnWindowFocus: true
   });
 }
 
