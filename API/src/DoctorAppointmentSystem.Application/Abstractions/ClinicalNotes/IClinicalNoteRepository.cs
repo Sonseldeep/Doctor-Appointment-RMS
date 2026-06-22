@@ -33,4 +33,6 @@ public interface IClinicalNoteRepository
     Guid patientUserId,
     DateTimeOffset now,
     CancellationToken cancellationToken);
+
+    Task<ClinicalNoteWithDetailsDto?> GetWithDetailsByAppointmentIdAsync(Guid appointmentId, CancellationToken cancellationToken);
 }

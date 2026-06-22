@@ -176,4 +176,11 @@ internal sealed class ClinicalNoteRepository : IClinicalNoteRepository
 
         return await GetWithDetailsAsync(query, cancellationToken);
     }
+
+    public async Task<ClinicalNoteWithDetailsDto?> GetWithDetailsByAppointmentIdAsync(Guid appointmentId, CancellationToken cancellationToken)
+    {
+        var query = _db.ClinicalNotes.Where(x => x.AppointmentId == appointmentId);
+        var results = await GetWithDetailsAsync(query, cancellationToken);
+        return results.SingleOrDefault();
+    }
 }
