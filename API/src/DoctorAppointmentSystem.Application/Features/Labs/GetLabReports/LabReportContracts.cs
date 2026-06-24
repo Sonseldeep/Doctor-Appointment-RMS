@@ -4,7 +4,10 @@ public record LabReportResponse(
     Guid Id,
     string LabName,
     string PanelName,
-    DateTime ObservationDate,
+    DateTime ObservationDateTime,
+    string? DocumentUrl,
+    string? DocumentType,
+    string? MimeType,
     List<ObservationResponse> Observations);
 
 public record ObservationResponse(
