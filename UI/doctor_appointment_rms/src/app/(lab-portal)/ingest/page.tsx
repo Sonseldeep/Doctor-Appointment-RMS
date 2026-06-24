@@ -31,6 +31,7 @@ export default function LabIngestPage() {
   const [testRows, setTestRows] = useState(DOCK_PANELS["Full Blood Count"]);
   const [testValues, setTestValues] = useState<Record<string, string>>({});
   const [abnormalMap, setAbnormalMap] = useState<Record<string, boolean>>({});
+  const [document, setDocument] = useState<File | null>(null);
 
   // Load key from storage on mount
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function LabIngestPage() {
       setPatientEmail("");
       setTestValues({});
       setAbnormalMap({});
+      setDocument(null);
     },
     onError: () => {
       alert("Ingestion Rejected: Ensure X-Lab-Access-Key is valid.");
@@ -89,7 +91,9 @@ export default function LabIngestPage() {
         unit: row.unit,
         referenceRange: row.range,
         isAbnormal: !!abnormalMap[row.name]
-      }))
+      })),
+
+      document,
     };
 
     uploadReport(payload);
@@ -130,23 +134,76 @@ export default function LabIngestPage() {
       {/* Main Ingestion Form (Visible only if authenticated) */}
       {isKeySaved && (
         <form onSubmit={onFormSubmit} className="space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Patient Email</label>
-              <Input required type="email" value={patientEmail} onChange={e => setPatientEmail(e.target.value)} className="rounded-xl" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Lab Facility</label>
-              <Input required value={labName} onChange={e => setLabName(e.target.value)} className="rounded-xl" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Template</label>
-              <select value={panelName} onChange={e => handlePanelSwitch(e.target.value)} className="w-full bg-white border border-slate-200 h-10 px-3 rounded-xl text-sm">
-                <option value="Full Blood Count">Full Blood Count (FBC)</option>
-                <option value="Lipid Panel">Lipid Panel</option>
-              </select>
-            </div>
-          </div>
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4">
+  {/* Patient Email */}
+  <div className="space-y-1.5">
+    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+      Patient Email
+    </label>
+    <Input
+      required
+      type="email"
+      value={patientEmail}
+      onChange={(e) => setPatientEmail(e.target.value)}
+      className="rounded-xl"
+    />
+  </div>
+
+  {/* Lab Facility */}
+  <div className="space-y-1.5">
+    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+      Lab Facility
+    </label>
+    <Input
+      required
+      value={labName}
+      onChange={(e) => setLabName(e.target.value)}
+      className="rounded-xl"
+    />
+  </div>
+
+  {/* Template */}
+  <div className="space-y-1.5">
+    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+      Template
+    </label>
+
+    <select
+      value={panelName}
+      onChange={(e) => handlePanelSwitch(e.target.value)}
+      className="w-full bg-white border border-slate-200 h-10 px-3 rounded-xl text-sm"
+    >
+      <option value="Full Blood Count">
+        Full Blood Count (FBC)
+      </option>
+
+      <option value="Lipid Panel">
+        Lipid Panel
+      </option>
+    </select>
+  </div>
+
+  {/* Supporting Document */}
+  <div className="space-y-1.5">
+    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+      Supporting Document
+    </label>
+
+    <Input
+      type="file"
+      accept=".pdf,.jpg,.jpeg,.png"
+      onChange={(e) =>
+        setDocument(e.target.files?.[0] ?? null)
+      }
+    />
+
+    {document && (
+      <p className="text-xs text-emerald-600 truncate">
+        Selected: {document.name}
+      </p>
+    )}
+  </div>
+</div>
 
           {/* ... Observation Rows ... */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">

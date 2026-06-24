@@ -129,7 +129,7 @@ export function DoctorProfileView({ doctor, onBack, onProceedToBooking }: Doctor
         <div className="w-full md:w-auto flex flex-col sm:flex-row md:flex-col justify-between items-stretch md:items-end p-4 bg-slate-50 border border-slate-100 rounded-xl gap-4 min-w-[220px]">
           <div>
             <span className="text-[10px] text-slate-400 font-bold tracking-widest uppercase block mb-0.5">Consultation Fee</span>
-            <span className="text-2xl font-extrabold text-slate-900">${Number(doctor.consultationFee).toFixed(2)}</span>
+            <span className="text-2xl font-extrabold text-slate-900">NPR {Number(doctor.consultationFee).toFixed(2)}</span>
           </div>
           <Button 
             onClick={onProceedToBooking}
