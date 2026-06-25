@@ -111,4 +111,25 @@ internal sealed class PatientProfileRepository : IPatientProfileRepository
         }
         return age;
     }
+
+    public async Task<List<(PatientProfile Patient, User User)>> SearchByNameOrEmailAsync(string searchTerm, CancellationToken cancellationToken = default)
+    {
+        var term = searchTerm.ToLower();
+
+        return await _db.PatientProfiles
+            .Join(
+                _db.Users,
+                patient => patient.UserId, // FK on PatientProfile
+                user => user.Id,           // PK on User
+                (patient, user) => new { Patient = patient, User = user } // Anonymous result
+            )
+            .Where(joined =>
+                joined.User.FirstName.ToLower().Contains(term) ||
+                joined.User.LastName.ToLower().Contains(term) ||
+                joined.User.Email.ToLower().Contains(term))
+            .Take(10)
+            // Select into a Tuple or a small internal DTO so we can return both objects
+            .Select(joined => ValueTuple.Create(joined.Patient, joined.User))
+            .ToListAsync(cancellationToken);
+    }
 }
