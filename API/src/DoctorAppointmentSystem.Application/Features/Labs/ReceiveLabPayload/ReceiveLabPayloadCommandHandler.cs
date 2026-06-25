@@ -3,6 +3,7 @@ using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Labs;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Abstractions.Notifications;
+using DoctorAppointmentSystem.Application.Abstractions.Storage; 
 using DoctorAppointmentSystem.Domain.Labs;
 using DoctorAppointmentSystem.Domain.Notifications;
 using ErrorOr;
@@ -16,19 +17,22 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
     private readonly IUnitOfWork _unitOfWork;
     private readonly INotificationService _notificationService;
     private readonly INotificationRepository _notificationRepository;
+    private readonly IFileStorageService _fileStorageService; 
 
     public ReceiveLabPayloadCommandHandler(
         ILabReportRepository labRepository,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
         INotificationService notificationService,
-        INotificationRepository notificationRepository)
+        INotificationRepository notificationRepository,
+        IFileStorageService fileStorageService) 
     {
         _labRepository = labRepository;
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
         _notificationService = notificationService;
         _notificationRepository = notificationRepository;
+        _fileStorageService = fileStorageService;
     }
 
     public async Task<ErrorOr<Success>> Handle(ReceiveLabPayloadCommand request, CancellationToken cancellationToken)
@@ -40,16 +44,36 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
 
         var report = LabReport.Create(user.Id, request.LabName, request.PanelName, request.ObservationDate);
 
+        
+
         foreach (var obs in request.Observations)
         {
+            
             report.AddObservation(obs.TestName, obs.Value, obs.Unit, obs.ReferenceRange, obs.IsAbnormal);
         }
+
+        // --- HYBRID INGESTION: Handle Document Upload ---
+        if (request.Document is not null && request.Document.Length > 0)
+        {
+            // Pass the pure stream and metadata to the storage service
+            string documentUrl = await _fileStorageService.UploadAsync(
+                request.Document.Content,
+                request.Document.FileName,
+                request.Document.ContentType,
+                cancellationToken);
+            
+            string mimeType = request.Document.ContentType;
+            
+            // Differentiate between Radiology (X-Ray/Scan) and Lab Reports (PDF)
+            string documentType = mimeType.StartsWith("image/") ? "XRAY" : "PDF";
+
+            report.AttachDocument(documentUrl, documentType, mimeType);
+        }
+        
 
         await _labRepository.AddAsync(report, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // We pass 'null' for the 5th argument here to ensure positional parameters align perfectly.
-        // If you want to link the report ID and it's strongly typed, use 'report.Id.Value' instead of 'null'.
         var notification = Notification.Create(
             user.Id,
             "Lab Report Ready",
@@ -57,8 +81,7 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
             NotificationType.LabReportReady,
             report.Id);
 
-        await _notificationRepository.AddAsync(notification, cancellationToken); // Save to DB
-
+        await _notificationRepository.AddAsync(notification, cancellationToken); 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await _notificationService.SendToUserAsync(

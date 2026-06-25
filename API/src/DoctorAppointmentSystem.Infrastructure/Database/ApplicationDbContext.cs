@@ -17,6 +17,7 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<User> Users => Set<User>();
 
     public DbSet<LabReport> LabReports { get; set; }
+    public DbSet<LabObservation> LabObservations { get; set; }
     public DbSet<UserRefreshToken> UserRefreshTokens => Set<UserRefreshToken>();
 
     public DbSet<UserOtp> UserOtps => Set<UserOtp>();

@@ -17,9 +17,7 @@ export function useGetMyClinicalNotes() {
   });
 }
 
-/**
- * Hook to submit a new clinical note (Doctor Only)
- */
+
 export function useCreateClinicalNote() {
   const queryClient = useQueryClient();
 

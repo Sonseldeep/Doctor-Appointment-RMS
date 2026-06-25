@@ -85,7 +85,7 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
       <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between gap-4">
         <div>
           <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase mb-0.5">Consultation Fee</p>
-          <p className="text-lg font-bold text-slate-900">${Number(doctor.consultationFee).toFixed(2)}</p>
+          <p className="text-lg font-bold text-slate-900">NPR{Number(doctor.consultationFee).toFixed(2)}</p>
         </div>
         
         <Button

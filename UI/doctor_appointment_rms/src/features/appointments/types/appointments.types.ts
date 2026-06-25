@@ -1,4 +1,3 @@
-
 export type AppointmentStatus = "Pending" | "Confirmed" | "Completed" | "Cancelled" | "Scheduled" | string;
 
 export interface Appointment {

@@ -3,36 +3,73 @@
 import { useState } from "react";
 import { useLabReports } from "../hooks/use-lab-reports";
 import { LabReportResponse } from "../types/lab-reports.types";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import { labReportsApi } from "../api/lab-reports-api";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { RiEyeLine, RiAlertFill, RiCheckboxCircleFill, RiCalendarEventLine } from "@remixicon/react";
+
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
+
+import {
+  RiHeartPulseLine,
+  RiErrorWarningFill,
+  RiCheckboxCircleFill,
+  RiFilePdf2Line,
+  RiImageLine,
+  RiHospitalLine,
+  RiMicroscopeLine,
+  RiEyeLine,
+  RiExternalLinkLine,
+  RiFlaskLine
+} from "@remixicon/react";
 
 export const LabReportsTable = () => {
-  // 1. Fetch data but do not immediately assume it is an array
   const { data, isLoading, error } = useLabReports();
   const [selectedReport, setSelectedReport] = useState<LabReportResponse | null>(null);
 
-  // 2. TypeScript Fix: Guarantee 'reports' is strictly an array of LabReportResponse
+  // Download Trigger Handler Mechanism
+  const { mutate: exportPdf, isPending: isExporting } = useMutation({
+    mutationFn: (reportId: string) => labReportsApi.exportLabReportPdf(reportId),
+    onSuccess: (blob, reportId) => {
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `MedicalReport_${reportId.substring(0, 8)}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Memory deallocation garbage cleaner
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("PDF report downloaded successfully!");
+    },
+    onError: (err) => {
+      console.error("PDF Export failed:", err);
+      toast.error("Failed to generate download package. Please try again.");
+    },
+  });
+
   const reports: LabReportResponse[] = Array.isArray(data) ? data : [];
 
-  // Senior Fallback Rule: Defensively check multiple common JSON serialization keys 
-  // to ensure dates parse properly regardless of .NET naming conventions
   const parseAndFormatDate = (report: any): string => {
-    const rawDate = 
-      report?.observationDateTime || 
-      report?.ObservationDateTime || 
-      report?.observationDate || 
+    const rawDate =
+      report?.observationDateTime ||
+      report?.ObservationDateTime ||
+      report?.observationDate ||
       report?.date;
 
     if (!rawDate) return "N/A";
-
     const parsed = new Date(rawDate);
     if (isNaN(parsed.getTime())) return "N/A";
 
@@ -44,20 +81,27 @@ export const LabReportsTable = () => {
   };
 
   if (isLoading) return <TableSkeleton />;
-  
+
   if (error) {
     return (
-      <div className="p-8 text-center text-sm text-red-500 font-medium">
-        Failed to fetch records. Please refresh or try again later.
+      <div className="p-12 text-center bg-red-50 rounded-xl border border-red-100">
+        <RiErrorWarningFill className="w-8 h-8 text-red-500 mx-auto mb-3" />
+        <h3 className="font-semibold text-red-800">Failed to load medical records</h3>
+        <p className="text-sm text-red-600 mt-1">Please try refreshing the page.</p>
       </div>
     );
   }
 
-  // 3. This length check now works perfectly because we forced it into an array
-  if (reports.length === 0) {
+  if (!reports.length) {
     return (
-      <div className="p-12 text-center text-sm text-slate-400 font-medium">
-        No lab reports found in your medical history.
+      <div className="p-16 flex flex-col items-center justify-center text-center">
+        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <RiFlaskLine className="w-8 h-8 text-slate-400" />
+        </div>
+        <h3 className="font-semibold text-slate-900 text-lg">No medical records found</h3>
+        <p className="text-slate-500 mt-1 max-w-sm">
+          You don't have any diagnostic panels or lab reports available in your history yet.
+        </p>
       </div>
     );
   }
@@ -65,32 +109,63 @@ export const LabReportsTable = () => {
   return (
     <>
       <Table>
-        <TableHeader className="bg-slate-50/70">
-          <TableRow>
-            <TableHead className="font-semibold text-slate-700 h-12">Lab Facility</TableHead>
-            <TableHead className="font-semibold text-slate-700 h-12">Diagnostic Panel</TableHead>
-            <TableHead className="font-semibold text-slate-700 h-12">Date Ordered</TableHead>
-            <TableHead className="font-semibold text-slate-700 h-12 text-right pr-6">Actions</TableHead>
+        <TableHeader className="bg-slate-50/80 border-b border-slate-200">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="font-semibold text-slate-600">Lab Facility</TableHead>
+            <TableHead className="font-semibold text-slate-600">Panel</TableHead>
+            <TableHead className="font-semibold text-slate-600">Date</TableHead>
+            <TableHead className="font-semibold text-slate-600">Document</TableHead>
+            <TableHead className="text-right font-semibold text-slate-600">Actions</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
-          {/* 4. report is implicitly understood as LabReportResponse here */}
           {reports.map((report) => (
-            <TableRow key={report.id || report.panelName} className="hover:bg-slate-50/40 transition-colors border-slate-100">
-              <TableCell className="font-semibold text-slate-900 py-4">{report.labName}</TableCell>
-              <TableCell className="text-slate-600 py-4">{report.panelName}</TableCell>
-              <TableCell className="text-slate-500 py-4">
-                <div className="flex items-center gap-1.5">
-                  <RiCalendarEventLine className="w-4 h-4 text-slate-400" />
-                  {parseAndFormatDate(report)}
+            <TableRow
+              key={report.id}
+              className="hover:bg-blue-50/50 transition-colors group cursor-pointer"
+              onClick={() => setSelectedReport(report)}
+            >
+              <TableCell className="font-medium text-slate-900">
+                <div className="flex items-center gap-2">
+                  <RiHospitalLine className="text-slate-400 group-hover:text-blue-500 transition-colors" size={18} />
+                  {report.labName}
                 </div>
               </TableCell>
-              <TableCell className="text-right py-4 pr-6">
+
+              <TableCell className="text-slate-700 font-medium">
+                {report.panelName}
+              </TableCell>
+
+              <TableCell className="text-slate-600 text-sm">
+                {parseAndFormatDate(report)}
+              </TableCell>
+
+              <TableCell>
+                {report.documentType ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-medium uppercase tracking-wider">
+                    {report.documentType === 'PDF' || report.mimeType?.includes('pdf') ? (
+                      <RiFilePdf2Line size={14} className="text-red-500" />
+                    ) : (
+                      <RiImageLine size={14} className="text-blue-500" />
+                    )}
+                    {report.documentType}
+                  </span>
+                ) : (
+                  <span className="text-slate-400 text-sm">-</span>
+                )}
+              </TableCell>
+
+              <TableCell className="text-right">
                 <button
-                  onClick={() => setSelectedReport(report)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100/80 rounded-lg transition-all duration-200 shadow-sm"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent double triggering from row click
+                    setSelectedReport(report);
+                  }}
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-700 hover:bg-blue-50 transition-all font-medium text-sm shadow-sm"
                 >
-                  <RiEyeLine className="w-3.5 h-3.5" /> View Results
+                  <RiEyeLine size={16} />
+                  View Record
                 </button>
               </TableCell>
             </TableRow>
@@ -98,64 +173,231 @@ export const LabReportsTable = () => {
         </TableBody>
       </Table>
 
-      {/* Optimized Detail Modal for Health Observations */}
-      <Dialog open={!!selectedReport} onOpenChange={(open) => !open && setSelectedReport(null)}>
-        <DialogContent className="sm:max-w-xl md:max-w-2xl w-full bg-white rounded-2xl p-6 shadow-xl gap-0 border border-slate-100">
-          <DialogHeader className="pb-4 border-b border-slate-100">
-            <DialogTitle className="text-xl font-bold text-slate-900 tracking-tight">
-              {selectedReport?.panelName}
-            </DialogTitle>
-            <div className="text-xs text-slate-500 font-medium flex items-center gap-2 mt-1">
-              <span>Facility: <strong className="text-slate-700 font-semibold">{selectedReport?.labName}</strong></span>
-              <span className="text-slate-300">•</span>
-              <span className="flex items-center gap-1">
-                <RiCalendarEventLine className="w-3.5 h-3.5 text-slate-400" />
-                Verified on {selectedReport && parseAndFormatDate(selectedReport)}
-              </span>
-            </div>
-          </DialogHeader>
+      <Dialog
+        open={!!selectedReport}
+        onOpenChange={(open) => !open && setSelectedReport(null)}
+      >
+        <DialogContent className="sm:max-w-5xl lg:max-w-6xl w-[95vw] h-[90vh] p-0 flex flex-col overflow-hidden bg-slate-50 rounded-2xl gap-0 border border-slate-200 shadow-2xl">
+          {selectedReport && (
+            <>
+              {/* Header section - Fixed height at top */}
+              <div className="bg-white border-b border-slate-200 px-6 py-5 sm:px-8 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                    {selectedReport.panelName}
+                  </h2>
+                  <p className="mt-1 text-slate-500 flex items-center gap-2 text-sm font-medium">
+                    <RiHospitalLine size={16} className="text-blue-600" />
+                    {selectedReport.labName}
+                  </p>
+                </div>
 
-          {/* Clean Layout Container - Removes ugly text compression and unwanted horizontal overflow */}
-          <div className="mt-5 border border-slate-100 rounded-xl overflow-hidden bg-slate-50/30">
-            <div className="overflow-x-auto">
-              <Table className="w-full min-w-[500px]">
-                <TableHeader className="bg-slate-50">
-                  <TableRow className="border-slate-100">
-                    <TableHead className="text-xs font-bold text-slate-600 h-10 w-[40%]">Test Parameter</TableHead>
-                    <TableHead className="text-xs font-bold text-slate-600 h-10 w-[30%]">Result Value</TableHead>
-                    <TableHead className="text-xs font-bold text-slate-600 h-10 w-[30%]">Reference Range</TableHead>
-                    <TableHead className="text-xs font-bold text-slate-600 h-10 text-right pr-4">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {selectedReport?.observations.map((obs, idx) => (
-                    <TableRow key={idx} className="hover:bg-slate-50/50 border-slate-100 transition-colors">
-                      <TableCell className="font-medium text-slate-800 text-sm py-3.5 whitespace-nowrap">
-                        {obs.testName}
-                      </TableCell>
-                      <TableCell className="text-slate-900 font-bold text-sm py-3.5">
-                        {obs.value} <span className="text-xs font-normal text-slate-400 ml-0.5">{obs.unit}</span>
-                      </TableCell>
-                      <TableCell className="text-slate-500 text-sm py-3.5 whitespace-nowrap">
-                        {obs.referenceRange}
-                      </TableCell>
-                      <TableCell className="text-right py-3.5 pr-4">
-                        {obs.isAbnormal ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-red-600 bg-red-50/80 border border-red-100 px-2 py-0.5 rounded-md tracking-wide whitespace-nowrap">
-                            <RiAlertFill className="w-3 h-3" /> ABNORMAL
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-green-600 bg-green-50/80 border border-green-100 px-2 py-0.5 rounded-md tracking-wide whitespace-nowrap">
-                            <RiCheckboxCircleFill className="w-3 h-3" /> NORMAL
-                          </span>
+                <div className="flex items-center gap-6">
+                  <div className="flex flex-col sm:items-end text-sm">
+                    <span className="text-slate-500 font-medium">Report Date</span>
+                    <span className="font-bold text-slate-900 text-base">
+                      {parseAndFormatDate(selectedReport)}
+                    </span>
+                  </div>
+
+                  {/* PDF Download Button */}
+                  <button
+                    onClick={() => exportPdf(selectedReport.id)}
+                    disabled={isExporting}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold text-sm rounded-xl shadow-sm transition-all cursor-pointer disabled:cursor-not-allowed"
+                  >
+                    {isExporting ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        <span>Generating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <RiFilePdf2Line size={16} />
+                        <span>Export PDF</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Scrollable Body - Two Column Grid */}
+              <div className="flex-1 overflow-y-auto p-6 sm:p-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                  
+                  {/* LEFT COLUMN: Summary & Stats */}
+                  <div className="lg:col-span-4 space-y-6">
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="rounded-xl border border-slate-200 p-4 bg-white shadow-sm">
+                        <p className="text-[10px] tracking-wider uppercase text-slate-500 font-bold mb-1">Total Tests</p>
+                        <p className="text-3xl font-black text-slate-800">{selectedReport.observations.length}</p>
+                      </div>
+                      <div className="rounded-xl border border-slate-200 p-4 bg-white shadow-sm">
+                        <p className="text-[10px] tracking-wider uppercase text-slate-500 font-bold mb-1">Doc Type</p>
+                        <p className="text-lg font-bold text-slate-800 mt-2">{selectedReport.documentType || "N/A"}</p>
+                      </div>
+                      <div className="rounded-xl border border-green-200 p-4 bg-green-50/50 shadow-sm">
+                        <p className="text-[10px] tracking-wider uppercase text-green-700 font-bold mb-1">Normal</p>
+                        <p className="text-3xl font-black text-green-600">
+                          {selectedReport.observations.filter((o) => !o.isAbnormal).length}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-red-200 p-4 bg-red-50/50 shadow-sm">
+                        <p className="text-[10px] tracking-wider uppercase text-red-700 font-bold mb-1">Abnormal</p>
+                        <p className="text-3xl font-black text-red-600">
+                          {selectedReport.observations.filter((o) => o.isAbnormal).length}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Clinical Summary Widget */}
+                    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+                        <RiHeartPulseLine className="text-blue-600" size={20} />
+                        <h3 className="font-bold text-slate-900">Clinical Summary</h3>
+                      </div>
+                      <ul className="space-y-3 text-sm text-slate-600 font-medium">
+                        <li className="flex justify-between items-center">
+                          <span>Total Tests Performed</span>
+                          <span className="text-slate-900">{selectedReport.observations.length}</span>
+                        </li>
+                        <li className="flex justify-between items-center">
+                          <span>Laboratory</span>
+                          <span className="text-slate-900 text-right">{selectedReport.labName}</span>
+                        </li>
+                        {selectedReport.observations.filter((o) => o.isAbnormal).length > 0 && (
+                          <li className="pt-2 mt-2 border-t border-slate-100">
+                            <span className="text-red-600 font-bold text-xs uppercase tracking-wider block mb-2">Elevated Findings</span>
+                            {selectedReport.observations
+                              .filter((o) => o.isAbnormal)
+                              .map((o) => (
+                                <div key={o.testName} className="text-slate-800 mb-1">
+                                  • {o.testName}
+                                </div>
+                              ))}
+                          </li>
                         )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* RIGHT COLUMN: Alert, Findings, Document */}
+                  <div className="lg:col-span-8 space-y-6">
+                    
+                    {/* Alert Banner */}
+                    {selectedReport.observations.some((o) => o.isAbnormal) ? (
+                      <div className="rounded-xl border border-red-200 bg-red-50 p-4 shadow-sm flex items-start gap-3">
+                        <RiErrorWarningFill className="text-red-600 shrink-0 mt-0.5" size={20} />
+                        <div>
+                          <h3 className="font-bold text-red-800 text-sm">Attention Required</h3>
+                          <p className="text-sm text-red-600 mt-0.5">
+                            One or more findings are outside the normal reference range. Please consult your physician.
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="rounded-xl border border-green-200 bg-green-50 p-4 shadow-sm flex items-start gap-3">
+                        <RiCheckboxCircleFill className="text-green-600 shrink-0 mt-0.5" size={20} />
+                        <div>
+                          <h3 className="font-bold text-green-800 text-sm">All Results Within Range</h3>
+                          <p className="text-sm text-green-600 mt-0.5">
+                            No abnormal laboratory findings were detected in this panel.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Laboratory Findings */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <RiMicroscopeLine className="text-blue-600" size={20} />
+                        <h3 className="text-lg font-bold text-slate-900">Laboratory Findings</h3>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {selectedReport.observations.map((obs, index) => (
+                          <div
+                            key={index}
+                            className={`rounded-xl border p-4 shadow-sm ${
+                              obs.isAbnormal ? "border-red-200 bg-white" : "border-slate-200 bg-white"
+                            }`}
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <h4 className="font-bold text-slate-900">{obs.testName}</h4>
+                              {obs.isAbnormal ? (
+                                <span className="px-2 py-0.5 rounded text-[10px] bg-red-100 text-red-700 font-bold uppercase tracking-wider">Abnormal</span>
+                              ) : (
+                                <span className="px-2 py-0.5 rounded text-[10px] bg-green-100 text-green-700 font-bold uppercase tracking-wider">Normal</span>
+                              )}
+                            </div>
+
+                            <div className="flex items-baseline gap-1 mt-3">
+                              <span className={`text-2xl font-black ${obs.isAbnormal ? "text-red-600" : "text-slate-800"}`}>
+                                {obs.value}
+                              </span>
+                              <span className="text-sm text-slate-500 font-medium">{obs.unit}</span>
+                            </div>
+
+                            <div className="mt-3 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                              <span className="text-slate-500 uppercase tracking-wider font-bold">Ref Range</span>
+                              <span className="font-medium text-slate-700">{obs.referenceRange}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Document Preview */}
+                    {selectedReport.documentUrl && (
+                      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm mt-8">
+                        <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex items-center gap-2 text-sm font-bold text-slate-700">
+                          {selectedReport.documentType?.toLowerCase() === "pdf" || selectedReport.mimeType?.includes("pdf") ? (
+                            <RiFilePdf2Line size={18} className="text-red-500" />
+                          ) : (
+                            <RiImageLine size={18} className="text-blue-500" />
+                          )}
+                          Supporting Document
+                        </div>
+
+                        <div className="p-1">
+                          {selectedReport.documentType?.toLowerCase() === "pdf" || selectedReport.mimeType?.includes("pdf") ? (
+                            <div className="p-10 flex flex-col items-center justify-center text-center bg-slate-50/50 m-4 rounded-lg border border-dashed border-slate-300">
+                              <RiFilePdf2Line className="w-16 h-16 text-slate-300 mb-4" />
+                              <h4 className="text-lg font-bold text-slate-800">PDF Report Attached</h4>
+                              <p className="text-slate-500 text-sm mt-1 mb-6 max-w-sm">
+                                This record includes a standardized PDF document. Click below to securely view or download it.
+                              </p>
+                              <a
+                                href={selectedReport.documentUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 bg-white text-blue-600 border border-slate-200 shadow-sm px-6 py-2.5 rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors font-semibold text-sm"
+                              >
+                                <RiExternalLinkLine size={18} />
+                                View PDF Document
+                              </a>
+                            </div>
+                          ) : selectedReport.mimeType?.includes("image") || selectedReport.documentType?.toLowerCase() === "xray" ? (
+                            <div className="bg-slate-100 flex justify-center rounded-b-xl">
+                              <img
+                                src={selectedReport.documentUrl}
+                                alt="Medical Document"
+                                className="w-full max-w-full h-auto max-h-[600px] object-contain"
+                              />
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </>
@@ -163,10 +405,10 @@ export const LabReportsTable = () => {
 };
 
 const TableSkeleton = () => (
-  <div className="w-full space-y-4 p-6 animate-pulse bg-white rounded-2xl">
-    <div className="h-10 bg-slate-100 rounded-lg w-full" />
-    {[1, 2, 3].map((n) => (
-      <div key={n} className="h-14 bg-slate-50 rounded-xl w-full" />
-    ))}
+  <div className="space-y-3 p-2 animate-pulse">
+    <div className="h-14 bg-slate-100 rounded-lg w-full" />
+    <div className="h-14 bg-slate-50 rounded-lg w-full" />
+    <div className="h-14 bg-slate-50 rounded-lg w-full" />
+    <div className="h-14 bg-slate-50 rounded-lg w-full" />
   </div>
 );

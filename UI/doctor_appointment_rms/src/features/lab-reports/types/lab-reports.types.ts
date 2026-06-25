@@ -11,5 +11,10 @@ export interface LabReportResponse {
   labName: string;
   panelName: string;
   observationDateTime: string;
+
+  documentUrl?: string;
+  documentType?: string;
+  mimeType?: string;
+
   observations: ObservationResponse[];
 }

@@ -5,7 +5,6 @@ using ErrorOr;
 
 namespace DoctorAppointmentSystem.Application.Features.Labs.GetLabReports;
 
-// This is correct: The interface handles the ErrorOr wrapping for you.
 public sealed class GetLabReportsQueryHandler : IQueryHandler<GetLabReportsQuery, List<LabReportResponse>>
 {
     private readonly ILabReportRepository _labRepository;
@@ -13,7 +12,6 @@ public sealed class GetLabReportsQueryHandler : IQueryHandler<GetLabReportsQuery
     public GetLabReportsQueryHandler(ILabReportRepository labRepository)
         => _labRepository = labRepository;
 
-    // This is also correct: You manually return ErrorOr here.
     public async Task<ErrorOr<List<LabReportResponse>>> Handle(
         GetLabReportsQuery request,
         CancellationToken cancellationToken)
@@ -25,6 +23,9 @@ public sealed class GetLabReportsQueryHandler : IQueryHandler<GetLabReportsQuery
             r.LabName,
             r.PanelName,
             r.ObservationDateTime,
+            r.DocumentUrl,   
+            r.DocumentType,  
+            r.MimeType,      
             r.Observations.Select(o => new ObservationResponse(
                 o.TestName,
                 o.Value,

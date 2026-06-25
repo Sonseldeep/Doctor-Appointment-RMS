@@ -1,5 +1,6 @@
 ﻿using DoctorAppointmentSystem.Api.Controllers;
-using DoctorAppointmentSystem.Application.Features.Labs.GetLabReports; // Make sure this is here!
+using DoctorAppointmentSystem.Application.Features.Labs.ExportLabReport;
+using DoctorAppointmentSystem.Application.Features.Labs.GetLabReports;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +21,20 @@ public sealed class LabReportsController : ApiController
 
         var result = await _sender.Send(new GetLabReportsQuery(userId), cancellationToken);
 
-        // This explicit lambda fixes the CS0123 error
         return result.Match(
             value => Ok(value),
+            errors => Problem(errors)
+        );
+    }
+
+    [HttpGet("{id}/export")]
+    public async Task<IActionResult> ExportLabReport(Guid id, [FromServices] ISender sender)
+    {
+        var query = new ExportLabReportQuery(id);
+        var result = await sender.Send(query);
+
+        return result.Match(
+            pdfBytes => File(pdfBytes, "application/pdf", $"MedicalReport_{id}.pdf"),
             errors => Problem(errors)
         );
     }

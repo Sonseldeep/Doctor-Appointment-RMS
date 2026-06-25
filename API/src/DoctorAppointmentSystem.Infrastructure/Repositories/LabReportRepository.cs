@@ -25,4 +25,11 @@ public class LabReportRepository : ILabReportRepository
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<LabReport?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.LabReports
+            .Include(r => r.Observations) // Vital for loading individual test rows
+            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+    }
 }
