@@ -5,9 +5,6 @@ import { toast } from "sonner";
 import { ratingsApi } from "../api/ratings-api";
 import type { CreateRatingDto, UpdateRatingDto } from "../types/ratings.types";
 
-/**
- * Hook to retrieve doctor performance evaluation metrics, average scores, and public reviews
- */
 export function useGetDoctorRatings(doctorUserId: string) {
   return useQuery({
     queryKey: ["doctor-ratings", doctorUserId],
@@ -17,9 +14,7 @@ export function useGetDoctorRatings(doctorUserId: string) {
   });
 }
 
-/**
- * Hook to execute a rating submission after an completed consultation workflow (Patient Only)
- */
+
 export function useSubmitDoctorRating() {
   const queryClient = useQueryClient();
 
