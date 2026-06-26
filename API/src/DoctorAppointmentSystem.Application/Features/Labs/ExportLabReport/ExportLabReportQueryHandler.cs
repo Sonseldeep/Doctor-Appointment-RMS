@@ -18,8 +18,7 @@ public class ExportLabReportQueryHandler : IQueryHandler<ExportLabReportQuery, b
 
     public async Task<ErrorOr<byte[]>> Handle(ExportLabReportQuery request, CancellationToken cancellationToken)
     {
-        // 1. Fetch the single lab report by ID from your repository
-        // Note: Ensure your ILabReportRepository has a GetByIdAsync method or similar that includes observations
+        
         var report = await _labRepository.GetByIdAsync(request.LabReportId, cancellationToken);
 
         if (report == null)
@@ -27,7 +26,7 @@ public class ExportLabReportQueryHandler : IQueryHandler<ExportLabReportQuery, b
             return Error.NotFound(description: "The requested medical report could not be found.");
         }
 
-        // 2. Render out the PDF Document matching your exact style guidelines
+        // 2. Render out the PDF Document matching  style guidelines
         var document = Document.Create(container =>
         {
             container.Page(page =>
