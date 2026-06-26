@@ -18,3 +18,11 @@ export interface LabReportResponse {
 
   observations: ObservationResponse[];
 }
+
+export interface PatientSearchResult {
+  id: string;
+  name: string;
+  email: string;
+  dateOfBirth: string;
+  phoneNumber?: string;
+}
