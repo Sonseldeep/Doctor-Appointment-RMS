@@ -17,9 +17,7 @@ export function useGetMyClinicalNotes() {
   });
 }
 
-/**
- * Hook to submit a new clinical note (Doctor Only)
- */
+
 export function useCreateClinicalNote() {
   const queryClient = useQueryClient();
 
@@ -60,5 +58,13 @@ export function useUpdateClinicalNote() {
       const message = error.response?.data?.message || "Failed to update clinical note";
       toast.error(message);
     },
+  });
+}
+
+export function useGetUpcomingFollowUps() {
+  return useQuery({
+    queryKey: ["clinical-notes", "upcoming-followups"],
+    queryFn: clinicalNotesApi.getUpcomingFollowUps,
+    staleTime: 1000 * 60 * 10, // 10 minutes
   });
 }

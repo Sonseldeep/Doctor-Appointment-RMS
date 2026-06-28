@@ -7,6 +7,7 @@ using DoctorAppointmentSystem.Application.Abstractions.Doctors;
 using DoctorAppointmentSystem.Application.Abstractions.Email;
 using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Jobs;
+using DoctorAppointmentSystem.Application.Abstractions.Labs;
 using DoctorAppointmentSystem.Application.Abstractions.Notifications;
 using DoctorAppointmentSystem.Application.Abstractions.Otp;
 using DoctorAppointmentSystem.Application.Abstractions.Patients;
@@ -131,6 +132,8 @@ public static class DependencyInjection
         services.AddScoped<IPatientProfileRepository, PatientProfileRepository>();
         services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
         services.AddScoped<IClinicalNoteRepository, ClinicalNoteRepository>();
+
+        services.AddScoped<ILabReportRepository, LabReportRepository>();
 
 
         

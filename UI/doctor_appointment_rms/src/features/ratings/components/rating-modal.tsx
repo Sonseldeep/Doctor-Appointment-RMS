@@ -47,7 +47,7 @@ export function RatingModal({ isOpen, onClose, appointment }: RatingModalProps) 
       return;
     }
 
-    // --- BACKEND FIELD ALIGNMENT ---
+    
     // We send both casing conventions to ensure complete compatibility with your backend DTO
     const payloadData = {
       appointmentId: appointment.id,

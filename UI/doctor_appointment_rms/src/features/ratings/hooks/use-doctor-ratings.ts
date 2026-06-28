@@ -1,16 +1,3 @@
-// import { useQuery } from "@tanstack/react-query";
-// import { ratingsApi } from "../api/ratings-api";
-
-// export function useDoctorRatings(doctorUserId: string) {
-//   return useQuery({
-//     queryKey: ["doctor-ratings", doctorUserId],
-//     queryFn: () => ratingsApi.getDoctorRatings(doctorUserId),
-//     enabled: !!doctorUserId, // Only run if we have a valid ID
-//     staleTime: 5 * 60 * 1000, // 5 minutes cache to prevent spamming the API
-//   });
-// }
-
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ratingsApi } from "../api/ratings-api";
 

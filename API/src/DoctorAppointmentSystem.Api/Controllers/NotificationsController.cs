@@ -58,6 +58,8 @@ public sealed class NotificationsController : ApiController
             return Unauthorized();
         }
 
+        Console.WriteLine($"DEBUG: Fetching notifications for UserID: {userId}");
+
         var result = await _sender.Send(
             new MarkAllNotificationsReadCommand(userId),
             cancellationToken);

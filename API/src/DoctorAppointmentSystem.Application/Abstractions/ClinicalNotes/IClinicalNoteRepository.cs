@@ -27,6 +27,12 @@ public interface IClinicalNoteRepository
         List<MedicationRequest> medications,
         CancellationToken cancellationToken);
 
-    // Add this to your IClinicalNoteRepository interface
     Task<IReadOnlyList<ClinicalNote>> GetByPatientIdAsync(Guid patientId, CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<ClinicalNoteWithDetailsDto>> GetUpcomingFollowUpsAsync(
+    Guid patientUserId,
+    DateTimeOffset now,
+    CancellationToken cancellationToken);
+
+    Task<ClinicalNoteWithDetailsDto?> GetWithDetailsByAppointmentIdAsync(Guid appointmentId, CancellationToken cancellationToken);
 }

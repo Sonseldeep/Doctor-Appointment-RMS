@@ -7,6 +7,7 @@ using DoctorAppointmentSystem.Domain.Notifications;
 using DoctorAppointmentSystem.Domain.Patients;
 using DoctorAppointmentSystem.Domain.Ratings;
 using DoctorAppointmentSystem.Domain.Users;
+using DoctorAppointmentSystem.Domain.Labs;
 using Microsoft.EntityFrameworkCore;
 
 namespace DoctorAppointmentSystem.Infrastructure.Database;
@@ -14,6 +15,9 @@ namespace DoctorAppointmentSystem.Infrastructure.Database;
 public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 {
     public DbSet<User> Users => Set<User>();
+
+    public DbSet<LabReport> LabReports { get; set; }
+    public DbSet<LabObservation> LabObservations { get; set; }
     public DbSet<UserRefreshToken> UserRefreshTokens => Set<UserRefreshToken>();
 
     public DbSet<UserOtp> UserOtps => Set<UserOtp>();
@@ -37,7 +41,6 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 
     public DbSet<ClinicalNote> ClinicalNotes => Set<ClinicalNote>();
     public DbSet<Medication> Medications => Set<Medication>();
-    
     
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {

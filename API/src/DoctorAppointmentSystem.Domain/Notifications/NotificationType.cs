@@ -8,6 +8,7 @@ public enum NotificationType
     AppointmentCompleted = 4,
     DoctorApproved = 5,
     DoctorSuspended = 6,
-    ClinicalNoteAdded = 7
+    ClinicalNoteAdded = 7,
+    LabReportReady = 8
 
 }

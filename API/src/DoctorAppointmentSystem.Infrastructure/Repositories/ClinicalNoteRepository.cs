@@ -163,4 +163,24 @@ internal sealed class ClinicalNoteRepository : IClinicalNoteRepository
             .OrderByDescending(n => n.CreatedAtUtc)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<ClinicalNoteWithDetailsDto>> GetUpcomingFollowUpsAsync(
+    Guid patientUserId,
+    DateTimeOffset now,
+    CancellationToken cancellationToken)
+    {
+        // Filter for future dates only
+        var query = _db.ClinicalNotes.Where(x =>
+            x.PatientUserId == patientUserId &&
+            x.FollowUpDate >= now);
+
+        return await GetWithDetailsAsync(query, cancellationToken);
+    }
+
+    public async Task<ClinicalNoteWithDetailsDto?> GetWithDetailsByAppointmentIdAsync(Guid appointmentId, CancellationToken cancellationToken)
+    {
+        var query = _db.ClinicalNotes.Where(x => x.AppointmentId == appointmentId);
+        var results = await GetWithDetailsAsync(query, cancellationToken);
+        return results.SingleOrDefault();
+    }
 }

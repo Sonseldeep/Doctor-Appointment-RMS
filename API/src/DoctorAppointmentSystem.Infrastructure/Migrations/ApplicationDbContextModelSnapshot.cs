@@ -266,6 +266,78 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                     b.ToTable("doctor_profiles", "hospital_management");
                 });
 
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Labs.LabObservation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsAbnormal")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("LabReportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReferenceRange")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TestName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LabReportId");
+
+                    b.ToTable("LabObservations", "hospital_management");
+                });
+
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Labs.LabReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DocumentType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("DocumentUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("LabName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MimeType")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("ObservationDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PanelName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LabReports", "hospital_management");
+                });
+
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Notifications.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -581,6 +653,17 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Labs.LabObservation", b =>
+                {
+                    b.HasOne("DoctorAppointmentSystem.Domain.Labs.LabReport", "LabReport")
+                        .WithMany("Observations")
+                        .HasForeignKey("LabReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LabReport");
+                });
+
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.Users.UserRefreshToken", b =>
                 {
                     b.HasOne("DoctorAppointmentSystem.Domain.Users.User", null)
@@ -598,6 +681,11 @@ namespace DoctorAppointmentSystem.Infrastructure.Migrations
             modelBuilder.Entity("DoctorAppointmentSystem.Domain.ClinicalNotes.ClinicalNote", b =>
                 {
                     b.Navigation("Medications");
+                });
+
+            modelBuilder.Entity("DoctorAppointmentSystem.Domain.Labs.LabReport", b =>
+                {
+                    b.Navigation("Observations");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,4 +1,3 @@
-
 export type AppointmentStatus = "Pending" | "Confirmed" | "Completed" | "Cancelled" | "Scheduled" | string;
 
 export interface Appointment {
@@ -49,4 +48,11 @@ export interface CompleteAppointmentDto {
     durationInDays: number;
     instructions: string;
   }>;
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
 }
