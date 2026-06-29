@@ -51,6 +51,7 @@ export interface PatientProfile {
   sex: string;
   phoneNumber: string | null;
   address: string | null;
+  dateOfBirth?: string | Date;
 }
 
 // Admin profile (if needed)

@@ -10,6 +10,8 @@ export interface Doctor {
   rating?: number;        // Fallback option for display
   reviewCount?: number;   // Fallback option for display
   experience?: number;    // Fallback option for display (in years)
+  nmcNumber?: string;     
+  gender?: string;
 }
 
 // Matches your exact backend API response structure

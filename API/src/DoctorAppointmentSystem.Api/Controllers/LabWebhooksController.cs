@@ -59,4 +59,12 @@ public class LabWebhooksController : ApiController
 
         return Ok(new { Message = "Payload and attached documents successfully processed and secured." });
     }
+
+    [HttpGet("verify-key")]
+    [ApiKey] // Reuses your standard header token evaluation rules
+    public IActionResult VerifyKey()
+    {
+        // If the ApiKey attribute passes, return a lightweight 200 OK
+        return Ok(new { Valid = true, Message = "Access key verified." });
+    }
 }

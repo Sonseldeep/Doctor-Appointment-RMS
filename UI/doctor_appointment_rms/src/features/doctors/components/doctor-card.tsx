@@ -38,6 +38,11 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
             <p className="text-sm font-medium text-slate-500 line-clamp-1">
               {doctor.specialization}
             </p>
+            {doctor.nmcNumber && (
+              <p className="text-[11px] font-semibold text-slate-400 mt-0.5">
+                NMC No. {doctor.nmcNumber}
+              </p>
+            )}
           </div>
 
           {/* Avatar Image Frame */}
