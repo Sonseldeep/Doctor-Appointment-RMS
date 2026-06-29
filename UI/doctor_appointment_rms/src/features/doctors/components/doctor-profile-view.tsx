@@ -157,14 +157,33 @@ export function DoctorProfileView({ doctor, onBack, onProceedToBooking }: Doctor
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 h-fit">
           <h2 className="text-base font-bold text-slate-900">Practice Details</h2>
           <div className="space-y-3.5 text-sm">
+
+            {/* 🩺 Injected Verified NMC Record Block Row */}
+            {doctor.nmcNumber && (
+              <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
+                <span className="text-slate-400">NMC Number</span>
+                <span className="font-semibold text-slate-800 tracking-wide bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                  {doctor.nmcNumber}
+                </span>
+              </div>
+            )}
+            {/* 🧬 Injected Gender Record Block Row */}
+            {doctor.gender && (
+              <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
+                <span className="text-slate-400">Gender</span>
+                <span className="font-medium text-slate-700 capitalize">
+                  {doctor.gender}
+                </span>
+              </div>
+            )}
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
               <span className="text-slate-400">Availability</span>
               <span className="font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded text-xs">Mon - Fri</span>
             </div>
-            <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
+            {/* <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
               <span className="text-slate-400">Session Mode</span>
               <span className="font-medium text-slate-700">Video / Audio Call</span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

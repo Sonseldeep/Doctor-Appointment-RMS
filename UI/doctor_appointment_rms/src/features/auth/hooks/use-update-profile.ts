@@ -31,10 +31,13 @@ export function useUpdatePatientProfile() {
 
   return useMutation({
     mutationFn: async (payload: UpdatePatientDto) => {
+      // Remove the hardcoded fallback "2026-06-10"
+      // If dateOfBirth is an empty string, you might want to send null or undefined
       const finalPayload = {
         ...payload,
-        dateOfBirth: payload.dateOfBirth || "2026-06-10",
+        dateOfBirth: payload.dateOfBirth || null, 
       };
+      
       const res = await axiosClient.put("/api/patients/profile", finalPayload);
       return res.data;
     },
