@@ -2,7 +2,6 @@
 using DoctorAppointmentSystem.Api.Common.Authentication;
 using DoctorAppointmentSystem.Application.Features.Labs.ReceiveLabPayload;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DoctorAppointmentSystem.Api.Controllers;

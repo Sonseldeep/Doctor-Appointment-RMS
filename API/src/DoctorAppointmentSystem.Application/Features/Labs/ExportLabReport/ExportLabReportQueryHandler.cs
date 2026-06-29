@@ -3,7 +3,6 @@ using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using ErrorOr;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 
 namespace DoctorAppointmentSystem.Application.Features.Labs.ExportLabReport;
 

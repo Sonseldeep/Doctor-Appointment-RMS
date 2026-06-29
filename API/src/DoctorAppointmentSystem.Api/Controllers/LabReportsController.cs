@@ -1,5 +1,4 @@
-﻿using DoctorAppointmentSystem.Api.Controllers;
-using DoctorAppointmentSystem.Application.Features.Labs.ExportLabReport;
+﻿using DoctorAppointmentSystem.Application.Features.Labs.ExportLabReport;
 using DoctorAppointmentSystem.Application.Features.Labs.GetLabReports;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
