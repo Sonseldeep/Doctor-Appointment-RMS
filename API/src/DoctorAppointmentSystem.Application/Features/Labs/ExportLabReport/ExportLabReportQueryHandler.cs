@@ -31,6 +31,7 @@ public class ExportLabReportQueryHandler : IQueryHandler<ExportLabReportQuery, b
         {
             return Error.NotFound(description: "The requested medical report could not be found.");
         }
+        
         var user = await _userRepository.GetByIdAsync(report.PatientId, cancellationToken);
         if (user is null)
         {
