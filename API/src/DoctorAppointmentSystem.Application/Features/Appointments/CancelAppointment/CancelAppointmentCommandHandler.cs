@@ -70,9 +70,8 @@ internal sealed class CancelAppointmentCommandHandler : ICommandHandler<CancelAp
 
         var appointmentDate = $"{appointment.StartUtc:dd MMM yyyy} at {appointment.StartUtc:HH:mm} UTC";
         const string newStatus = nameof(AppointmentStatus.Cancelled);
-
-
-        // Notify the OTHER party about the cancellation
+        
+        
         if (cancelledByDoctor)
         {
             var doctorName = $"Dr. {user.FirstName} {user.LastName}";
@@ -108,6 +107,9 @@ internal sealed class CancelAppointmentCommandHandler : ICommandHandler<CancelAp
         
         await _notificationService.SendAppointmentStatusChangedAsync(
             appointment.PatientUserId, appointment.Id, newStatus, cancellationToken);
+        
+        await _uow.SaveChangesAsync(cancellationToken);
+
         await _notificationService.SendAppointmentStatusChangedAsync(
             appointment.DoctorUserId, appointment.Id, newStatus, cancellationToken);
         
