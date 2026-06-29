@@ -28,9 +28,7 @@ public class LabWebhooksController : ApiController
         var observations = string.IsNullOrWhiteSpace(request.ObservationsJson) 
             ? []
             : JsonSerializer.Deserialize<List<ObservationDto>>(request.ObservationsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-        Console.WriteLine($"ObservationsJson: {request.ObservationsJson}");
-        Console.WriteLine($"Observation Count: {observations?.Count ?? 0}");
+        
 
                 FileDto? fileDto = null;
         if (request.Document is not null && request.Document.Length > 0)
