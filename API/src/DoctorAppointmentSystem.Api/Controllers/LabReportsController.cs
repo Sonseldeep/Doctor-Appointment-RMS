@@ -11,19 +11,24 @@ namespace DoctorAppointmentSystem.Api.Controllers;
 public sealed class LabReportsController : ApiController
 {
     private readonly ISender _sender;
-    public LabReportsController(ISender sender) => _sender = sender;
+
+    public LabReportsController(ISender sender)
+    {
+        _sender = sender;
+    }
+
 
     [HttpGet]
     public async Task<IActionResult> GetMyReports(CancellationToken cancellationToken)
     {
-        if (!TryGetCurrentUserId(out var userId)) return Unauthorized();
+        if (!TryGetCurrentUserId(out var userId))
+        {
+            return Unauthorized();
+        }
 
         var result = await _sender.Send(new GetLabReportsQuery(userId), cancellationToken);
 
-        return result.Match(
-            value => Ok(value),
-            errors => Problem(errors)
-        );
+        return result.Match(Ok, Problem);
     }
 
     [HttpGet("{id}/export")]
@@ -34,7 +39,7 @@ public sealed class LabReportsController : ApiController
 
         return result.Match(
             pdfBytes => File(pdfBytes, "application/pdf", $"MedicalReport_{id}.pdf"),
-            errors => Problem(errors)
+            Problem
         );
     }
 }
