@@ -143,6 +143,14 @@ export const labReportsApi = {
     );
   },
 
+  verifyAccessKey: async (accessKey: string): Promise<void> => {
+    await axiosClient.get("/api/webhooks/labs/verify-key", {
+      headers: {
+        "X-Lab-Access-Key": accessKey,
+      },
+    });
+  },
+
   // --- New Doctor-Facing Endpoints ---
   searchPatients: async (query: string): Promise<PatientSearchResult[]> => {
     const res = await axiosClient.get<PatientSearchResult[]>(

@@ -26,7 +26,7 @@ export default function ProfilePage() {
   const updateDoctor = useUpdateDoctorProfile(); 
 
   const [isEditing, setIsEditing] = useState(false);
-  const [patientForm, setPatientForm] = useState({ phoneNumber: "", address: "", sex: "Unknown" });
+  const [patientForm, setPatientForm] = useState({ phoneNumber: "", address: "", sex: "Unknown", dateOfBirth:"" });
   const [doctorForm, setDoctorForm] = useState({ nmcNumber: "", bio: "", specialization: "General", consultationFee: 0 });
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -42,6 +42,7 @@ export default function ProfilePage() {
           phoneNumber: user.phoneNumber || "",
           address: user.address || "",
           sex: user.sex || "Unknown",
+          dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "", // Format YYYY-MM-DD
         });
       }
       if (isDoctorProfile(user)) {
@@ -311,6 +312,23 @@ export default function ProfilePage() {
                       />
                     )}
                   </div>
+
+                  {/* NEW DOB FIELD */}
+  <div>
+    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Date of Birth</label>
+    {!isEditing ? (
+      <p className="font-semibold text-gray-800 mt-1.5">
+        {user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : "—"}
+      </p>
+    ) : (
+      <Input 
+        type="date"
+        className="mt-1" 
+        value={patientForm.dateOfBirth} 
+        onChange={(e) => setPatientForm({ ...patientForm, dateOfBirth: e.target.value })} 
+      />
+    )}
+  </div>
                 </div>
 
                 <div>
