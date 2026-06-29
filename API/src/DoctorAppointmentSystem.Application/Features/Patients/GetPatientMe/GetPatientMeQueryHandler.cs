@@ -48,6 +48,7 @@ internal sealed class GetPatientMeQueryHandler
             ProfilePhotoUrl: user.ProfilePhotoUrl,
             Sex: profile.Sex,
             PhoneNumber: profile.PhoneNumber,
-            Address: profile.Address);
+            Address: profile.Address,
+            DateOfBirth:profile.DateOfBirth);
     }
 }
