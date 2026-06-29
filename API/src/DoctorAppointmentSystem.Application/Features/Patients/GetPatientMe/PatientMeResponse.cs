@@ -11,5 +11,6 @@ public sealed record PatientMeResponse(
     string? ProfilePhotoUrl,
     Sex Sex,
     string? PhoneNumber,
-    string? Address
+    string? Address,
+    DateOnly? DateOfBirth
 );
