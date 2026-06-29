@@ -72,7 +72,6 @@ internal sealed class CancelAppointmentCommandHandler : ICommandHandler<CancelAp
         const string newStatus = nameof(AppointmentStatus.Cancelled);
         
         
-        // Notify the OTHER party about the cancellation
         if (cancelledByDoctor)
         {
             var doctorName = $"Dr. {user.FirstName} {user.LastName}";
