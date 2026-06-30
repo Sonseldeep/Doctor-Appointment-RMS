@@ -1,8 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation"; 
-import { appointmentsApi } from "@/features/appointments/api/appointments-api";
+import { useRouter } from "next/navigation";
 import { AppointmentCard } from "@/features/appointments/components/appointment-card";
 import { StatCard } from "./stat-card";
 import { FollowUpList } from "./follow-up-list";
@@ -23,13 +21,10 @@ export function UserDashboard() {
   const router = useRouter();
   const { data: user } = useCurrentUser();
   
-  // FIX: Using the hook with required arguments (Page 1, PageSize 50 to cover dashboard view)
-  const { data: pagedData, isLoading, refetch } = useGetMyAppointments(1, 50);
+  const { data: pagedData, isLoading, refetch } = useGetMyAppointments(1, 10);
   
-  // Extract items from the paginated result
   const appointments = pagedData?.items || [];
 
-  // 📊 CLEANED DYNAMIC STATS (Derived straight from your actual live database context)
   const upcomingCount = appointments?.filter(
     apt => apt.status === "Confirmed" || apt.status === "Scheduled" || apt.status === "Pending"
   ).length || 0;
@@ -46,7 +41,6 @@ export function UserDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
           Welcome back, {user?.firstName}!
@@ -56,7 +50,6 @@ export function UserDashboard() {
         </p>
       </div>
 
-      {/* 🏎️ Dynamic Stat Cards Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Upcoming Bookings"
