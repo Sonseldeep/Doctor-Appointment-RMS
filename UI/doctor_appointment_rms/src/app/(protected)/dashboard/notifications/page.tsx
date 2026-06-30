@@ -1,15 +1,18 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
+import { SystemNotification } from "@/features/notifications/types/notifications.types";
 import { 
   RiCalendarCheckLine, 
   RiCalendarCloseLine, 
   RiNotification3Line, 
   RiMessage3Line,
-  RiCheckDoubleLine
+  RiCheckDoubleLine,
+  RiFileTextLine
 } from "@remixicon/react";
 
 export default function NotificationsPage() {
+  const router = useRouter();
   const { 
     notifications, 
     isLoading, 
@@ -19,17 +22,17 @@ export default function NotificationsPage() {
     isMarkingAllPending 
   } = useNotifications();
 
-  // Color profiles map layout matrix depending on verification type rules
   const getNotificationStyles = (type: string, isRead: boolean) => {
     if (isRead) {
       return {
         icon: <RiMessage3Line className="text-slate-400 w-5 h-5" />,
-        containerBg: "bg-white border-slate-200 opacity-75",
+        containerBg: "bg-white border-slate-200 opacity-80 hover:bg-slate-50/50",
       };
     }
 
     switch (type) {
       case "AppointmentConfirmed":
+      case "AppointmentCompleted":
         return {
           icon: <RiCalendarCheckLine className="text-emerald-600 w-5 h-5" />,
           containerBg: "bg-emerald-50/40 border-emerald-100 hover:bg-emerald-50/60",
@@ -38,6 +41,12 @@ export default function NotificationsPage() {
         return {
           icon: <RiCalendarCloseLine className="text-red-600 w-5 h-5" />,
           containerBg: "bg-red-50/40 border-red-100 hover:bg-red-50/60",
+        };
+      case "LabReportReady":
+      case "NewClinicalNote":
+        return {
+          icon: <RiFileTextLine className="text-indigo-600 w-5 h-5" />,
+          containerBg: "bg-indigo-50/40 border-indigo-100 hover:bg-indigo-50/60",
         };
       case "AppointmentBooked":
       default:
@@ -48,9 +57,38 @@ export default function NotificationsPage() {
     }
   };
 
+  const handleNotificationClick = (item: SystemNotification) => {
+    if (!item.isRead) {
+      markAsRead(item.id);
+    }
+
+    // Dynamic routing target map configuration
+    switch (item.type) {
+      case "AppointmentBooked":
+      case "AppointmentConfirmed":
+      case "AppointmentCancelled":
+      case "AppointmentCompleted":
+        router.push(`/dashboard/appointments?id=${item.appointmentId}`);
+        break;
+      case "LabReportReady":
+        //  FIXED: Passes the ID tracking parameter down into the URL query
+        const reportId = (item as any).labReportId || (item as any).referenceId || item.id;
+        router.push(`/dashboard/medical-records?id=${item.appointmentId}`);
+        break;
+      case "ClinicalNoteAdded":
+        //  FIXED: Routes to prescriptions page instead of medical records, appending target ID
+        const noteId = (item as any).clinicalNoteId || (item as any).prescriptionId || (item as any).referenceId || item.id;
+        router.push(`/dashboard/prescriptions?id=${item.appointmentId}`);
+        break;
+      default:
+        console.warn("Unhandled notification type:", item.type);
+        router.push("/dashboard");
+        break;
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto py-2">
-      {/* Header View Panel Workspace block layout context */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Notifications Activity Hub</h1>
@@ -59,7 +97,6 @@ export default function NotificationsPage() {
           </p>
         </div>
 
-        {/* Mark All As Read Master Interactive Context Command Trigger */}
         {unreadCount > 0 && (
           <button
             onClick={() => markAllAsRead()}
@@ -72,7 +109,6 @@ export default function NotificationsPage() {
         )}
       </div>
 
-      {/* Notifications List View Feed Container Context */}
       <div className="space-y-3">
         {isLoading ? (
           <p className="text-sm text-slate-500 animate-pulse">Loading secure tracking matrix ledger...</p>
@@ -90,16 +126,11 @@ export default function NotificationsPage() {
               return (
                 <div
                   key={item.id}
-                  onClick={() => !item.isRead && markAsRead(item.id)}
-                  className={`flex gap-4 p-4 rounded-xl border shadow-sm transition-all ${styles.containerBg} ${
-                    !item.isRead ? "cursor-pointer transform hover:-translate-y-0.5" : ""
-                  }`}
+                  onClick={() => handleNotificationClick(item)}
+                  className={`flex gap-4 p-4 rounded-xl border shadow-sm transition-all cursor-pointer transform hover:-translate-y-0.5 active:scale-[0.99] ${styles.containerBg}`}
                 >
-                  {/* Status Profile Glyph Circle Wrapper Frame */}
                   <div className="flex-shrink-0 p-2 bg-white rounded-lg border h-fit shadow-xs relative">
                     {styles.icon}
-                    
-                    {/* Live Unread Dot Accent Node indicator */}
                     {!item.isRead && (
                       <span className="absolute -top-1 -right-1 flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -108,10 +139,9 @@ export default function NotificationsPage() {
                     )}
                   </div>
 
-                  {/* Body Copy Text Framing */}
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between gap-4">
-                      <h4 className={`text-sm font-semibold ${item.isRead ? "text-gray-500 line-through/none" : "text-gray-900"}`}>
+                      <h4 className={`text-sm font-semibold ${item.isRead ? "text-gray-500" : "text-gray-900"}`}>
                         {item.title}
                       </h4>
                       <span className="text-xs text-slate-400 font-medium whitespace-nowrap">{formattedDate}</span>

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLabReports } from "../hooks/use-lab-reports";
 import { LabReportResponse } from "../types/lab-reports.types";
 import { labReportsApi } from "../api/lab-reports-api";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
 
 import {
   Table,
@@ -33,10 +34,15 @@ import {
   RiExternalLinkLine,
   RiFlaskLine
 } from "@remixicon/react";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 export const LabReportsTable = () => {
   const { data, isLoading, error } = useLabReports();
   const [selectedReport, setSelectedReport] = useState<LabReportResponse | null>(null);
+  const searchParams = useSearchParams();
+  
+  const hasAutoOpened = useRef(false);
 
   // Download Trigger Handler Mechanism
   const { mutate: exportPdf, isPending: isExporting } = useMutation({
@@ -49,7 +55,6 @@ export const LabReportsTable = () => {
       document.body.appendChild(link);
       link.click();
       
-      // Memory deallocation garbage cleaner
       link.parentNode?.removeChild(link);
       window.URL.revokeObjectURL(url);
       toast.success("PDF report downloaded successfully!");
@@ -61,6 +66,39 @@ export const LabReportsTable = () => {
   });
 
   const reports: LabReportResponse[] = Array.isArray(data) ? data : [];
+
+  // Helper utility to safely cross-reference any incoming route token against the report record
+  const checkReportMatch = (report: any): boolean => {
+    const URL_PARAMS = ["id", "reportId", "labReportId", "appointmentId", "noteId", "clinicalNoteId"];
+    const RECORD_KEYS = ["id", "reportId", "labReportId", "appointmentId", "noteId", "clinicalNoteId"];
+
+    for (const param of URL_PARAMS) {
+      const paramValue = searchParams.get(param);
+      if (!paramValue) continue;
+
+      for (const key of RECORD_KEYS) {
+        if (report[key] && String(report[key]) === String(paramValue)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    // Determine if any applicable parameter is present in the current URL context
+    const hasActiveQuery = ["id", "reportId", "labReportId", "appointmentId", "noteId", "clinicalNoteId"].some(
+      (param) => !!searchParams.get(param)
+    );
+
+    if (reports.length > 0 && hasActiveQuery && !hasAutoOpened.current) {
+      const matchingReport = reports.find((r) => checkReportMatch(r));
+      // if (matchingReport) {
+      //   setSelectedReport(matchingReport);
+      //   hasAutoOpened.current = true; 
+      // }
+    }
+  }, [reports, searchParams]);
 
   const parseAndFormatDate = (report: any): string => {
     const rawDate =
@@ -120,56 +158,64 @@ export const LabReportsTable = () => {
         </TableHeader>
 
         <TableBody>
-          {reports.map((report) => (
-            <TableRow
-              key={report.id}
-              className="hover:bg-blue-50/50 transition-colors group cursor-pointer"
-              onClick={() => setSelectedReport(report)}
-            >
-              <TableCell className="font-medium text-slate-900">
-                <div className="flex items-center gap-2">
-                  <RiHospitalLine className="text-slate-400 group-hover:text-blue-500 transition-colors" size={18} />
-                  {report.labName}
-                </div>
-              </TableCell>
+          {reports.map((report) => {
+            const isHighlighted = checkReportMatch(report);
 
-              <TableCell className="text-slate-700 font-medium">
-                {report.panelName}
-              </TableCell>
+            return (
+              <TableRow
+                key={report.id}
+                className={`transition-all group cursor-pointer ${
+                  isHighlighted
+                    ? "bg-blue-50/80! hover:bg-blue-50/90! shadow-[inset_4px_0_0_0_#3b82f6] font-medium"
+                    : "hover:bg-blue-50/50"
+                }`}
+                onClick={() => setSelectedReport(report)}
+              >
+                <TableCell className="font-medium text-slate-900">
+                  <div className="flex items-center gap-2">
+                    <RiHospitalLine className="text-slate-400 group-hover:text-blue-500 transition-colors" size={18} />
+                    {report.labName}
+                  </div>
+                </TableCell>
 
-              <TableCell className="text-slate-600 text-sm">
-                {parseAndFormatDate(report)}
-              </TableCell>
+                <TableCell className="text-slate-700 font-medium">
+                  {report.panelName}
+                </TableCell>
 
-              <TableCell>
-                {report.documentType ? (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-medium uppercase tracking-wider">
-                    {report.documentType === 'PDF' || report.mimeType?.includes('pdf') ? (
-                      <RiFilePdf2Line size={14} className="text-red-500" />
-                    ) : (
-                      <RiImageLine size={14} className="text-blue-500" />
-                    )}
-                    {report.documentType}
-                  </span>
-                ) : (
-                  <span className="text-slate-400 text-sm">-</span>
-                )}
-              </TableCell>
+                <TableCell className="text-slate-600 text-sm">
+                  {parseAndFormatDate(report)}
+                </TableCell>
 
-              <TableCell className="text-right">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent double triggering from row click
-                    setSelectedReport(report);
-                  }}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-700 hover:bg-blue-50 transition-all font-medium text-sm shadow-sm"
-                >
-                  <RiEyeLine size={16} />
-                  View Record
-                </button>
-              </TableCell>
-            </TableRow>
-          ))}
+                <TableCell>
+                  {report.documentType ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-medium uppercase tracking-wider">
+                      {report.documentType === 'PDF' || report.mimeType?.includes('pdf') ? (
+                        <RiFilePdf2Line size={14} className="text-red-500" />
+                      ) : (
+                        <RiImageLine size={14} className="text-blue-500" />
+                      )}
+                      {report.documentType}
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 text-sm">-</span>
+                  )}
+                </TableCell>
+
+                <TableCell className="text-right">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); 
+                      setSelectedReport(report);
+                    }}
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-700 hover:bg-blue-50 transition-all font-medium text-sm shadow-sm"
+                  >
+                    <RiEyeLine size={16} />
+                    View Record
+                  </button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
 
@@ -201,26 +247,23 @@ export const LabReportsTable = () => {
                   </div>
 
                   {/* PDF Download Button */}
-                  <button
+                  <Button
                     onClick={() => exportPdf(selectedReport.id)}
                     disabled={isExporting}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold text-sm rounded-xl shadow-sm transition-all cursor-pointer disabled:cursor-not-allowed"
+                    className="gap-2 px-4 h-10 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold text-sm rounded-xl shadow-sm transition-all"
                   >
                     {isExporting ? (
                       <>
-                        <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                        </svg>
-                        <span>Generating...</span>
+                        <Loader2 className="size-4 animate-spin" />
+                        <span>Exporting...</span>
                       </>
                     ) : (
                       <>
-                        <RiFilePdf2Line size={16} />
+                        <RiFilePdf2Line className="size-4" />
                         <span>Export PDF</span>
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -386,7 +429,7 @@ export const LabReportsTable = () => {
                               <img
                                 src={selectedReport.documentUrl}
                                 alt="Medical Document"
-                                className="w-full max-w-full h-auto max-h-[600px] object-contain"
+                                className="w-full max-w-full h-auto max-h-150 object-contain"
                               />
                             </div>
                           ) : null}

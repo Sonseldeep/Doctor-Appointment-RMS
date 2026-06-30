@@ -24,7 +24,7 @@ export function UserDashboard() {
   const { data: user } = useCurrentUser();
   
   // FIX: Using the hook with required arguments (Page 1, PageSize 50 to cover dashboard view)
-  const { data: pagedData, isLoading, refetch } = useGetMyAppointments(1, 50);
+  const { data: pagedData, isLoading, refetch } = useGetMyAppointments(1, 10);
   
   // Extract items from the paginated result
   const appointments = pagedData?.items || [];
