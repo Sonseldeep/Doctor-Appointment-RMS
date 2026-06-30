@@ -39,9 +39,10 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
     {
         var user = await _userRepository.GetByEmailAsync(request.PatientEmail, cancellationToken);
 
-        if (user == null)
+        if (user is null)
+        {
             return Error.NotFound("Lab.PatientNotFound", "Patient verification context failed.");
-
+        }
         var report = LabReport.Create(user.Id, request.LabName, request.PanelName, request.ObservationDate);
 
         
@@ -52,20 +53,17 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
             report.AddObservation(obs.TestName, obs.Value, obs.Unit, obs.ReferenceRange, obs.IsAbnormal);
         }
 
-        // --- HYBRID INGESTION: Handle Document Upload ---
         if (request.Document is not null && request.Document.Length > 0)
         {
-            // Pass the pure stream and metadata to the storage service
-            string documentUrl = await _fileStorageService.UploadAsync(
+            var documentUrl = await _fileStorageService.UploadAsync(
                 request.Document.Content,
                 request.Document.FileName,
                 request.Document.ContentType,
                 cancellationToken);
             
-            string mimeType = request.Document.ContentType;
+            var mimeType = request.Document.ContentType;
             
-            // Differentiate between Radiology (X-Ray/Scan) and Lab Reports (PDF)
-            string documentType = mimeType.StartsWith("image/") ? "XRAY" : "PDF";
+            var documentType = mimeType.StartsWith("image/") ? "XRAY" : "PDF";
 
             report.AttachDocument(documentUrl, documentType, mimeType);
         }
