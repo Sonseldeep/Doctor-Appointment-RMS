@@ -6,13 +6,7 @@ export interface CreateAppointmentPayload {
 }
 
 export async function createAppointment(payload: CreateAppointmentPayload): Promise<void> {
-  if (typeof window !== "undefined") {
-    console.log("=== 🔍 DEBUGGING AUTHENTICATION TOKEN ===");
-    console.log("All available keys in LocalStorage:", Object.keys(localStorage));
-    console.log("Value of 'token':", localStorage.getItem("token"));
-    console.log("Value of 'accessToken':", localStorage.getItem("accessToken"));
-    console.log("=========================================");
-  }
+
 
   // Try to read both common names for now
   const token = typeof window !== "undefined" 

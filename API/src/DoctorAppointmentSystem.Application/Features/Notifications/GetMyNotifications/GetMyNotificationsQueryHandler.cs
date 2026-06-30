@@ -1,12 +1,13 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Abstractions.Notifications;
+using DoctorAppointmentSystem.Application.Common;
 using DoctorAppointmentSystem.Application.Features.Notifications.Contracts;
 using ErrorOr;
 
 namespace DoctorAppointmentSystem.Application.Features.Notifications.GetMyNotifications;
 
 internal sealed class GetMyNotificationsQueryHandler
-    : IQueryHandler<GetMyNotificationsQuery, List<NotificationResponse>>
+    : IQueryHandler<GetMyNotificationsQuery, PagedResult<NotificationResponse>>
 {
     private readonly INotificationRepository _notifications;
 
@@ -15,24 +16,10 @@ internal sealed class GetMyNotificationsQueryHandler
         _notifications = notifications;
     }
 
-    public async Task<ErrorOr<List<NotificationResponse>>> Handle(
+    public async Task<ErrorOr<PagedResult<NotificationResponse>>> Handle(
         GetMyNotificationsQuery request,
         CancellationToken cancellationToken)
     {
-        var notifications = await _notifications.GetByUserIdAsync(request.UserId, cancellationToken);
-
-        var response = notifications
-            .OrderByDescending(n => n.CreatedAtUtc)
-            .Select(n => new NotificationResponse(
-                n.Id,
-                n.Title,
-                n.Message,
-                n.Type.ToString(),
-                n.AppointmentId,
-                n.IsRead,
-                n.CreatedAtUtc))
-            .ToList();
-
-        return response;
+        return await _notifications.GetByUserIdPagedAsync(request, cancellationToken);
     }
 }
