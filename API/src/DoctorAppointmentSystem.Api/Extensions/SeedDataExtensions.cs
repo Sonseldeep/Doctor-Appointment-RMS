@@ -40,4 +40,39 @@ public static class SeedDataExtensions
 
         app.Logger.LogInformation("Seeded default admin user: {Email}", adminEmail);
     }
+    
+    
+
+    public static async Task SeedLabTechnicianUserAsync(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
+
+        const string labTechEmail = "labtech@labtech.com";
+        const string labTechPassword = "LabTech@12345";
+
+        var labTechExists = await db.Users.AnyAsync(u => u.Role == UserRole.LabTechnician);
+        if (labTechExists)
+        {
+            return;
+        }
+
+        var passwordHash = passwordHasher.Hash(labTechPassword);
+
+        var labTechnician = User.Create(
+            firstName: "Lab",
+            lastName: "Technician",
+            email: labTechEmail,
+            passwordHash: passwordHash,
+            role: UserRole.LabTechnician);
+
+        labTechnician.VerifyEmail();
+
+        await db.Users.AddAsync(labTechnician);
+        await db.SaveChangesAsync();
+
+        app.Logger.LogInformation("Seeded default lab technician user: {Email}", labTechEmail);
+    }
 }

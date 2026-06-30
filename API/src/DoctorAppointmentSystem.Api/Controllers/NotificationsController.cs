@@ -20,17 +20,17 @@ public sealed class NotificationsController : ApiController
 
    
     [HttpGet]
-    public async Task<IActionResult> GetMine(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMine([FromQuery] GetMyNotificationsRequest request ,CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var userId))
         {
             return Unauthorized();
         }
 
-        var result = await _sender.Send(
-            new GetMyNotificationsQuery(userId), cancellationToken);
-
+        var result = await _sender.Send(request.ToQuery(userId), cancellationToken);
+        
         return result.Match(Ok, Problem);
+        
     }
 
   
@@ -58,7 +58,6 @@ public sealed class NotificationsController : ApiController
             return Unauthorized();
         }
 
-        Console.WriteLine($"DEBUG: Fetching notifications for UserID: {userId}");
 
         var result = await _sender.Send(
             new MarkAllNotificationsReadCommand(userId),

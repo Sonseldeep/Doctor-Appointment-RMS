@@ -115,7 +115,7 @@ export function DoctorDashboard() {
   const { data: appointments, isLoading } = useQuery({
     queryKey: ["appointments", "doctor"],
     // Pass default pagination parameters (e.g., page 1, limit 50) for the dashboard overview
-    queryFn: () => appointmentsApi.getMyAppointments(1, 50),  
+    queryFn: () => appointmentsApi.getMyAppointments(1, 10),
   });
 
   // Safely extract the appointments array from either a raw array or a paginated object

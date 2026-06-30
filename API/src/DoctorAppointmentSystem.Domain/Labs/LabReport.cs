@@ -9,20 +9,19 @@ public class LabReport : Entity
     public string PanelName { get; private set; } = string.Empty;
     public DateTime ObservationDateTime { get; private set; }
 
-    // New Hybrid Ingestion Properties
     public string? DocumentUrl { get; private set; }
-    public string? DocumentType { get; private set; } // e.g., "PDF", "XRAY"
-    public string? MimeType { get; private set; }     // e.g., "application/pdf", "image/jpeg"
+    public string? DocumentType { get; private set; } 
+    public string? MimeType { get; private set; }     
 
     public List<LabObservation> Observations { get; private set; } = new();
 
-    private LabReport() { } // EF Core Required
+    private LabReport() { }
 
     public static LabReport Create(Guid patientId, string labName, string panelName, DateTime observationDateTime)
     {
         return new LabReport
         {
-            Id = Guid.NewGuid(), // Now valid!
+            Id = Guid.NewGuid(), 
             PatientId = patientId,
             LabName = labName,
             PanelName = panelName,
@@ -32,11 +31,9 @@ public class LabReport : Entity
 
     public void AddObservation(string testName, string value, string unit, string referenceRange, bool isAbnormal)
     {
-        // This will now pass a valid, non-empty Guid because Id was set in the Create method
         Observations.Add(new LabObservation(this.Id, testName, value, unit, referenceRange, isAbnormal));
     }
 
-    // New Domain Behavior
     public void AttachDocument(string documentUrl, string documentType, string mimeType)
     {
         DocumentUrl = documentUrl;
