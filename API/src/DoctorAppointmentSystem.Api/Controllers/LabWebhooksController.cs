@@ -1,15 +1,16 @@
 ﻿using System.Text.Json;
-using DoctorAppointmentSystem.Api.Common.Authentication;
 using DoctorAppointmentSystem.Api.Common.Request;
 using DoctorAppointmentSystem.Application.Features.Labs.ReceiveLabPayload;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DoctorAppointmentSystem.Api.Controllers;
 
 
 [ApiController]
-[Route("api/webhooks/labs")]
+[Route("api/lab-technicians/lab-results")]
+[Authorize(Roles = "LabTechnician")]
 public class LabWebhooksController : ApiController
 {
     private readonly ISender _sender; 
@@ -20,7 +21,6 @@ public class LabWebhooksController : ApiController
     }
 
     [HttpPost("ingest")]
-    [ApiKey] 
     public async Task<IActionResult> IngestLabResults(
         [FromForm] LabIngestionRequest request, 
         CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ public class LabWebhooksController : ApiController
             : JsonSerializer.Deserialize<List<ObservationDto>>(request.ObservationsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         
 
-                FileDto? fileDto = null;
+        FileDto? fileDto = null;
         if (request.Document is not null && request.Document.Length > 0)
         {
             fileDto = new FileDto(
@@ -58,12 +58,5 @@ public class LabWebhooksController : ApiController
         }
 
         return Ok(new { Message = "Payload and attached documents successfully processed and secured." });
-    }
-
-    [HttpGet("verify-key")]
-    [ApiKey] 
-    public IActionResult VerifyKey()
-    {
-        return Ok(new { Valid = true, Message = "Access key verified." });
     }
 }
