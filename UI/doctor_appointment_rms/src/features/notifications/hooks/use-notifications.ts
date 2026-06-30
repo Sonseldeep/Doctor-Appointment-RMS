@@ -6,7 +6,7 @@ export function useNotifications() {
 
   const notificationsQuery = useQuery({
     queryKey: ["notifications"],
-    queryFn: notificationsApi.getNotifications,
+    queryFn: () => notificationsApi.getNotifications(),
     refetchInterval: 15000, // Optional background auto-polling every 15 seconds
   });
 
@@ -24,10 +24,12 @@ export function useNotifications() {
     },
   });
 
+  const notifications = notificationsQuery.data?.items ?? [];
+
   return {
-    notifications: notificationsQuery.data || [],
+    notifications,
     isLoading: notificationsQuery.isLoading,
-    unreadCount: notificationsQuery.data?.filter((n) => !n.isRead).length || 0,
+    unreadCount: notifications.filter((n) => !n.isRead).length,
     markAsRead: markAsReadMutation.mutate,
     markAllAsRead: markAllAsReadMutation.mutate,
     isMarkingAllPending: markAllAsReadMutation.isPending,

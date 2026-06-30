@@ -33,7 +33,6 @@ public sealed class AppointmentsController : ApiController
             return Unauthorized();
         }
 
-        // Optional: Add simple validation to prevent invalid pagination values
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 10;
         if (pageSize > 50) pageSize = 50; // Optional cap to prevent large memory usage

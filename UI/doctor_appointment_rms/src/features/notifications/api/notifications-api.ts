@@ -10,18 +10,38 @@ export interface SystemNotification {
   createdAtUtc: string;
 }
 
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+
+export interface GetNotificationsParams {
+  page?: number;
+  pageSize?: number;
+  isRead?: boolean;
+}
+
+
 export const notificationsApi = {
-  getNotifications: async (): Promise<SystemNotification[]> => {
-    const res = await axiosClient.get<SystemNotification[]>("/api/notifications");
+  getNotifications: async (
+      params?: GetNotificationsParams
+  ): Promise<PagedResult<SystemNotification>> => {
+    const res = await axiosClient.get<PagedResult<SystemNotification>>("/api/notifications", {
+      params,
+    });
     return res.data;
   },
 
-  // 1. Added explicit empty body {} to the POST request parameter
   markAsRead: async (id: string): Promise<void> => {
     await axiosClient.put(`/api/notifications/${id}/read`, {});
   },
 
-  // 2. Added explicit empty body {} here as well
   markAllAsRead: async (): Promise<void> => {
     await axiosClient.put("/api/notifications/read-all", {});
   }
