@@ -1,6 +1,6 @@
 ﻿namespace DoctorAppointmentSystem.Api.Common.Request;
 
-public class LabIngestionRequest
+public class LabResultRequest
 {
     public string LabName { get; set; } = string.Empty;
     public string PatientEmail { get; set; } = string.Empty;
