@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation"; 
 import { useQueryClient } from "@tanstack/react-query";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { useGetMyAppointments } from "@/features/appointments/hooks/use-my-appointment";
@@ -51,11 +52,13 @@ export default function AppointmentsPage() {
   const queryClient = useQueryClient();
   const { data: user } = useCurrentUser();
   
-  // State for Pagination
+  
+  const searchParams = useSearchParams();
+  const targetAppointmentId = searchParams.get("id");
+  
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   
-  // Clean Server-side pagination mapping
   const { data: myAppointments, isLoading, isError } = useGetMyAppointments(currentPage, pageSize);
   const { mutate: cancelAppointment } = useCancelAppointment();
   const { mutate: confirmAppointment } = useConfirmAppointment();
@@ -69,14 +72,12 @@ export default function AppointmentsPage() {
 
   const isDoctor = user?.role?.toLowerCase() === "doctor";
 
-  // Safely extract items and total count from PagedResult
+
   const appointmentsArray = (myAppointments as any)?.items || [];
   const totalCount = (myAppointments as any)?.totalCount || 0;
 
-  // Derive total pages from total count returned by the API
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  // Filters are applied to the active page array records returned by server
   const processedAppointments = useMemo(() => {
     let list = [...appointmentsArray];
 
@@ -353,13 +354,27 @@ export default function AppointmentsPage() {
                       const avatarUrl = isDoctor ? apt.patientPhotoUrl : apt.doctorPhotoUrl;
                       const displayName = isDoctor ? apt.patientName : `Dr. ${apt.doctorName}`;
                       
+                      // Compare row ID with URL target parameter to detect matching record
+                      const isHighlighted = apt.id === targetAppointmentId;
+                      
                       return (
-                        <TableRow key={apt.id} className="group hover:bg-slate-50/50 transition-colors">
-                          <TableCell className="py-3 text-center text-sm font-medium text-slate-400">
+                        <TableRow 
+                          key={apt.id} 
+                          className={`group transition-all duration-300 ${
+                            isHighlighted 
+                              ? "bg-blue-50/60 hover:bg-blue-50/80 ring-1 ring-inset ring-blue-100" // Premium highlight styles
+                              : "hover:bg-slate-50/50 transition-colors"
+                          }`}
+                        >
+                          {/*Added left color accent indicator on highlighted serial column */}
+                          <TableCell className={`py-3 text-center text-sm font-medium transition-all ${
+                            isHighlighted 
+                              ? "text-blue-600 font-bold border-l-4 border-l-blue-500" 
+                              : "text-slate-400"
+                          }`}>
                             {globalIndex}
                           </TableCell>
                           
-                          {/* 🌟 NEW: Rich Demographic Profile Layout */}
                           <TableCell className="py-3">
                             <div className="flex items-center gap-3">
                               <div className="relative h-10 w-10 rounded-full bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200/80 shadow-sm flex items-center justify-center">
@@ -379,7 +394,9 @@ export default function AppointmentsPage() {
                               </div>
                               
                               <div className="flex flex-col">
-                                <span className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors text-sm">
+                                <span className={`font-semibold text-slate-900 group-hover:text-blue-600 transition-colors text-sm ${
+                                  isHighlighted ? "text-blue-700" : ""
+                                }`}>
                                   {displayName}
                                 </span>
                                 <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5">
@@ -438,10 +455,13 @@ export default function AppointmentsPage() {
                           </TableCell>
                           <TableCell className="py-3 text-right">
                             <div className="flex items-center justify-end gap-2">
+                              {/*  Swapped the base view button background if highlighted to make actions pop */}
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                className="h-8 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100"
+                                className={`h-8 text-xs font-medium text-slate-600 hover:text-slate-900 ${
+                                  isHighlighted ? "bg-blue-100 text-blue-700 hover:bg-blue-200" : "bg-slate-50 hover:bg-slate-100"
+                                }`}
                                 onClick={() => setActiveAppointment(apt)}
                               >
                                 View

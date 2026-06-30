@@ -1,14 +1,5 @@
 import axiosClient from "@/lib/axios";
-
-export interface SystemNotification {
-  id: string;
-  title: string;
-  message: string;
-  type: "AppointmentBooked" | "AppointmentCancelled" | "AppointmentConfirmed";
-  appointmentId: string;
-  isRead: boolean;
-  createdAtUtc: string;
-}
+import { SystemNotification } from "../types/notifications.types";
 
 export interface PagedResult<T> {
   items: T[];
