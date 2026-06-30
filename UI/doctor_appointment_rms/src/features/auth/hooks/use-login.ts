@@ -20,7 +20,11 @@ export function useLogin() {
         // STEP 1: Store token FIRST (before any API calls)
         if (data?.accessToken) {
           tokenStorage.setAccessToken(data.accessToken);
-          console.log(" Token stored");
+          
+          // ADDED THIS LINE: Creates an HTTP-readable cookie for your server-side middleware
+          document.cookie = `Access_token=${data.accessToken}; path=/; max-age=604800; SameSite=Lax;`;
+          
+          console.log("Token stored in Local Storage & Cookies");
         }
 
         // STEP 2: Now fetch user profile (token is available)
@@ -32,7 +36,6 @@ export function useLogin() {
         }
 
         console.log("Login successful. Role stored:", user.role);
-
         toast.success("Login successful");
 
         // STEP 4: Navigate to dashboard
@@ -43,6 +46,9 @@ export function useLogin() {
 
         // Clear token if profile fetch failed
         tokenStorage.clear();
+        
+        // ADDED THIS LINE: Clean up the cookie if profile fetching fails
+        document.cookie = "Access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
       }
     },
 
