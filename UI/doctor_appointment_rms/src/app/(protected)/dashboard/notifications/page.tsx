@@ -1,4 +1,6 @@
 "use client";
+
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { SystemNotification } from "@/features/notifications/types/notifications.types";
@@ -8,19 +10,30 @@ import {
   RiNotification3Line, 
   RiMessage3Line,
   RiCheckDoubleLine,
-  RiFileTextLine
+  RiFileTextLine,
+  RiArrowLeftSLine,
+  RiArrowRightSLine
 } from "@remixicon/react";
 
 export default function NotificationsPage() {
   const router = useRouter();
+  
+  //  Paginated State Configuration
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
+
   const { 
     notifications, 
     isLoading, 
+    isFetching,
     unreadCount, 
+    totalPages,
+    hasNextPage,
+    hasPreviousPage,
     markAsRead, 
     markAllAsRead, 
     isMarkingAllPending 
-  } = useNotifications();
+  } = useNotifications({ page, pageSize: PAGE_SIZE });
 
   const getNotificationStyles = (type: string, isRead: boolean) => {
     if (isRead) {
@@ -62,7 +75,6 @@ export default function NotificationsPage() {
       markAsRead(item.id);
     }
 
-    // Dynamic routing target map configuration
     switch (item.type) {
       case "AppointmentBooked":
       case "AppointmentConfirmed":
@@ -71,13 +83,9 @@ export default function NotificationsPage() {
         router.push(`/dashboard/appointments?id=${item.appointmentId}`);
         break;
       case "LabReportReady":
-        //  FIXED: Passes the ID tracking parameter down into the URL query
-        const reportId = (item as any).labReportId || (item as any).referenceId || item.id;
         router.push(`/dashboard/medical-records?id=${item.appointmentId}`);
         break;
       case "ClinicalNoteAdded":
-        //  FIXED: Routes to prescriptions page instead of medical records, appending target ID
-        const noteId = (item as any).clinicalNoteId || (item as any).prescriptionId || (item as any).referenceId || item.id;
         router.push(`/dashboard/prescriptions?id=${item.appointmentId}`);
         break;
       default:
@@ -114,45 +122,78 @@ export default function NotificationsPage() {
           <p className="text-sm text-slate-500 animate-pulse">Loading secure tracking matrix ledger...</p>
         ) : notifications.length > 0 ? (
           <div className="grid gap-3">
-            {notifications.map((item) => {
-              const styles = getNotificationStyles(item.type, item.isRead);
-              const formattedDate = new Date(item.createdAtUtc).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit"
-              });
+            {/* 🌟 Container opacity transition tracking if updating query background cache */}
+            <div className={`grid gap-3 transition-opacity duration-200 ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
+              {notifications.map((item) => {
+                const styles = getNotificationStyles(item.type, item.isRead);
+                const formattedDate = new Date(item.createdAtUtc).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit"
+                });
 
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => handleNotificationClick(item)}
-                  className={`flex gap-4 p-4 rounded-xl border shadow-sm transition-all cursor-pointer transform hover:-translate-y-0.5 active:scale-[0.99] ${styles.containerBg}`}
-                >
-                  <div className="flex-shrink-0 p-2 bg-white rounded-lg border h-fit shadow-xs relative">
-                    {styles.icon}
-                    {!item.isRead && (
-                      <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between gap-4">
-                      <h4 className={`text-sm font-semibold ${item.isRead ? "text-gray-500" : "text-gray-900"}`}>
-                        {item.title}
-                      </h4>
-                      <span className="text-xs text-slate-400 font-medium whitespace-nowrap">{formattedDate}</span>
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => handleNotificationClick(item)}
+                    className={`flex gap-4 p-4 rounded-xl border shadow-sm transition-all cursor-pointer transform hover:-translate-y-0.5 active:scale-[0.99] ${styles.containerBg}`}
+                  >
+                    <div className="flex-shrink-0 p-2 bg-white rounded-lg border h-fit shadow-xs relative">
+                      {styles.icon}
+                      {!item.isRead && (
+                        <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+                        </span>
+                      )}
                     </div>
-                    <p className={`text-sm leading-relaxed ${item.isRead ? "text-slate-400" : "text-slate-600"}`}>
-                      {item.message}
-                    </p>
+
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center justify-between gap-4">
+                        <h4 className={`text-sm font-semibold ${item.isRead ? "text-gray-500" : "text-gray-900"}`}>
+                          {item.title}
+                        </h4>
+                        <span className="text-xs text-slate-400 font-medium whitespace-nowrap">{formattedDate}</span>
+                      </div>
+                      <p className={`text-sm leading-relaxed ${item.isRead ? "text-slate-400" : "text-slate-600"}`}>
+                        {item.message}
+                      </p>
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+
+            {/*  PAGINATION FOOTER PANEL CONTROL HUB */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t border-slate-100 pt-5 mt-2">
+                <span className="text-xs font-semibold text-slate-500">
+                  Showing page <span className="text-slate-900 font-bold">{page}</span> of{" "}
+                  <span className="text-slate-900 font-bold">{totalPages}</span>
+                </span>
+                
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={!hasPreviousPage || isFetching}
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                    className="inline-flex items-center justify-center p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition cursor-pointer shadow-xs"
+                    title="Previous Page"
+                  >
+                    <RiArrowLeftSLine size={18} />
+                  </button>
+                  
+                  <button
+                    disabled={!hasNextPage || isFetching}
+                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                    className="inline-flex items-center justify-center p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition cursor-pointer shadow-xs"
+                    title="Next Page"
+                  >
+                    <RiArrowRightSLine size={18} />
+                  </button>
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-2xl py-12 px-4 bg-slate-50/50 text-center">
