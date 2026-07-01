@@ -40,10 +40,24 @@ export function LoginForm() {
   });
 
   const onSubmit = (values: LoginDto) => {
-    loginMutation.mutate(values);
+    loginMutation.mutate(values, {
+      onSuccess: (data: any) => {
+        // Cast to any to bypass strict union checks and avoid 'never' errors
+        const extendedData = data as any;
+        const role = extendedData?.role || extendedData?.user?.role;
+        const roleString = role ? String(role).toUpperCase() : "";
+        
+        if (roleString === "LabTechnician" || roleString === "LabTechnician") {
+          // toast.success("Welcome back! Loading Lab Portal...");
+          router.push("/dashboard/lab");
+        } else {
+          
+          router.push("/dashboard/lab");
+        }
+      },
+    });
   };
 
-  // 🛡️ OPTIMIZED: Pull directly from react-hook-form state instead of a messy local useState
   const handleForgotPassword = () => {
     const emailValue = form.getValues("email");
 
@@ -79,7 +93,7 @@ export function LoginForm() {
           <div className="p-2 bg-white rounded-lg">
             <RiHeartPulseFill className="text-blue-600 size-6" />
           </div>
-          <span className="text-2xl font-bold tracking-tight">DocCare</span>
+          <span className="text-2xl font-bold tracking-tight">MediLink</span>
         </div>
 
         <div className="relative z-10 space-y-6 max-w-lg">
@@ -92,7 +106,7 @@ export function LoginForm() {
         </div>
 
         <div className="relative z-10 text-sm text-blue-200">
-          © {new Date().getFullYear()} DocCare Health. All rights reserved.
+          © {new Date().getFullYear()} MediLink Health. All rights reserved.
         </div>
       </div>
 
@@ -112,7 +126,7 @@ export function LoginForm() {
             <p className="text-slate-500">Please enter your details to sign in.</p>
           </div>
 
-          {/* 🛡️ ADDED: Dual-Layer submission protection & explicit POST method */}
+          {/* Dual-Layer submission protection & explicit POST method */}
           <form 
             onSubmit={(e) => {
               e.preventDefault();
@@ -190,7 +204,6 @@ export function LoginForm() {
                     <Input
                       placeholder="Enter your registered email"
                       className="h-12 rounded-xl"
-                      // 🛡️ Watch and update the main form's email cleanly without breaking handlers
                       value={form.watch("email") || ""}
                       onChange={(e) => form.setValue("email", e.target.value)}
                     />

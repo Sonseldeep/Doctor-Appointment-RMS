@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
-import { useNotifications } from "@/features/notifications/hooks/use-notifications";
+import { useNotificationCount } from "@/features/notifications/hooks/use-notifications";
+
 import {
   RiDashboardLine,
   RiCalendarLine,
@@ -29,7 +30,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { logout } = useLogout();
   const { data: user } = useCurrentUser();
-  const { unreadCount } = useNotifications();
+  const { unreadCount } = useNotificationCount();
 
   const userNavItems: NavItem[] = [
     { label: "Dashboard", href: "/dashboard", icon: <RiDashboardLine /> },

@@ -107,10 +107,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notificationsApi, GetNotificationsParams } from "../api/notifications-api";
 
-/**
- * ✅ HOOK 1: For Shared Layout Components (Sidebar/Navbar Badge Counter)
- * Requests ONLY a 1-row metadata shell. Prevents layout components from downloading whole list arrays.
- */
+
 export function useNotificationCount() {
   const query = useQuery({
     queryKey: ["notifications", "unread-count"],
@@ -125,10 +122,7 @@ export function useNotificationCount() {
   };
 }
 
-/**
- * ✅ HOOK 2: Dedicated to the Central Notifications Activity Hub View
- * Manages pagination states, list data feeds, and item mutations.
- */
+
 export function useNotifications(params: GetNotificationsParams = {}) {
   const queryClient = useQueryClient();
   
@@ -152,6 +146,9 @@ export function useNotifications(params: GetNotificationsParams = {}) {
     },
   });
 
+  
+
+
   const markAllAsReadMutation = useMutation({
     mutationFn: notificationsApi.markAllAsRead,
     onSuccess: () => {
@@ -168,6 +165,8 @@ export function useNotifications(params: GetNotificationsParams = {}) {
     totalPages: notificationsQuery.data?.totalPages ?? 1,
     hasNextPage: notificationsQuery.data?.hasNextPage ?? false,
     hasPreviousPage: notificationsQuery.data?.hasPreviousPage ?? false,
+
+    
     
     markAsRead: markAsReadMutation.mutate,
     markAllAsRead: markAllAsReadMutation.mutate,

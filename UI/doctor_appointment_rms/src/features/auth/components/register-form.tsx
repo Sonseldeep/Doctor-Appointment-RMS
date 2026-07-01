@@ -48,7 +48,7 @@ export function RegisterForm() {
           <div className="p-2 bg-white rounded-lg">
             <RiHeartPulseFill className="text-blue-600 size-6" />
           </div>
-          <span className="text-2xl font-bold tracking-tight">DocCare</span>
+          <span className="text-2xl font-bold tracking-tight">MediLink</span>
         </div>
 
         <div className="relative z-10 space-y-6 max-w-lg">
@@ -61,7 +61,7 @@ export function RegisterForm() {
         </div>
 
         <div className="relative z-10 text-sm text-blue-200">
-          © {new Date().getFullYear()} DocCare Health. All rights reserved.
+          © {new Date().getFullYear()} MediLink Health. All rights reserved.
         </div>
       </div>
 

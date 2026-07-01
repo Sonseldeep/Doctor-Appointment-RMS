@@ -48,17 +48,16 @@ export default function PrescriptionHistoryPage() {
   
   // Auto-open the note if matched from a notification link
   useEffect(() => {
-  if (history && targetNoteId && !selectedNote) {
-    //Look for a match against either note.id OR note.appointmentId
-    const matchingNote = history.find((note: any) => 
-      String(note.id) === String(targetNoteId) || 
-      String(note.appointmentId) === String(targetNoteId)
-    );
-    // if (matchingNote) {
-    //   setSelectedNote(matchingNote);
-    // }
-  }
-}, [history, targetNoteId, selectedNote]);
+    if (history && targetNoteId && !selectedNote) {
+      const matchingNote = history.find((note: any) => 
+        String(note.id) === String(targetNoteId) || 
+        String(note.appointmentId) === String(targetNoteId)
+      );
+      if (matchingNote) {
+        setSelectedNote(matchingNote);
+      }
+    }
+  }, [history, targetNoteId, selectedNote]);
 
   const handleEditInit = (note: any) => {
     setEditForm(JSON.parse(JSON.stringify(note)));
@@ -157,6 +156,27 @@ export default function PrescriptionHistoryPage() {
           </div>
         ) : isEditing ? (
           <div className="space-y-6 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 animate-fade-in max-w-3xl mx-auto">
+            {/* Context Profile Banner during Editing */}
+            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+              <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
+                {(isDoctor ? selectedNote.patientPhotoUrl : selectedNote.doctorPhotoUrl) ? (
+                  <img 
+                    src={isDoctor ? selectedNote.patientPhotoUrl : selectedNote.doctorPhotoUrl} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User size={16} className="text-slate-400" />
+                )}
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none">Editing Record For</p>
+                <h4 className="font-bold text-slate-800 text-sm mt-1 leading-none">
+                  {isDoctor ? selectedNote.patientName : selectedNote.doctorName}
+                </h4>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
                 <ClipboardList size={14} className="text-blue-500" /> Primary Diagnosis
@@ -304,13 +324,37 @@ export default function PrescriptionHistoryPage() {
           </div>
         ) : selectedNote ? (
           <div className="space-y-5 animate-fade-in max-w-3xl mx-auto">
-            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Diagnosis File</h4>
-                <p className="font-bold text-lg text-slate-900 mt-0.5">{selectedNote?.diagnosis || "No diagnosis"}</p>
+            {/* Redesigned Multi-Profile & Diagnosis Main Header Card */}
+            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-slate-100 text-slate-400 overflow-hidden shrink-0 border border-slate-200 shadow-inner">
+                  {(isDoctor ? selectedNote.patientPhotoUrl : selectedNote.doctorPhotoUrl) ? (
+                    <img 
+                      src={isDoctor ? selectedNote.patientPhotoUrl : selectedNote.doctorPhotoUrl} 
+                      alt="Profile Picture" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User size={22} />
+                  )}
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block leading-none">
+                    {isDoctor ? "Assigned Patient" : "Prescribing Doctor"}
+                  </span>
+                  <h3 className="font-bold text-lg text-slate-900 mt-1 leading-tight">
+                    {isDoctor ? selectedNote.patientName : selectedNote.doctorName}
+                  </h3>
+                  <div className="pt-1 flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Diagnosis:</span>
+                    <span className="text-[11px] text-blue-600 font-bold bg-blue-50/70 px-2 py-0.5 rounded border border-blue-100/50">
+                      {selectedNote?.diagnosis || "No diagnosis assigned"}
+                    </span>
+                  </div>
+                </div>
               </div>
               
-              <div className="flex gap-2">
+              <div className="flex gap-2 self-start sm:self-center shrink-0">
                 <Button 
                   onClick={() => {
                     const id = selectedNote?.appointmentId;
@@ -336,10 +380,6 @@ export default function PrescriptionHistoryPage() {
                     </>
                   )}
                 </Button>
-                
-                <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
-                  <ClipboardList size={20} />
-                </div>
               </div>
             </div>
             
@@ -465,7 +505,6 @@ export default function PrescriptionHistoryPage() {
                     
                     <div className="grid gap-2.5">
                       {items.map((note: any) => {
-                        // Apply conditional background highlighting check
                         const isHighlighted = targetNoteId && (
                           String(note.id) === String(targetNoteId) || 
                           String(note.appointmentId) === String(targetNoteId)
