@@ -146,4 +146,16 @@ internal sealed class AppointmentRepository : IAppointmentRepository
                 && x.EndUtc > startUtc,
             cancellationToken);
     }
+
+    public async Task<bool> HasAssociationAsync(Guid doctorUserId, Guid patientUserId, CancellationToken cancellationToken)
+    {
+        return await
+            _db.Appointments
+                .AnyAsync(a =>
+                        a.DoctorUserId == doctorUserId &&
+                        a.PatientUserId == patientUserId &&
+                        a.Status != AppointmentStatus.Cancelled,
+                        cancellationToken);
+
+    }
 }

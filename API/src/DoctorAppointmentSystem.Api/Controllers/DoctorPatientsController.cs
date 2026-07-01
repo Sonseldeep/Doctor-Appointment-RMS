@@ -18,16 +18,12 @@ public class DoctorPatientsController : ApiController
     }
 
     [HttpGet("search")]
-    public async Task<IActionResult> SearchPatients([FromQuery] string q)
-    {
+    public async Task<IActionResult> SearchPatients([FromQuery] string q){
         var query = new SearchPatientsQuery(q);
 
         var result = await _sender.Send(query);
 
-        return result.Match(
-            Ok,
-            errors => Problem(errors.ToString())
-        );
+        return result.Match(Ok, Problem);
     }
 
     [HttpGet("{patientId:guid}/lab-reports")]
@@ -37,9 +33,7 @@ public class DoctorPatientsController : ApiController
 
         var result = await _sender.Send(query);
 
-        return result.Match(
-            Ok,
-            errors => Problem(errors.ToString())
-        );
+        return result.Match(Ok, Problem);
+
     }
 }
