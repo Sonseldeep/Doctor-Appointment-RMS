@@ -7,6 +7,8 @@ namespace DoctorAppointmentSystem.Infrastructure.Hubs;
 public sealed class NotificationHub : Hub
 {
  
+    public const string AdminDashboardGroup = "admin-dashboard";
+
     public override async Task OnConnectedAsync()
     {
         var userId = Context.UserIdentifier;
@@ -15,6 +17,12 @@ public sealed class NotificationHub : Hub
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(userId));
         }
+        
+        if (Context.User?.IsInRole("Admin") == true)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, AdminDashboardGroup);
+        }
+        
 
         await base.OnConnectedAsync();
     }
@@ -27,6 +35,11 @@ public sealed class NotificationHub : Hub
         if (userId is not null)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGroupName(userId));
+        }
+        
+        if (Context.User?.IsInRole("Admin") == true)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, AdminDashboardGroup);
         }
 
         await base.OnDisconnectedAsync(exception);
