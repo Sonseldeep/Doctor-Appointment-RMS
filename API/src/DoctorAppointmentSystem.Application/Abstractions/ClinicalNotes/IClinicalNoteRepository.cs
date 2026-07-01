@@ -14,25 +14,13 @@ public interface IClinicalNoteRepository
     Task AddAsync(ClinicalNote clinicalNote, CancellationToken cancellationToken);
 
 
-    Task<IReadOnlyList<ClinicalNoteWithDetailsDto>> GetForPatientAsync(
-        Guid patientUserId,
-        CancellationToken cancellationToken);
+    Task<IReadOnlyList<ClinicalNoteWithDetailsDto>> GetForPatientAsync(Guid patientUserId, CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<ClinicalNoteWithDetailsDto>> GetForDoctorAsync(
-        Guid doctorUserId,
-        CancellationToken cancellationToken);
+    Task<IReadOnlyList<ClinicalNoteWithDetailsDto>> GetForDoctorAsync(Guid doctorUserId, CancellationToken cancellationToken);
     
-    Task UpdateWithMedicationsAsync(
-        ClinicalNote note,
-        List<MedicationRequest> medications,
-        CancellationToken cancellationToken);
+    Task UpdateWithMedicationsAsync(ClinicalNote note, List<MedicationRequest> medications, CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<ClinicalNote>> GetByPatientIdAsync(Guid patientId, CancellationToken cancellationToken);
-
-    Task<IReadOnlyList<ClinicalNoteWithDetailsDto>> GetUpcomingFollowUpsAsync(
-    Guid patientUserId,
-    DateTimeOffset now,
-    CancellationToken cancellationToken);
+    Task<IReadOnlyList<ClinicalNoteWithDetailsDto>> GetUpcomingFollowUpsAsync(Guid patientUserId, DateTimeOffset now, CancellationToken cancellationToken);
 
     Task<ClinicalNoteWithDetailsDto?> GetWithDetailsByAppointmentIdAsync(Guid appointmentId, CancellationToken cancellationToken);
 }

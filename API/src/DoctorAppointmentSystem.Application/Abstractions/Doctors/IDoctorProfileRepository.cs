@@ -11,23 +11,11 @@ public interface IDoctorProfileRepository
     Task<DoctorProfile?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken);
     Task AddAsync(DoctorProfile profile, CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<DoctorProfile>> GetActiveAsync(CancellationToken cancellationToken);
-    
-    Task<IReadOnlyList<DoctorProfile>> GetAllWithUserAsync(CancellationToken cancellationToken);
-    Task<IReadOnlyList<DoctorProfile>> GetActiveWithUserAsync(CancellationToken cancellationToken);
-    
     Task<bool> NmcNumberExistsAsync(string nmcNumber, CancellationToken cancellationToken);
+    
+    Task<PagedResult<DoctorResponse>> GetActivePagedAsync(GetDoctorsQuery filters, CancellationToken cancellationToken);
 
-    
-    
-    
-    Task<PagedResult<DoctorResponse>> GetActivePagedAsync(
-        GetDoctorsQuery filters,
-        CancellationToken cancellationToken);
-
-    Task<PagedResult<AdminDoctorResponse>> GetAllPagedAsync(
-        GetAllDoctorsQuery filters,
-        CancellationToken cancellationToken);
+    Task<PagedResult<AdminDoctorResponse>> GetAllPagedAsync(GetAllDoctorsQuery filters, CancellationToken cancellationToken);
 
 
 }
