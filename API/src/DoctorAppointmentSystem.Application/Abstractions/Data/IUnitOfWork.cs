@@ -1,5 +1,5 @@
 ﻿
-namespace DoctorAppointmentSystem.Application.Abstractions.Interfaces;
+namespace DoctorAppointmentSystem.Application.Abstractions.Data;
 
 public interface IUnitOfWork
 {
