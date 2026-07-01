@@ -15,7 +15,7 @@ export function useDoctors({
   searchTerm = "", 
   specialization = "", 
   page = 1, 
-  pageSize = 20 
+  pageSize = 10
 }: UseDoctorsParams = {}) {
   return useQuery<DoctorsResponse>({
     queryKey: ["doctors", { searchTerm, specialization, page, pageSize }],

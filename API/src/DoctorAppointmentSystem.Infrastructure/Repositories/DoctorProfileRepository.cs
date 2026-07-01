@@ -79,7 +79,9 @@ internal sealed class DoctorProfileRepository : IDoctorProfileRepository
         }
 
         if (filters.Specialization.HasValue)
+        {
             query = query.Where(x => x.d.Specialization == filters.Specialization.Value);
+        }
 
         var totalCount = await query.CountAsync(cancellationToken);
 
@@ -133,11 +135,13 @@ internal sealed class DoctorProfileRepository : IDoctorProfileRepository
         }
 
         if (filters.Specialization.HasValue)
+        {
             query = query.Where(x => x.d.Specialization == filters.Specialization.Value);
-
+        }
         if (filters.Status.HasValue)
+        {
             query = query.Where(x => x.d.Status == filters.Status.Value);
-
+        }
         var totalCount = await query.CountAsync(cancellationToken);
 
         var items = await query
