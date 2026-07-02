@@ -31,7 +31,8 @@ public static class SeedDataExtensions
             lastName: "Admin",
             email: adminEmail,
             passwordHash: passwordHash,
-            role: UserRole.Admin);
+            role: UserRole.Admin,
+            now: DateTime.Now);
 
         admin.VerifyEmail();
 
@@ -66,7 +67,8 @@ public static class SeedDataExtensions
             lastName: "Technician",
             email: labTechEmail,
             passwordHash: passwordHash,
-            role: UserRole.LabTechnician);
+            role: UserRole.LabTechnician,
+            now: DateTime.Now);
 
         labTechnician.VerifyEmail();
 

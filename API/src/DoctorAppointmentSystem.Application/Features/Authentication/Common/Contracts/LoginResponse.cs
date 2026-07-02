@@ -3,4 +3,5 @@
 public sealed record LoginResponse(
     Guid UserId,
     string AccessToken,
-    string RefreshToken);
+    string RefreshToken,
+    bool MustChangePassword);

@@ -17,6 +17,8 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRefreshTokenLifetime _refreshTokenLifetime;
+    private readonly IAccountLockoutOptions  _accountLockoutOptions;
+    private readonly IPasswordPolicyOptions _passwordPolicyOptions;
 
     public LoginCommandHandler(
         IUserRepository userRepository,
@@ -25,7 +27,9 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
         IRefreshTokenStore refreshTokenStore,
         IDateTimeProvider dateTimeProvider,
         IUnitOfWork unitOfWork,
-        IRefreshTokenLifetime refreshTokenLifetime)
+        IRefreshTokenLifetime refreshTokenLifetime,
+        IPasswordPolicyOptions passwordPolicyOptions,
+        IAccountLockoutOptions accountLockoutOptions)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
@@ -34,6 +38,8 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
         _dateTimeProvider = dateTimeProvider;
         _unitOfWork = unitOfWork;
         _refreshTokenLifetime = refreshTokenLifetime;
+        _passwordPolicyOptions = passwordPolicyOptions;
+        _accountLockoutOptions = accountLockoutOptions;
     }
 
     public async Task<ErrorOr<LoginResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -45,11 +51,22 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
             return AuthErrors.InvalidCredentials;
         }
         
+        var utcNow = _dateTimeProvider.UtcNow;
+
+        if (user.IsLockedOut(utcNow))
+        {
+            return AuthErrors.AccountLocked;
+        }
+        
         var isValidPassword = _passwordHasher.Verify(request.Password, user.PasswordHash);
 
         if (!isValidPassword)
         {
-            return AuthErrors.InvalidCredentials;
+            var justLockedOut = user.RecordFailedLoginAttempt(_accountLockoutOptions.MaxFailedAttempts,_accountLockoutOptions.LockoutDuration,utcNow);
+            
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            
+            return justLockedOut? AuthErrors.AccountLocked : AuthErrors.InvalidCredentials;
         }
 
         if (!user.IsEmailVerified)
@@ -67,8 +84,10 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
         
         await _refreshTokenStore.StoreActiveAsync(user.Id, refreshToken, expiresAt, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        var mustChangePassword = user.IsPasswordExpired(utcNow, _passwordPolicyOptions.MaxPasswordAge);
 
-        var result = new LoginResponse(user.Id, accessToken, refreshToken);
+        var result = new LoginResponse(user.Id, accessToken, refreshToken,mustChangePassword);
 
         return result;
         
