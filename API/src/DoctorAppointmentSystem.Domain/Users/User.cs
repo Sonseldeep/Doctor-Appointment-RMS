@@ -107,9 +107,9 @@ public sealed class User : Entity
         LockedOutUntil = null;
     }
 
-    public bool IsPasswordExpired(DateTimeOffset now, TimeSpan maxAge)
+    public bool IsPasswordExpired(DateTimeOffset now, TimeSpan maxPasswordAge)
     {
-        return now - PasswordChangeAt > maxAge;
+        return now - PasswordChangeAt > maxPasswordAge;
     }
     
 }
