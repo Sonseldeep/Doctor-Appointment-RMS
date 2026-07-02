@@ -14,5 +14,5 @@ internal sealed class AccountSecurityPolicyProvider : IAccountLockoutOptions, IP
     
     public int MaxFailedAttempts => _options.MaxFailedLoginAttempts;
     public TimeSpan LockoutDuration => TimeSpan.FromHours(_options.LockoutDurationHours);
-    public TimeSpan MaxPasswordAge => TimeSpan.FromDays(_options.PasswordExpiryDays);
+    // public TimeSpan MaxPasswordAge => TimeSpan.FromDays(_options.PasswordExpiryDays);
 }

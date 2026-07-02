@@ -85,7 +85,7 @@ public sealed class AuthController : ApiController
             success =>
             {
                 AppendRefreshTokenCookie(success.RefreshToken);
-                var response = new AuthResponse(success.AccessToken, success.MustChangePassword);
+                var response = new AuthResponse(success.AccessToken);
                 return Ok(response);
             },
             Problem);
@@ -110,7 +110,7 @@ public sealed class AuthController : ApiController
             success =>
             {
                 AppendRefreshTokenCookie(success.RefreshToken);
-                var response = new AuthResponse(success.AccessToken, success.MustChangePassword);
+                var response = new AuthResponse(success.AccessToken);
                 return Ok(response);
             },
             Problem);
