@@ -53,6 +53,7 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
         
         var utcNow = _dateTimeProvider.UtcNow;
 
+        // checked BEFORE password verification
         if (user.IsLockedOut(utcNow))
         {
             return AuthErrors.AccountLocked;

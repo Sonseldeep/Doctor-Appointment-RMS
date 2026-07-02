@@ -27,7 +27,7 @@ public sealed class User : Entity
         IsEmailVerified = false;
         PasswordChangeAt = now;
         FailedLoginAttempts = 0;
-        LockedOutUntil = now;
+        LockedOutUntil = null;
     }
 
     public string FirstName { get; private set; } = string.Empty;
@@ -47,7 +47,7 @@ public sealed class User : Entity
 
     public int FailedLoginAttempts { get; private set; }
 
-    public DateTimeOffset? LockedOutUntil { get; set; }
+    public DateTimeOffset? LockedOutUntil { get; private set; }
 
     public DateTimeOffset PasswordChangeAt { get; private set; }
 
@@ -98,7 +98,6 @@ public sealed class User : Entity
         }
         
         LockedOutUntil = now.Add(lockoutDuration);
-        FailedLoginAttempts = 0;
         return true;
     }
 
