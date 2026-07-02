@@ -112,8 +112,7 @@ export function useNotificationCount() {
   const query = useQuery({
     queryKey: ["notifications", "unread-count"],
     queryFn: () => notificationsApi.getNotifications({ isRead: false, page: 1, pageSize: 1 }),
-    staleTime: 30000,       // Cache count for 30 seconds before even considering a network call
-    refetchInterval: 30000, // Poll cleanly in the background every 30 seconds
+    staleTime: Infinity,
   });
 
   return {
@@ -134,8 +133,7 @@ export function useNotifications(params: GetNotificationsParams = {}) {
   const notificationsQuery = useQuery({
     queryKey: ["notifications", "list", { page, pageSize, isRead }],
     queryFn: () => notificationsApi.getNotifications({ page, pageSize, isRead }),
-    staleTime: 15000,       // Data remains fresh for 15s. Prevents spammed requests on rapid view re-focus
-    refetchInterval: 15000, // Polling interval
+    staleTime: Infinity,
     placeholderData: (previousData) => previousData, // Smooth pagination transitions
   });
 
