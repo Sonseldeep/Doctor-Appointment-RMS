@@ -1,6 +1,7 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Notifications;
 using DoctorAppointmentSystem.Application.Features.Appointments.GetMyAppointments;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.Contracts;
+using DoctorAppointmentSystem.Application.Features.Labs.GetLabReports;
 using DoctorAppointmentSystem.Application.Features.Notifications.Contracts;
 using DoctorAppointmentSystem.Domain.Notifications;
 using DoctorAppointmentSystem.Infrastructure.Hubs;
@@ -78,7 +79,20 @@ internal sealed class SignalRNotificationService : INotificationService
             .SendAsync("ClinicalNoteAdded", clinicalNote, cancellationToken);
     }
 
+    public async Task SendLabReportAddedToPatientAsync(
+        Guid patientUserId,
+        LabReportResponse labReport,
+        CancellationToken cancellationToken = default)
+    {
+        var group = NotificationHub.GetGroupName(patientUserId.ToString());
+
+        await _hubContext.Clients
+            .Group(group)
+            .SendAsync("LabReportAdded", labReport, cancellationToken);
+    }
+
    
+    
     public async Task NotifyDashboardStatsChangedAsync(
         string reason,
         CancellationToken cancellationToken = default)
