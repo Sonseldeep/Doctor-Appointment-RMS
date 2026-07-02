@@ -14,7 +14,8 @@ public sealed class User : Entity
         string lastName,
         string email, 
         string passwordHash,
-        UserRole role)
+        UserRole role,
+        DateTimeOffset now)
         : base(id)
     {
         FirstName = firstName;
@@ -24,6 +25,9 @@ public sealed class User : Entity
         Role = role;
         TokenVersion = Guid.NewGuid();
         IsEmailVerified = false;
+        PasswordChangeAt = now;
+        FailedLoginAttempts = 0;
+        LockedOutUntil = now;
     }
 
     public string FirstName { get; private set; } = string.Empty;
@@ -41,10 +45,15 @@ public sealed class User : Entity
 
     public string? ProfilePhotoUrl { get; private set; }
 
+    public int FailedLoginAttempts { get; private set; }
 
-    public static User Create(string firstName, string lastName, string email, string passwordHash, UserRole role)
+    public DateTimeOffset? LockedOutUntil { get; set; }
+
+    public DateTimeOffset PasswordChangeAt { get; private set; }
+
+    public static User Create(string firstName, string lastName, string email, string passwordHash, UserRole role, DateTimeOffset now)
     {
-        var user = new User(Guid.NewGuid(), firstName, lastName, email, passwordHash, role);
+        var user = new User(Guid.NewGuid(), firstName, lastName, email, passwordHash, role,now);
         return user;
     }
     
@@ -60,13 +69,48 @@ public sealed class User : Entity
         IsEmailVerified = true;
     }
     
-    public void ChangePasswordHash(string passwordHash)
+    public void ChangePasswordHash(string passwordHash, DateTimeOffset changeAt)
     {
         PasswordHash = passwordHash;
+        PasswordChangeAt = changeAt;
+        
+        FailedLoginAttempts = 0;
+        LockedOutUntil = null;
     }
 
     public void UpdateProfilePhoto(string url)
     {
         ProfilePhotoUrl = url;
     }
+
+    public bool IsLockedOut(DateTimeOffset now)
+    {
+        return LockedOutUntil is not null && LockedOutUntil.Value > now;
+    }
+
+    public bool RecordFailedLoginAttempt(int maxAttempts, TimeSpan lockoutDuration, DateTimeOffset now)
+    {
+        FailedLoginAttempts++;
+
+        if (FailedLoginAttempts < maxAttempts)
+        {
+            return false;
+        }
+        
+        LockedOutUntil = now.Add(lockoutDuration);
+        FailedLoginAttempts = 0;
+        return true;
+    }
+
+    public void ResetLockout()
+    {
+        FailedLoginAttempts = 0;
+        LockedOutUntil = null;
+    }
+
+    public bool IsPasswordExpired(DateTimeOffset now, TimeSpan maxAge)
+    {
+        return now - PasswordChangeAt > maxAge;
+    }
+    
 }
