@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
-import { useNotifications } from "@/features/notifications/hooks/use-notifications";
+import { useNotificationCount } from "@/features/notifications/hooks/use-notifications";
+
 import {
   RiDashboardLine,
   RiCalendarLine,
@@ -16,6 +17,7 @@ import {
   RiGroupLine,
   RiBarChart2Line,
   RiLogoutBoxLine,
+  RiTestTubeLine,
 } from "@remixicon/react";
 
 interface NavItem {
@@ -29,7 +31,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { logout } = useLogout();
   const { data: user } = useCurrentUser();
-  const { unreadCount } = useNotifications();
+  const { unreadCount } = useNotificationCount();
 
   const userNavItems: NavItem[] = [
     { label: "Dashboard", href: "/dashboard", icon: <RiDashboardLine /> },
@@ -47,7 +49,16 @@ export function Sidebar() {
     { label: "Reports", href: "/dashboard/admin/reports", icon: <RiBarChart2Line /> },
   ];
 
-  const navItems = user?.role === "Admin" ? adminNavItems : userNavItems;
+  const labNavItems: NavItem[] = [
+    { label: "Lab Portal", href: "/dashboard/lab", icon: <RiTestTubeLine /> },
+  ];
+
+  let navItems = userNavItems;
+  if (user?.role === "Admin") {
+    navItems = adminNavItems;
+  } else if (user?.role === "LabTechnician") {
+    navItems = labNavItems;
+  }
 
   const handleLogout = async () => {
     await logout();
@@ -55,6 +66,7 @@ export function Sidebar() {
 
   const getDashboardSubtitle = () => {
     if (user?.role === "Admin") return "Admin Panel";
+    if (user?.role === "LabTechnician") return "Lab Technician";
     if (user?.role?.toLowerCase() === "doctor") return "Doctor Dashboard";
     return "Patient Dashboard";
   };
@@ -112,7 +124,7 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom Action Anchor */}
-      <div>
+      {/* <div>
         <Button
           onClick={handleLogout}
           variant="outline"
@@ -121,7 +133,7 @@ export function Sidebar() {
           <RiLogoutBoxLine className="text-lg" />
           Logout
         </Button>
-      </div> 
+      </div>  */}
     </aside>
   );
 }

@@ -64,8 +64,17 @@ export interface AdminProfile {
   profilePhotoUrl: string | null;
 }
 
+export interface LabTechnicianProfile {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: "LabTechnician";
+  profilePhotoUrl: string | null;
+}
+
 // Union type for all user types with proper discriminated union
-export type CurrentUser = DoctorProfile | PatientProfile | AdminProfile;
+export type CurrentUser = DoctorProfile | PatientProfile | AdminProfile | LabTechnicianProfile;
 
 // Type guard functions for better type safety
 export const isDoctorProfile = (user: CurrentUser): user is DoctorProfile => {
@@ -78,6 +87,10 @@ export const isPatientProfile = (user: CurrentUser): user is PatientProfile => {
 
 export const isAdminProfile = (user: CurrentUser): user is AdminProfile => {
   return user.role === "Admin";
+};
+
+export const isLabTechnicianProfile = (user: CurrentUser): user is LabTechnicianProfile => {
+  return user.role === "LabTechnician";
 };
 
 export interface UploadProfilePhotoResponse {
