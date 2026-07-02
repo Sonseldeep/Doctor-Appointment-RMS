@@ -53,5 +53,15 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(PhotoUrlMaxLength)
             .IsRequired(false);
         
+        builder.Property(x => x.FailedLoginAttempts)
+            .IsRequired()
+            .HasDefaultValue(0);
+        
+        builder.Property(x => x.LockedOutUntil)
+            .IsRequired(false);
+        
+        builder.Property(x => x.PasswordChangeAt)
+            .IsRequired();
+        
     }
 }
