@@ -8,9 +8,11 @@ import { RiSearchLine, RiFilter3Line } from "@remixicon/react";
 
 interface DoctorsListProps {
   onSelectDoctor: (doctor: Doctor) => void;
+  page: number;
+  pageSize: number;
 }
 
-export function DoctorsList({ onSelectDoctor }: DoctorsListProps) {
+export function DoctorsList({ onSelectDoctor, page, pageSize }: DoctorsListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [specialization, setSpecialization] = useState("");
 
@@ -18,6 +20,8 @@ export function DoctorsList({ onSelectDoctor }: DoctorsListProps) {
   const { data, isLoading, isError } = useDoctors({
     searchTerm,
     specialization,
+    page, 
+    pageSize,
   });
 
   const doctorsList = data?.items || [];
