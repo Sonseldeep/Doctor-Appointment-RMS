@@ -124,21 +124,7 @@ export function AppointmentCard({ appointment, onCancel, onClick, isDoctorView =
 
         {/* Action Triggers */}
         <div className="flex gap-3 mt-5" onClick={(e) => e.stopPropagation()}>
-          {["Scheduled", "Confirmed", "Pending"].includes(apt.status) && (
-            <>
-              <Button variant="outline" size="sm" className="flex-1 rounded-xl font-semibold text-xs h-9 text-slate-700 border-slate-200">
-                Reschedule
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex-1 rounded-xl font-semibold text-xs h-9 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50" 
-                onClick={() => onCancel?.(apt.id)}
-              >
-                Cancel
-              </Button>
-            </>
-          )}
+          
 
           {!isDoctorView && apt.status === "Completed" && (
             <Button 

@@ -229,22 +229,57 @@ export default function ProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Clinical Area Specialization</label>
-                    {!isEditing ? (
-                      <p className="font-semibold text-gray-800 mt-1.5">{user.specialization || "General"}</p>
-                    ) : (
-                      <Input 
-                        className="mt-1" 
-                        value={doctorForm.specialization} 
-                        onChange={(e) => setDoctorForm({ ...doctorForm, specialization: e.target.value })} 
-                      />
-                    )}
-                  </div>
+  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+    Clinical Area Specialization
+  </label>
+  {!isEditing ? (
+    <p className="font-semibold text-gray-800 mt-1.5">
+      {user.specialization || "General"}
+    </p>
+  ) : (
+    <select
+      className="
+        mt-1
+        flex
+        h-10
+        w-full
+        rounded-md
+        border
+        border-input
+        bg-background
+        px-3
+        py-2
+        text-sm
+        ring-offset-background
+        file:border-0
+        file:bg-transparent
+        file:text-sm
+        file:font-medium
+        placeholder:text-muted-foreground
+        focus-visible:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-ring
+        focus-visible:ring-offset-2
+        disabled:cursor-not-allowed
+        disabled:opacity-50
+      "
+      value={doctorForm.specialization || "General"}
+      onChange={(e) =>
+        setDoctorForm({ ...doctorForm, specialization: e.target.value })
+      }
+    >
+      <option value="General">General</option>
+      <option value="Cardiologist">Cardiologist</option>
+      <option value="Dermatologist">Dermatologist</option>
+      <option value="Orthopedic">Orthopedic</option>
+    </select>
+  )}
+</div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Consultation Fee Rate ($)</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Consultation Fee Rate (NPR)</label>
                     {!isEditing ? (
-                      <p className="font-semibold text-gray-800 mt-1.5">{user.consultationFee ? `$${user.consultationFee}` : "$0"}</p>
+                      <p className="font-semibold text-gray-800 mt-1.5">{user.consultationFee ? `NPR ${user.consultationFee}` : "NPR 0"}</p>
                     ) : (
                       <Input 
                         type="number" 

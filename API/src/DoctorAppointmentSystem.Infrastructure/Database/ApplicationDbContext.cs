@@ -1,4 +1,4 @@
-﻿using DoctorAppointmentSystem.Application.Abstractions.Data;
+using DoctorAppointmentSystem.Application.Abstractions.Data;
 using DoctorAppointmentSystem.Domain.Appointments;
 using DoctorAppointmentSystem.Domain.Availability;
 using DoctorAppointmentSystem.Domain.ClinicalNotes;
