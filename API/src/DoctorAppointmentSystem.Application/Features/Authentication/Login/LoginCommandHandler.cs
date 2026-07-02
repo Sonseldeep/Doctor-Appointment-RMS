@@ -86,9 +86,9 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
         await _refreshTokenStore.StoreActiveAsync(user.Id, refreshToken, expiresAt, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         
-        var mustChangePassword = user.IsPasswordExpired(utcNow, _passwordPolicyOptions.MaxPasswordAge);
+        // var mustChangePassword = user.IsPasswordExpired(utcNow, _passwordPolicyOptions.MaxPasswordAge);
 
-        var result = new LoginResponse(user.Id, accessToken, refreshToken,mustChangePassword);
+        var result = new LoginResponse(user.Id, accessToken, refreshToken);
 
         return result;
         

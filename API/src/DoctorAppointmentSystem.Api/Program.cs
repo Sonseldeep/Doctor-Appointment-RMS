@@ -38,8 +38,6 @@ if (app.Environment.IsDevelopment())
     app.ApplyMigrations();
     await app.SeedAdminUserAsync();
     await app.SeedLabTechnicianUserAsync();
-    await app.SeedDemoDataAsync();
-
 
 }
 

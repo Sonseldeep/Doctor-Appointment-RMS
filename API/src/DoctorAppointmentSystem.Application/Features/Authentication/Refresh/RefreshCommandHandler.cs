@@ -68,9 +68,9 @@ internal sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand, Lo
         await _refreshTokenStore.StoreActiveAsync(user.Id, newRefreshToken, newExpiresAt, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var mustChangePassword = user.IsPasswordExpired(utcNow, _passwordPolicyOptions.MaxPasswordAge);
+        // var mustChangePassword = user.IsPasswordExpired(utcNow, _passwordPolicyOptions.MaxPasswordAge);
 
-        var result = new LoginResponse(user.Id, newAccessToken, newRefreshToken,mustChangePassword);
+        var result = new LoginResponse(user.Id, newAccessToken, newRefreshToken);
         return result;
     }
 }

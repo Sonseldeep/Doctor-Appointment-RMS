@@ -55,9 +55,12 @@ public abstract class ApiController : ControllerBase
             Detail = error.Description
         };
 
-        foreach (var (key, value) in error.Metadata!)
+        if (error.Metadata is not null)
         {
-            problemDetails.Extensions[key] = value;
+            foreach (var (key, value) in error.Metadata)
+            {
+                problemDetails.Extensions[key] = value;
+            }
         }
 
         return StatusCode(statusCode, problemDetails);

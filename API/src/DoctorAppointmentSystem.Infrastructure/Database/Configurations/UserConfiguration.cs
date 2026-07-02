@@ -60,8 +60,8 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.LockedOutUntil)
             .IsRequired(false);
         
-        builder.Property(x => x.PasswordChangeAt)
-            .IsRequired();
+        // builder.Property(x => x.PasswordChangeAt)
+        //     .IsRequired();
         
     }
 }
