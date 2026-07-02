@@ -16,7 +16,11 @@ internal static class AuthErrors
         code: "Auth.RefreshTokenInvalid",
         description: "Refresh token is invalid, expired, or revoked.");
 
-    public static Error AccountLocked => Error.Forbidden(
+    public static Error AccountLocked(DateTimeOffset lockedOutUntil) => Error.Forbidden(
         code: "Auth.AccountLocked",
-        description: "Too many failed login attempts. This account is temporarily locked. Please try again later or reset your password.");
+        description: "Too many failed login attempts. This account is temporarily locked. Please try again later.",
+        metadata: new Dictionary<string, object>
+        {
+            ["lockedOutUntil"] = lockedOutUntil
+        });
 }

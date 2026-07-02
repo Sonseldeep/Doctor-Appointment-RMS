@@ -34,6 +34,8 @@ public sealed class AuthController : ApiController
 
     [HttpPost("register")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth-ip-register")]
+
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
         var command = new RegisterCommand(request.FirstName, request.LastName, request.Email, request.Password, request.Role);
@@ -72,6 +74,7 @@ public sealed class AuthController : ApiController
 
     [HttpPost("login")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth-ip-login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         var command = new LoginCommand(request.Email, request.Password);

@@ -13,6 +13,7 @@ public abstract class ApiController : ControllerBase
         var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return Guid.TryParse(value, out userId);
     }
+
     protected IActionResult Problem(List<Error> errors)
     {
         if (errors.Count == 0)
@@ -28,33 +29,38 @@ public abstract class ApiController : ControllerBase
         return Problem(errors[0]);
     }
 
-    
     protected IActionResult Problem(Error error)
     {
-        if (error.Code == "Otp.TooManyRequests")
+        var statusCode = error.Code switch
         {
-            return Problem(
-                statusCode: StatusCodes.Status429TooManyRequests,
-                title: "Too many requests",
-                type: error.Code,
-                detail: error.Description);
-        }
-
-        var statusCode = error.Type switch
-        {
-            ErrorType.Validation => StatusCodes.Status400BadRequest,
-            ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
-            ErrorType.Forbidden => StatusCodes.Status403Forbidden,
-            ErrorType.NotFound => StatusCodes.Status404NotFound,
-            ErrorType.Conflict => StatusCodes.Status409Conflict,
-            _ => StatusCodes.Status500InternalServerError
+            "Otp.TooManyRequests" => StatusCodes.Status429TooManyRequests,
+            _ => error.Type switch
+            {
+                ErrorType.Validation => StatusCodes.Status400BadRequest,
+                ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
+                ErrorType.Forbidden => StatusCodes.Status403Forbidden,
+                ErrorType.NotFound => StatusCodes.Status404NotFound,
+                ErrorType.Conflict => StatusCodes.Status409Conflict,
+                _ => StatusCodes.Status500InternalServerError
+            }
         };
 
-        return Problem(
-            statusCode: statusCode,
-            title: "Request failed",
-            type: error.Code,
-            detail: error.Description);
+        var problemDetails = new ProblemDetails
+        {
+            Status = statusCode,
+            Title = error.Code == "Otp.TooManyRequests"
+                ? "Too many requests"
+                : "Request failed",
+            Type = error.Code,
+            Detail = error.Description
+        };
+
+        foreach (var (key, value) in error.Metadata!)
+        {
+            problemDetails.Extensions[key] = value;
+        }
+
+        return StatusCode(statusCode, problemDetails);
     }
 
     private IActionResult ValidationProblem(List<Error> errors)
@@ -74,6 +80,4 @@ public abstract class ApiController : ControllerBase
             Detail = "One or more validation errors occurred."
         });
     }
-    
-    
 }

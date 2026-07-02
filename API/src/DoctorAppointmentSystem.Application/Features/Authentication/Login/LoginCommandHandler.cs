@@ -56,7 +56,7 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
         // checked BEFORE password verification
         if (user.IsLockedOut(utcNow))
         {
-            return AuthErrors.AccountLocked;
+            return AuthErrors.AccountLocked(user.LockedOutUntil!.Value);
         }
         
         var isValidPassword = _passwordHasher.Verify(request.Password, user.PasswordHash);
@@ -67,7 +67,7 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
             
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             
-            return justLockedOut? AuthErrors.AccountLocked : AuthErrors.InvalidCredentials;
+            return justLockedOut? AuthErrors.AccountLocked(user.LockedOutUntil!.Value) : AuthErrors.InvalidCredentials;
         }
 
         if (!user.IsEmailVerified)
