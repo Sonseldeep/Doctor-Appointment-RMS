@@ -19,11 +19,11 @@ export function useGetMyAppointments(page: number = 1, pageSize: number = 10) {
       };
     },
     retry: 1,
-    staleTime: 0,
+    staleTime: Infinity,
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
-    refetchInterval: 15000, 
+   
   });
 }
 
