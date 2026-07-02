@@ -1,6 +1,6 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Authentication;
+using DoctorAppointmentSystem.Application.Abstractions.Data;
 using DoctorAppointmentSystem.Application.Abstractions.Doctors;
-using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Domain.Doctor;
 using DoctorAppointmentSystem.Domain.Users;

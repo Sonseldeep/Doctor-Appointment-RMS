@@ -130,6 +130,7 @@ export function useNotifications(params: GetNotificationsParams = {}) {
   const pageSize = params.pageSize ?? 10;
   const isRead = params.isRead;
 
+  // Query 1: Fetches the paginated list for the current active feed window
   const notificationsQuery = useQuery({
     queryKey: ["notifications", "list", { page, pageSize, isRead }],
     queryFn: () => notificationsApi.getNotifications({ page, pageSize, isRead }),
@@ -138,6 +139,7 @@ export function useNotifications(params: GetNotificationsParams = {}) {
     placeholderData: (previousData) => previousData, // Smooth pagination transitions
   });
 
+  // Mutation: Mark a single notification row item as read
   const markAsReadMutation = useMutation({
     mutationFn: notificationsApi.markAsRead,
     onSuccess: () => {
