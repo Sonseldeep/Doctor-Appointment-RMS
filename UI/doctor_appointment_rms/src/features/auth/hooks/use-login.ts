@@ -101,7 +101,7 @@ export function useLogin() {
             router.push("/dashboard/lab");
             break;
           case "Admin":
-            router.push("/dashboard/admin");
+            router.push("/dashboard");
             break;
           default:
             router.push("/dashboard"); 
