@@ -16,4 +16,7 @@ public interface INotificationService
     
     
     Task SendClinicalNoteAddedToPatientAsync(Guid patientUserId, ClinicalNoteResponse clinicalNote, CancellationToken cancellationToken = default);
+    
+    Task NotifyDashboardStatsChangedAsync(string reason, CancellationToken cancellationToken = default);
+
 }

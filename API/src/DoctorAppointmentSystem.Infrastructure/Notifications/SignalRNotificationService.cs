@@ -77,4 +77,14 @@ internal sealed class SignalRNotificationService : INotificationService
             .Group(group)
             .SendAsync("ClinicalNoteAdded", clinicalNote, cancellationToken);
     }
+
+   
+    public async Task NotifyDashboardStatsChangedAsync(
+        string reason,
+        CancellationToken cancellationToken = default)
+    {
+        await _hubContext.Clients
+            .Group(NotificationHub.AdminDashboardGroup)
+            .SendAsync("DashboardStatsChanged", new { reason, occurredAtUtc = DateTimeOffset.UtcNow }, cancellationToken);
+    }
 }

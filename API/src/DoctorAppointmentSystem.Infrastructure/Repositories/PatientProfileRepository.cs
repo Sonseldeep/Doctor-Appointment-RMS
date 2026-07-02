@@ -1,6 +1,7 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Patients;
 using DoctorAppointmentSystem.Application.Common;
 using DoctorAppointmentSystem.Application.Features.Admin.Patient.GetAllPatients;
+using DoctorAppointmentSystem.Domain.Appointments;
 using DoctorAppointmentSystem.Domain.Patients;
 using DoctorAppointmentSystem.Domain.Users;
 using DoctorAppointmentSystem.Infrastructure.Database;
@@ -101,6 +102,7 @@ internal sealed class PatientProfileRepository : IPatientProfileRepository
             PageSize: filters.PageSize);
     }
 
+   
     private static int CalculateAge(DateOnly dateOfBirth)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -112,23 +114,29 @@ internal sealed class PatientProfileRepository : IPatientProfileRepository
         return age;
     }
 
-    public async Task<List<(PatientProfile Patient, User User)>> SearchByNameOrEmailAsync(string searchTerm, CancellationToken cancellationToken = default)
+    public async Task<List<(PatientProfile Patient, User User)>> SearchByNameOrEmailAsync(
+        Guid doctorUserId,
+        string searchTerm,
+        CancellationToken cancellationToken = default)
     {
         var term = searchTerm.ToLower();
 
         return await _db.PatientProfiles
             .Join(
                 _db.Users,
-                patient => patient.UserId, // FK on PatientProfile
-                user => user.Id,           // PK on User
-                (patient, user) => new { Patient = patient, User = user } // Anonymous result
-            )
+                patient => patient.UserId,
+                user => user.Id,
+                (patient, user) => new { Patient = patient, User = user })
+            .Where(joined =>
+                _db.Appointments.Any(a =>
+                    a.DoctorUserId == doctorUserId &&
+                    a.PatientUserId == joined.Patient.UserId &&
+                    a.Status != AppointmentStatus.Cancelled))
             .Where(joined =>
                 joined.User.FirstName.ToLower().Contains(term) ||
                 joined.User.LastName.ToLower().Contains(term) ||
                 joined.User.Email.ToLower().Contains(term))
             .Take(10)
-            // Select into a Tuple or a small internal DTO so we can return both objects
             .Select(joined => ValueTuple.Create(joined.Patient, joined.User))
             .ToListAsync(cancellationToken);
     }

@@ -1,4 +1,5 @@
-﻿using DoctorAppointmentSystem.Application.Abstractions.Messaging;
+﻿using DoctorAppointmentSystem.Application.Abstractions.Authentication;
+using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Abstractions.Patients;
 using ErrorOr;
 
@@ -9,10 +10,12 @@ public record SearchPatientsQuery(string SearchTerm) : IQuery<List<PatientSearch
 public class SearchPatientsQueryHandler : IQueryHandler<SearchPatientsQuery, List<PatientSearchResponse>>
 {
     private readonly IPatientProfileRepository _patientRepository;
+    private readonly IUserContext _userContext;
 
-    public SearchPatientsQueryHandler(IPatientProfileRepository patientRepository)
+    public SearchPatientsQueryHandler(IPatientProfileRepository patientRepository, IUserContext userContext)
     {
         _patientRepository = patientRepository;
+        _userContext = userContext;
     }
 
     public async Task<ErrorOr<List<PatientSearchResponse>>> Handle(SearchPatientsQuery request, CancellationToken cancellationToken)
@@ -22,13 +25,13 @@ public class SearchPatientsQueryHandler : IQueryHandler<SearchPatientsQuery, Lis
             return new List<PatientSearchResponse>();
         }
 
-        // Now we get back a list of tuples containing both entities
-        var results = await _patientRepository.SearchByNameOrEmailAsync(request.SearchTerm, cancellationToken);
+        var results = await _patientRepository.SearchByNameOrEmailAsync(_userContext.UserId,request.SearchTerm, cancellationToken);
 
-        return results.Select(item => new PatientSearchResponse(
+        return results
+            .Select(item => new PatientSearchResponse(
             item.Patient.UserId,
-            $"{item.User.FirstName} {item.User.LastName}", // Access via the joined User
-            item.User.Email,                              // Access via the joined User
+            $"{item.User.FirstName} {item.User.LastName}", 
+            item.User.Email,                         
             item.Patient.DateOfBirth.ToDateTime(TimeOnly.MinValue)
         )).ToList();
     }

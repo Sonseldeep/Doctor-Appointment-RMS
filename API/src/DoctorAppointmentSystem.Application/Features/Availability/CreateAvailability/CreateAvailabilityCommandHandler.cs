@@ -1,9 +1,9 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Availability;
 using DoctorAppointmentSystem.Application.Abstractions.Doctors;
-using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Features.Doctors.Common;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
+using DoctorAppointmentSystem.Application.Abstractions.Data;
 using DoctorAppointmentSystem.Domain.Availability;
 using DoctorAppointmentSystem.Domain.Doctor;
 using ErrorOr;

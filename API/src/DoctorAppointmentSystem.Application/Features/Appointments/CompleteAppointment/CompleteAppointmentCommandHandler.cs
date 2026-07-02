@@ -1,7 +1,7 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Appointments;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
+using DoctorAppointmentSystem.Application.Abstractions.Data;
 using DoctorAppointmentSystem.Application.Abstractions.Doctors;
-using DoctorAppointmentSystem.Application.Abstractions.Interfaces;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Abstractions.Notifications;
 using DoctorAppointmentSystem.Application.Features.Doctors.Common;
