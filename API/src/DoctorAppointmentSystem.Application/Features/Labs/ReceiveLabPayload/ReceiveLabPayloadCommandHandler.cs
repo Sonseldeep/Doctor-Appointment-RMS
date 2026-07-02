@@ -3,7 +3,8 @@ using DoctorAppointmentSystem.Application.Abstractions.Data;
 using DoctorAppointmentSystem.Application.Abstractions.Labs;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Abstractions.Notifications;
-using DoctorAppointmentSystem.Application.Abstractions.Storage; 
+using DoctorAppointmentSystem.Application.Abstractions.Storage;
+using DoctorAppointmentSystem.Application.Features.Labs.GetLabReports;
 using DoctorAppointmentSystem.Domain.Labs;
 using DoctorAppointmentSystem.Domain.Notifications;
 using ErrorOr;
@@ -71,6 +72,26 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
 
         await _labRepository.AddAsync(report, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        var reportPayload = new LabReportResponse(
+            report.Id,
+            report.LabName,
+            report.PanelName,
+            report.ObservationDateTime,
+            report.DocumentUrl,
+            report.DocumentType,
+            report.MimeType,
+            report.Observations.Select(o => new ObservationResponse(
+                o.TestName,
+                o.Value,
+                o.Unit,
+                o.ReferenceRange,
+                o.IsAbnormal)).ToList());
+
+        await _notificationService.SendLabReportAddedToPatientAsync(
+            user.Id,
+            reportPayload,
+            cancellationToken);
 
         var notification = Notification.Create(
             user.Id,
@@ -82,10 +103,9 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
         await _notificationRepository.AddAsync(notification, cancellationToken); 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await _notificationService.SendToUserAsync(
-            user.Id,
-            notification,
-            cancellationToken);
+        await _notificationService.SendToUserAsync(user.Id, notification, cancellationToken);
+        
+        await _notificationService.NotifyDashboardStatsChangedAsync("lab-report-added", cancellationToken);
 
         return Result.Success;
     }
