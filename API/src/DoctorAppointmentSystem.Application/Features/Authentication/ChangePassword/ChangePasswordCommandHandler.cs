@@ -41,8 +41,9 @@ public sealed class ChangePasswordCommandHandler : ICommandHandler<ChangePasswor
             return Error.Validation(code: "Password.Invalid", description: "Current password is incorrect.");
         }
 
+        var utcNow = _dateTimeProvider.UtcNow;
         var newHash = _passwordHasher.Hash(request.NewPassword);
-        user.ChangePasswordHash(newHash);
+        user.ChangePasswordHash(newHash, utcNow);
 
         user.RotateTokenVersion();
         await _refreshTokenStore.RevokeActiveAsync(user.Id, _dateTimeProvider.UtcNow, cancellationToken);

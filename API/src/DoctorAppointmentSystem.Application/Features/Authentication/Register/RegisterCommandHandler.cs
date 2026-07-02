@@ -50,14 +50,15 @@ public class RegisterCommandHandler :
 
     public async Task<ErrorOr<Success>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        // 1. Check email already exists
+        //  1.Check email already exists
        var existingUser = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
+       
        if (existingUser is not null)
        {
            return AuthErrors.EmailAlreadyExists;
        }
        
-       // 2. Create user (unverified by default)
+       // 2. Create user 
        var passwordHash = _passwordHasher.Hash(request.Password);
 
        var roleResult = ParseRole(request.Role);
@@ -72,7 +73,8 @@ public class RegisterCommandHandler :
            request.LastName,
            request.Email,
            passwordHash,
-           roleResult.Value);
+           roleResult.Value,
+           _dateTimeProvider.UtcNow);
        
        await _userRepository.AddAsync(user, cancellationToken);
        await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -88,6 +90,7 @@ public class RegisterCommandHandler :
        // 3. Generate and store OTP
        var otp = _otpGenerator.Generate();
        var expiresAt = _dateTimeProvider.UtcNow.Add(OtpLifetime);
+       
        await _otpStore.StoreAsync(user.Id, OtpPurpose.EmailVerification, otp, expiresAt, cancellationToken);
        await _unitOfWork.SaveChangesAsync(cancellationToken);
        
@@ -112,7 +115,7 @@ public class RegisterCommandHandler :
             return parsed;
         }
 
-        return Error.Validation("Role", "Role must be Registered, Doctor, or Admin.");
+        return Error.Validation("Role", "Role must be Registered, Doctor, LabTechnician or Admin.");
     }
     
     

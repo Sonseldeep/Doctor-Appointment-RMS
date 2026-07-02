@@ -16,7 +16,7 @@ internal static class AuthErrors
         code: "Auth.RefreshTokenInvalid",
         description: "Refresh token is invalid, expired, or revoked.");
 
-    public static Error RefreshTokenMissing => Error.Unauthorized(
-        code: "Auth.RefreshTokenMissing",
-        description: "Refresh token cookie is missing.");
+    public static Error AccountLocked => Error.Forbidden(
+        code: "Auth.AccountLocked",
+        description: "Too many failed login attempts. This account is temporarily locked. Please try again later or reset your password.");
 }

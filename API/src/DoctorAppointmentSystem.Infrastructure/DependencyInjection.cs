@@ -121,7 +121,14 @@ public static class DependencyInjection
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IRefreshTokenLifetime, RefreshTokenLifetime>();
         services.AddScoped<TokenVersionValidator>();
+        
 
+        services.Configure<SecurityOptions>(configuration.GetSection(SecurityOptions.SectionName));
+        services.AddScoped<AccountSecurityPolicyProvider>();
+        services.AddScoped<IAccountLockoutOptions>(sp => sp.GetRequiredService<AccountSecurityPolicyProvider>());
+        services.AddScoped<IPasswordPolicyOptions>(sp => sp.GetRequiredService<AccountSecurityPolicyProvider>());
+
+        
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
         services.AddScoped<IEmailService, MailKitEmailService>();
 
