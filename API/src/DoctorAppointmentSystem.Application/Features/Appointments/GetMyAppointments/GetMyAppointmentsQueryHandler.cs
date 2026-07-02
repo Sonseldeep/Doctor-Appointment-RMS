@@ -24,7 +24,10 @@ internal sealed class GetMyAppointmentsQueryHandler
         CancellationToken cancellationToken)
     {
         var user = await _users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user is null) return UserErrors.NotFound;
+        if (user is null)
+        {
+            return UserErrors.NotFound;
+        }
 
         var pagedData = user.Role switch
         {

@@ -1,5 +1,4 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Labs;
-using DoctorAppointmentSystem.Application.Features.Labs.GetLabReports;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using ErrorOr;
 
@@ -10,7 +9,10 @@ public sealed class GetLabReportsQueryHandler : IQueryHandler<GetLabReportsQuery
     private readonly ILabReportRepository _labRepository;
 
     public GetLabReportsQueryHandler(ILabReportRepository labRepository)
-        => _labRepository = labRepository;
+    {
+        _labRepository = labRepository;
+    }
+
 
     public async Task<ErrorOr<List<LabReportResponse>>> Handle(
         GetLabReportsQuery request,
