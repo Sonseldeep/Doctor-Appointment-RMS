@@ -2,5 +2,5 @@
 
 public interface IPasswordPolicyOptions
 {
-    TimeSpan MaxPasswordAge { get; }
+    // TimeSpan MaxPasswordAge { get; }
 }

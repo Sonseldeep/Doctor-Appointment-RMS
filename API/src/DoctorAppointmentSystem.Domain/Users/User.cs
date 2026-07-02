@@ -25,7 +25,7 @@ public sealed class User : Entity
         Role = role;
         TokenVersion = Guid.NewGuid();
         IsEmailVerified = false;
-        PasswordChangeAt = now;
+        // PasswordChangeAt = now;
         FailedLoginAttempts = 0;
         LockedOutUntil = null;
     }
@@ -49,7 +49,7 @@ public sealed class User : Entity
 
     public DateTimeOffset? LockedOutUntil { get; private set; }
 
-    public DateTimeOffset PasswordChangeAt { get; private set; }
+    // public DateTimeOffset PasswordChangeAt { get; private set; }
 
     public static User Create(string firstName, string lastName, string email, string passwordHash, UserRole role, DateTimeOffset now)
     {
@@ -72,7 +72,7 @@ public sealed class User : Entity
     public void ChangePasswordHash(string passwordHash, DateTimeOffset changeAt)
     {
         PasswordHash = passwordHash;
-        PasswordChangeAt = changeAt;
+        // PasswordChangeAt = changeAt;
         
         FailedLoginAttempts = 0;
         LockedOutUntil = null;
@@ -107,9 +107,9 @@ public sealed class User : Entity
         LockedOutUntil = null;
     }
 
-    public bool IsPasswordExpired(DateTimeOffset now, TimeSpan maxPasswordAge)
-    {
-        return now - PasswordChangeAt > maxPasswordAge;
-    }
+    // public bool IsPasswordExpired(DateTimeOffset now, TimeSpan maxPasswordAge)
+    // {
+    //     return now - PasswordChangeAt > maxPasswordAge;
+    // }
     
 }
