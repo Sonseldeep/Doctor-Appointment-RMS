@@ -11,21 +11,7 @@ public static class RateLimitingExtensions
             options.RejectionStatusCode =
                 StatusCodes.Status429TooManyRequests;
             
-            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-            {
-                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-
-                return RateLimitPartition.GetFixedWindowLimiter(
-                    ip,
-                    _ => new FixedWindowRateLimiterOptions
-                    {
-                        PermitLimit = 300,
-                        Window = TimeSpan.FromMinutes(1),
-                        QueueLimit = 0,
-                        AutoReplenishment = true
-                    });
-            });
-
+         
             options.AddPolicy("otp-ip-resend", context =>
             {
                 var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
