@@ -84,8 +84,7 @@ public sealed class DoctorsController : ApiController
         {
             return Unauthorized();
         }
-          
-
+        
         var command = new UpdateDoctorProfileCommand(userId, request.Bio, request.Specialization, request.ConsultationFee);
 
         var result = await _sender.Send(command, cancellationToken);

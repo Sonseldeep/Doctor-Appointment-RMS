@@ -46,6 +46,7 @@ public interface IAppointmentRepository
         DateTimeOffset endUtc,
         CancellationToken cancellationToken);
 
+    Task<bool> HasAssociationAsync(Guid doctorUserId, Guid patientUserId, CancellationToken cancellationToken);
 
 
 }

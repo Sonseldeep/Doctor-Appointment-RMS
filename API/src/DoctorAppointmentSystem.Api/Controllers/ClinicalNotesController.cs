@@ -1,7 +1,6 @@
 ﻿using DoctorAppointmentSystem.Application.Features.ClinicalNotes.AddClinicalNote;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.Contracts;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.ExportClinicalNotes;
-using DoctorAppointmentSystem.Application.Features.ClinicalNotes.ExportClinicalNotes;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetClinicalNoteByAppointment;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetMyClinicalNotes;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetUpcomingFollowUps;
@@ -109,7 +108,6 @@ public sealed class ClinicalNotesController : ApiController
     [Authorize]
     public async Task<IActionResult> ExportPdf(Guid appointmentId, CancellationToken cancellationToken)
     {
-        // Send the specific appointmentId down to the handler
         var result = await _sender.Send(new ExportClinicalNotesQuery(appointmentId), cancellationToken);
 
         return result.Match<IActionResult>(
@@ -124,7 +122,6 @@ public sealed class ClinicalNotesController : ApiController
     {
 
         
-        // 1. Use the pattern your controller already uses to get the ID
         if (!TryGetCurrentUserId(out var userId))
         {
             return Unauthorized();
@@ -132,7 +129,6 @@ public sealed class ClinicalNotesController : ApiController
 
         var query = new GetUpcomingFollowUpsQuery(userId);
 
-        // 2. Use the injected _sender field instead of the undefined 'Sender' property
         var result = await _sender.Send(query, cancellationToken);
 
         return result.Match(Ok, Problem);
