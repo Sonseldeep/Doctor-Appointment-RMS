@@ -226,7 +226,7 @@ public static class DemoDataSeedExtensions
 
     private static User CreateVerifiedUser(string firstName, string lastName, string email, string passwordHash, UserRole role)
     {
-        var user = User.Create(firstName, lastName, email, passwordHash, role);
+        var user = User.Create(firstName, lastName, email, passwordHash, role, DateTimeOffset.Now);
         user.VerifyEmail();
         return user;
     }

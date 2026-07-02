@@ -56,7 +56,7 @@ public sealed class ResetPasswordCommandHandler : ICommandHandler<ResetPasswordC
         }
 
         var newHash = _passwordHasher.Hash(request.NewPassword);
-        user.ChangePasswordHash(newHash);
+        user.ChangePasswordHash(newHash,utcNow);
 
         user.RotateTokenVersion();
         await _refreshTokenStore.RevokeActiveAsync(user.Id, utcNow, cancellationToken);

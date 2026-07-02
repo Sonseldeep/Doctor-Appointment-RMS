@@ -16,6 +16,7 @@ internal sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand, Lo
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IRefreshTokenLifetime _refreshTokenLifetime;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPasswordPolicyOptions _passwordPolicyOptions;
 
     public RefreshCommandHandler(
         IUserRepository userRepository,
@@ -23,7 +24,8 @@ internal sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand, Lo
         IJwtTokenGenerator jwtTokenGenerator,
         IDateTimeProvider dateTimeProvider,
         IRefreshTokenLifetime refreshTokenLifetime,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IPasswordPolicyOptions passwordPolicyOptions)
     {
         _userRepository = userRepository;
         _refreshTokenStore = refreshTokenStore;
@@ -31,6 +33,7 @@ internal sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand, Lo
         _dateTimeProvider = dateTimeProvider;
         _refreshTokenLifetime = refreshTokenLifetime;
         _unitOfWork = unitOfWork;
+        _passwordPolicyOptions = passwordPolicyOptions;
     }
 
     public async Task<ErrorOr<LoginResponse>> Handle(RefreshCommand request, CancellationToken cancellationToken)
@@ -65,7 +68,9 @@ internal sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand, Lo
         await _refreshTokenStore.StoreActiveAsync(user.Id, newRefreshToken, newExpiresAt, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var result = new LoginResponse(user.Id, newAccessToken, newRefreshToken);
+        var mustChangePassword = user.IsPasswordExpired(utcNow, _passwordPolicyOptions.MaxPasswordAge);
+
+        var result = new LoginResponse(user.Id, newAccessToken, newRefreshToken,mustChangePassword);
         return result;
     }
 }
