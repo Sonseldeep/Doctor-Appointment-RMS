@@ -6,5 +6,4 @@ public sealed class SecurityOptions
 
     public int MaxFailedLoginAttempts { get; init; }
     public int LockoutDurationHours { get; init; } 
-    // public int PasswordExpiryDays { get; init; }
 }

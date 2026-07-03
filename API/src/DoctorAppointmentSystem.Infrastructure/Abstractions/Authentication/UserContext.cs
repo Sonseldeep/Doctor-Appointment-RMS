@@ -30,7 +30,6 @@ public sealed class UserContext : IUserContext
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext is null) return "UNKNOWN";
 
-            // Support setups behind reverse proxies (Nginx, Cloudflare, IIS)
             string? forwardedHeader = httpContext.Request.Headers["X-Forwarded-For"];
             if (!string.IsNullOrWhiteSpace(forwardedHeader))
             {
