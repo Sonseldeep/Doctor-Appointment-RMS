@@ -1,5 +1,7 @@
 "use client";
 
+
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -18,6 +20,7 @@ import {
   RiBarChart2Line,
   RiLogoutBoxLine,
   RiTestTubeLine,
+  RiTimeLine,
 } from "@remixicon/react";
 
 interface NavItem {
@@ -46,11 +49,20 @@ export function Sidebar() {
     { label: "Dashboard", href: "/dashboard", icon: <RiDashboardLine /> },
     { label: "Doctor Management", href: "/dashboard/admin/doctors", icon: <RiStethoscopeLine /> },
     { label: "Users", href: "/dashboard/admin/users", icon: <RiGroupLine /> },
-    { label: "Reports", href: "/dashboard/admin/reports", icon: <RiBarChart2Line /> },
+    // { label: "Reports", href: "/dashboard/admin/reports", icon: <RiBarChart2Line /> },
   ];
 
   const labNavItems: NavItem[] = [
     { label: "Lab Portal", href: "/dashboard/lab", icon: <RiTestTubeLine /> },
+  ];
+
+  const doctorNavItems: NavItem[] = [
+    { label: "Dashboard", href: "/dashboard", icon: <RiDashboardLine /> },
+    { label: "Appointments", href: "/dashboard/appointments", icon: <RiCalendarLine /> },
+    { label: "Availability", href: "/dashboard/availability", icon: <RiTimeLine /> }, // <--- NEW SIDEBAR LINK
+    { label: "Medical Records", href: "/dashboard/medical-records", icon: <RiFileListLine /> },
+    { label: "Prescriptions", href: "/dashboard/prescriptions", icon: <RiCapsuleLine /> },
+    { label: "Notifications", href: "/dashboard/notifications", icon: <RiNotificationLine />, badge: unreadCount },
   ];
 
   let navItems = userNavItems;
@@ -58,6 +70,8 @@ export function Sidebar() {
     navItems = adminNavItems;
   } else if (user?.role === "LabTechnician") {
     navItems = labNavItems;
+  }else if (user?.role === "Doctor") {
+    navItems = doctorNavItems; // <--- APPLY DOCTOR NAV
   }
 
   const handleLogout = async () => {

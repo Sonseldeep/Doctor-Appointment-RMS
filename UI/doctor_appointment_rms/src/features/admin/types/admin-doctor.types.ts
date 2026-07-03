@@ -3,6 +3,8 @@ export interface AdminDoctor {
   userId: string;
   firstName: string;
   lastName: string;
+  email: string;
+  nmcNumber: string;
   profilePhotoUrl: string | null;
   specialization: string;
   consultationFee: number;

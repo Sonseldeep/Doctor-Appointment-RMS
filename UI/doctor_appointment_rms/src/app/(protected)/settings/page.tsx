@@ -10,6 +10,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ChangePasswordForm } from "@/features/auth/components/change-password-form";
 import { Sidebar } from "@/features/dashboard/components/sidebar"; // IMPORT THE SIDEBAR
+import { Navbar } from "@/components/layout/navbar";
 
 export default function SettingsPage() {
   return (
@@ -19,6 +20,7 @@ export default function SettingsPage() {
 
       {/* MAIN CONTENT VIEWPORT */}
       <main className="flex-1 pl-64">
+        <Navbar />
         <div className="mx-auto max-w-3xl space-y-6 px-8 pt-8 pb-12">
           
           <div>
