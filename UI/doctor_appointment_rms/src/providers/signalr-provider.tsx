@@ -50,6 +50,9 @@ export function SignalRProvider({ children }: { children: React.ReactNode }) {
         // Professional Touch: Refetch on reconnect to catch missed updates
         queryClient.invalidateQueries({ queryKey: ["notifications"] });
         queryClient.invalidateQueries({ queryKey: ["appointments"] });
+
+        queryClient.invalidateQueries({ queryKey: ["lab-reports"] });
+        queryClient.invalidateQueries({ queryKey: ["doctor", "patients"] });
     });
     connection.onclose(() => setStatus('disconnected'));
 
@@ -59,6 +62,11 @@ export function SignalRProvider({ children }: { children: React.ReactNode }) {
     connection.on("ReceiveNotification", (data: any) => {
       console.log("SignalR: New notification received", data);
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    });
+
+    connection.on("DashboardStatsChanged", (data: any) => {
+      console.log("SignalR: Admin stats changed event received! Re-fetching analytics...", data);
+      queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
     });
 
     // Reusable utility function to clear appointment caches cleanly
@@ -74,6 +82,20 @@ export function SignalRProvider({ children }: { children: React.ReactNode }) {
       });
     };
 
+    const invalidateLabReportsCache = (eventType: string, data: any) => {
+      console.log(`SignalR: [${eventType}] event received! Updating lab reports cache...`, data);
+      queryClient.invalidateQueries({ 
+        queryKey: ["lab-reports"],
+        exact: false,
+        refetchType: 'all'
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["doctor", "patients"],
+        exact: false,
+        refetchType: 'all'
+      });
+    };
+
     // New Booking Pipeline Listeners (PascalCase and camelCase/lowercase variants)
     connection.on("AppointmentBooked", (data: any) => invalidateAppointmentsCache("AppointmentBooked", data));
     connection.on("appointmentbooked", (data: any) => invalidateAppointmentsCache("appointmentbooked", data));
@@ -81,6 +103,10 @@ export function SignalRProvider({ children }: { children: React.ReactNode }) {
     // Status Badge & State Pipeline Listeners (PascalCase and camelCase/lowercase variants)
     connection.on("AppointmentStatusChanged", (data: any) => invalidateAppointmentsCache("AppointmentStatusChanged", data));
     connection.on("appointmentstatuschanged", (data: any) => invalidateAppointmentsCache("appointmentstatuschanged", data));
+
+    // Real-time Lab Reports Pipeline Listeners
+    connection.on("LabReportAdded", (data: any) => invalidateLabReportsCache("LabReportAdded", data));
+    connection.on("labreportadded", (data: any) => invalidateLabReportsCache("labreportadded", data));
 
     // 5. Start Logic
     const startConnection = async () => {
