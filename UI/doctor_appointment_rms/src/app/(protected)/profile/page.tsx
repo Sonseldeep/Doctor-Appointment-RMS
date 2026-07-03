@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Navbar } from "@/components/layout/navbar";
 
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { useUploadProfilePhoto } from "@/features/auth/hooks/use-upload-profile-photo";
@@ -128,6 +129,7 @@ export default function ProfilePage() {
 
       {/* MAIN CONTENT VIEWPORT */}
       <main className="flex-1 pl-64">
+        <Navbar />
         <div className="mx-auto max-w-3xl space-y-6 px-8 pt-8 pb-12">
           
           <div className="flex items-center justify-between border-b pb-4">
@@ -136,7 +138,7 @@ export default function ProfilePage() {
               <p className="text-sm text-muted-foreground mt-0.5">Manage your digital account details and profile fields.</p>
             </div>
             
-            {!isEditing ? (
+            {user?.role !== "Admin" && (!isEditing ? (
               <Button onClick={() => setIsEditing(true)} variant="default" className="shadow-sm">
                 {isDoctor && !hasDoctorProfileRecord ? "Setup Profile" : "Edit Profile"}
               </Button>
@@ -153,6 +155,7 @@ export default function ProfilePage() {
                       : "Save Changes"}
                 </Button>
               </div>
+            )
             )}
           </div>
 

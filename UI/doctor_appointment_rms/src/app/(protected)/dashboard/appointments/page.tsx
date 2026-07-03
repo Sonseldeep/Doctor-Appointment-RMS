@@ -176,15 +176,6 @@ export default function AppointmentsPage() {
             <span className="text-sm font-semibold text-slate-800">
               Filters & Search
             </span>
-
-            {(searchQuery || dateFilter || statusFilter) && (
-              <span className="ml-auto rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
-                {
-                  [searchQuery, dateFilter, statusFilter].filter(Boolean)
-                    .length
-                } Active
-              </span>
-            )}
           </div>
 
           <div className="p-4">
@@ -537,9 +528,7 @@ export default function AppointmentsPage() {
               </div>
               <h3 className="text-sm font-semibold text-slate-900">No appointments found</h3>
               <p className="text-xs text-slate-500 mt-1 max-w-sm">Try adjusting your filters or check back later for new bookings.</p>
-              {(dateFilter || searchQuery) && (
-                <Button variant="outline" size="sm" onClick={() => { setDateFilter(""); setSearchQuery(""); }} className="mt-4 text-xs h-8">Clear Filters</Button>
-              )}
+              
             </div>
           )}
         </div>
