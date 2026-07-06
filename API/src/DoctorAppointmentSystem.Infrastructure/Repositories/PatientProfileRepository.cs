@@ -140,4 +140,27 @@ internal sealed class PatientProfileRepository : IPatientProfileRepository
             .Select(joined => ValueTuple.Create(joined.Patient, joined.User))
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<List<(PatientProfile Patient, User User)>> SearchForLabAsync(
+        string searchTerm,
+        CancellationToken cancellationToken = default)
+    {
+        var term = searchTerm.ToLower();
+
+        return await _db.PatientProfiles
+            .AsNoTracking()
+            .Join(
+                _db.Users.AsNoTracking().Where(u => u.Role == UserRole.Registered),
+                patient => patient.UserId,
+                user => user.Id,
+                (patient, user) => new { Patient = patient, User = user })
+            .Where(joined =>
+                joined.User.FirstName.ToLower().Contains(term) ||
+                joined.User.LastName.ToLower().Contains(term) ||
+                joined.User.Email.ToLower().Contains(term))
+            .OrderBy(joined => joined.User.FirstName)
+            .Take(10)
+            .Select(joined => ValueTuple.Create(joined.Patient, joined.User))
+            .ToListAsync(cancellationToken);
+    }
 }
