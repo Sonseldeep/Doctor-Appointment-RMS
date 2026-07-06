@@ -192,8 +192,7 @@ function BookingWizard() {
             <DoctorsList 
               onSelectDoctor={(doc: Doctor) => {
                 handleSelectDoctorInWizard(doc.doctorProfileId || doc.userId);
-              }} 
-            />
+              } } page={0} pageSize={0}            />
           </div>
         )}
 

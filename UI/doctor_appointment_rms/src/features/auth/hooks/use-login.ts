@@ -117,7 +117,14 @@ export function useLogin() {
       }
     },
 
-    onError: (error) => {
+    onError: (error: any) => {
+      const errorType = error?.response?.data?.Type;
+
+      if (errorType === "Auth.AccountLocked") {
+        toast.error("Account is locked");
+        return;
+      }
+
       console.error("Login error:", error);
       toast.error("Invalid email or password");
     },

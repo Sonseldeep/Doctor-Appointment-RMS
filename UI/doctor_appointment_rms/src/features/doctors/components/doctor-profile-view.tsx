@@ -118,10 +118,7 @@ export function DoctorProfileView({ doctor, onBack, onProceedToBooking }: Doctor
                 <RiStarFill className="text-amber-400" size={16} />
                 <span className="text-slate-800 font-bold">{displayRating}</span> ({displayReviewsCount} reviews)
               </span>
-              <span className="flex items-center gap-1">
-                <RiTimeLine className="text-slate-400" size={16} />
-                <span>{doctor.experience ?? 10} Years Experience</span>
-              </span>
+              
             </div>
           </div>
         </div>

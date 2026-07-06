@@ -298,13 +298,7 @@ export function AdminDashboard() {
         </Card>
       </div>
       
-      {/* Footer Timestamp Ring */}
-      <div className="text-right">
-        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 bg-slate-50 border px-2.5 py-1 rounded-md shadow-sm">
-          <RiTimeLine size={12} />
-          <span>Sync State Cache Fresh: {new Date(data?.generatedAtUtc || "").toLocaleTimeString()}</span>
-        </span>
-      </div>
+      
     </div>
   );
 }

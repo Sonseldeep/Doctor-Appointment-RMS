@@ -74,10 +74,7 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
               </>
             )}
           </span>
-          <span className="flex items-center gap-1">
-            <RiTimeLine className="text-blue-500" size={15} /> 
-            <span>{displayExperience} years experience</span>
-          </span>
+          
         </div>
 
         {/* Clinical Biography */}
