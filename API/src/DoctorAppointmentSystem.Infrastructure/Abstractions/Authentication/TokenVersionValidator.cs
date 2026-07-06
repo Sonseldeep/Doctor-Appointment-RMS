@@ -13,7 +13,6 @@ internal sealed class TokenVersionValidator
     
     private readonly IUserRepository _userRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
-    // private readonly IPasswordPolicyOptions _passwordPolicyOptions;
 
     public TokenVersionValidator(IUserRepository userRepository,
         IDateTimeProvider dateTimeProvider,
@@ -21,7 +20,6 @@ internal sealed class TokenVersionValidator
     {
         _userRepository = userRepository;
         _dateTimeProvider = dateTimeProvider;
-        // _passwordPolicyOptions = passwordPolicyOptions;
     }
 
     public async Task ValidateAsync(TokenValidatedContext context)
@@ -51,15 +49,6 @@ internal sealed class TokenVersionValidator
             context.Fail("Token revoked.");
             return;
         }
-        
-        var utcNow = _dateTimeProvider.UtcNow;
-        // var passwordExpired = user.IsPasswordExpired(utcNow, _passwordPolicyOptions.MaxPasswordAge);
-
-        // if (passwordExpired && !IsOnPasswordExpiryAllowList(context.HttpContext.Request.Path))
-        // {
-        //     context.Fail("Password has expired. Please change your password before continuing.");
-        // }
-        
     }
     
     private static bool IsOnPasswordExpiryAllowList(PathString path)

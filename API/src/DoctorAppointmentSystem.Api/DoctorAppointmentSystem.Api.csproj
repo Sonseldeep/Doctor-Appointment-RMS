@@ -21,6 +21,7 @@
         <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
         <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1-dev-02351" />
+        <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="10.0.1-dev-00163" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="9.1.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
     
