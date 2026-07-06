@@ -467,6 +467,13 @@ export function LoginForm() {
                 "Sign In"
               )}
             </Button>
+
+            <div className="text-center pt-6 text-slate-500">
+              Don't have an account?{" "}
+              <Link href="/register" className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors">
+                Register here
+              </Link>
+            </div>
           </form>
         </div>
       </div>
