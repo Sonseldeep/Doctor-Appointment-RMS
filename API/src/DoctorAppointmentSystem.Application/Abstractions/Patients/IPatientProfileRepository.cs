@@ -15,4 +15,6 @@ public interface IPatientProfileRepository
         CancellationToken cancellationToken);
 
     Task<List<(PatientProfile Patient, User User)>> SearchByNameOrEmailAsync(Guid doctorUserId, string searchTerm, CancellationToken cancellationToken = default);
+    
+    Task<List<(PatientProfile Patient, User User)>> SearchForLabAsync(string searchTerm, CancellationToken cancellationToken = default);
 }
