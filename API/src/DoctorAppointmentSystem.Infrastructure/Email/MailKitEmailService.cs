@@ -119,7 +119,32 @@ public class MailKitEmailService : IEmailService
         var htmlBody = EmailTemplates.AppointmentReminder(
             toName, doctorName, appointmentStart, reminderType);
 
-        await SendAsync(toEmail, toName, subject, htmlBody, cancellationToken);
+        await SendAsync(toEmail, toName, subject, htmlBody, cancellationToken: cancellationToken);
+    }
+
+
+    public async Task SendLabReportAsync(
+        string toEmail,
+        string toName,
+        string labName,
+        string panelName,
+        DateTime observationDateTime,
+        byte[] reportPdf,
+        string attachmentFileName,
+        CancellationToken cancellationToken)
+    {
+        const string subject = "Your Lab Report is Ready - Doctor Appointment System";
+
+        var htmlBody = EmailTemplates.LabReportReady(toName, labName, panelName, observationDateTime);
+
+        await SendAsync(
+            toEmail,
+            toName,
+            subject,
+            htmlBody,
+            attachmentFileName: attachmentFileName,
+            attachmentBytes: reportPdf,
+            cancellationToken: cancellationToken);
     }
     
     
@@ -128,7 +153,9 @@ public class MailKitEmailService : IEmailService
         string toName,
         string subject,
         string htmlBody,
-        CancellationToken cancellationToken)
+        string? attachmentFileName = null,
+        byte[]? attachmentBytes = null,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -142,7 +169,15 @@ public class MailKitEmailService : IEmailService
             message.From.Add(new MailboxAddress(_options.FromName, _options.FromEmail.Trim()));
             message.To.Add(new MailboxAddress(toName, toEmail.Trim()));
             message.Subject = subject;
-            message.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
+
+            var bodyBuilder = new BodyBuilder { HtmlBody = htmlBody };
+
+            if (attachmentBytes is { Length: > 0 } && !string.IsNullOrWhiteSpace(attachmentFileName))
+            {
+                bodyBuilder.Attachments.Add(attachmentFileName, attachmentBytes, ContentType.Parse("application/pdf"));
+            }
+
+            message.Body = bodyBuilder.ToMessageBody();
 
             using var client = new SmtpClient();
 

@@ -13,4 +13,14 @@ public interface IEmailService
         DateTimeOffset appointmentStart,
         string reminderType, 
         CancellationToken cancellationToken);
+    
+    Task SendLabReportAsync(
+        string toEmail,
+        string toName,
+        string labName,
+        string panelName,
+        DateTime observationDateTime,
+        byte[] reportPdf,
+        string attachmentFileName,
+        CancellationToken cancellationToken);
 }
