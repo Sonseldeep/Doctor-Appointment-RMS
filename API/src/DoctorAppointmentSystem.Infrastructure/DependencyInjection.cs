@@ -181,6 +181,9 @@ public static class DependencyInjection
         // Job registrations
         services.AddScoped<IAppointmentReminderJob, AppointmentReminderJob>();
         services.AddScoped<IAppointmentScheduler, HangfireAppointmentScheduler>();
+        services.AddScoped<ILabReportEmailJob, LabReportEmailJob>();
+        services.AddScoped<ILabReportNotificationScheduler, HangfireLabReportNotificationScheduler>();
+
 
         return services;
     }
