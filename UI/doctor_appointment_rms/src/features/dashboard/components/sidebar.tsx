@@ -71,7 +71,7 @@ export function Sidebar() {
   } else if (user?.role === "LabTechnician") {
     navItems = labNavItems;
   }else if (user?.role === "Doctor") {
-    navItems = doctorNavItems; // <--- APPLY DOCTOR NAV
+    navItems = doctorNavItems; 
   }
 
   const handleLogout = async () => {
