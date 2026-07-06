@@ -1,5 +1,6 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Data;
+using DoctorAppointmentSystem.Application.Abstractions.Jobs;
 using DoctorAppointmentSystem.Application.Abstractions.Labs;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Abstractions.Notifications;
@@ -19,6 +20,8 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
     private readonly INotificationService _notificationService;
     private readonly INotificationRepository _notificationRepository;
     private readonly IFileStorageService _fileStorageService; 
+    private readonly ILabReportNotificationScheduler _labReportNotificationScheduler;
+
 
     public ReceiveLabPayloadCommandHandler(
         ILabReportRepository labRepository,
@@ -26,7 +29,8 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
         IUnitOfWork unitOfWork,
         INotificationService notificationService,
         INotificationRepository notificationRepository,
-        IFileStorageService fileStorageService) 
+        IFileStorageService fileStorageService,
+        ILabReportNotificationScheduler labReportNotificationScheduler) 
     {
         _labRepository = labRepository;
         _userRepository = userRepository;
@@ -34,6 +38,7 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
         _notificationService = notificationService;
         _notificationRepository = notificationRepository;
         _fileStorageService = fileStorageService;
+        _labReportNotificationScheduler = labReportNotificationScheduler;
     }
 
     public async Task<ErrorOr<Success>> Handle(ReceiveLabPayloadCommand request, CancellationToken cancellationToken)
@@ -44,6 +49,7 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
         {
             return Error.NotFound("Lab.PatientNotFound", "Patient verification context failed.");
         }
+        
         var report = LabReport.Create(user.Id, request.LabName, request.PanelName, request.ObservationDate);
 
         
@@ -106,6 +112,8 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
         await _notificationService.SendToUserAsync(user.Id, notification, cancellationToken);
         
         await _notificationService.NotifyDashboardStatsChangedAsync("lab-report-added", cancellationToken);
+
+        _labReportNotificationScheduler.EnqueueReportEmail(report.Id);
 
         return Result.Success;
     }
