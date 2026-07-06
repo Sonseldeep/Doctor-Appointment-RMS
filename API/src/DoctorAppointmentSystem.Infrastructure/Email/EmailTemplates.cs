@@ -129,4 +129,48 @@ internal static class EmailTemplates
                 </html>
                 """;
     }
+    
+        public static string LabReportReady(
+        string patientName,
+        string labName,
+        string panelName,
+        DateTime observationDateTime)
+    {
+        return $"""
+                <!DOCTYPE html>
+                <html>
+                <body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:0;">
+                  <div style="max-width:600px; margin:40px auto; background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="background:#2563eb; padding:32px; text-align:center;">
+                      <h1 style="color:#ffffff; margin:0; font-size:24px;">Your Lab Report is Ready</h1>
+                    </div>
+                    <div style="padding:32px;">
+                      <p>Dear <strong>{patientName}</strong>,</p>
+                      <p>Your lab report is attached to this email as a PDF for your records.</p>
+                      <table style="border-collapse:collapse; width:100%; margin:20px 0;">
+                        <tr style="background:#f8f9fa;">
+                          <td style="padding:12px; border:1px solid #dee2e6;"><strong>Test Panel</strong></td>
+                          <td style="padding:12px; border:1px solid #dee2e6;">{panelName}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding:12px; border:1px solid #dee2e6;"><strong>Laboratory</strong></td>
+                          <td style="padding:12px; border:1px solid #dee2e6;">{labName}</td>
+                        </tr>
+                        <tr style="background:#f8f9fa;">
+                          <td style="padding:12px; border:1px solid #dee2e6;"><strong>Observation Date</strong></td>
+                          <td style="padding:12px; border:1px solid #dee2e6;">{observationDateTime:yyyy-MM-dd}</td>
+                        </tr>
+                      </table>
+                      <p style="color:#6c757d; font-size:14px;">
+                        You can also view this report anytime from within the app. If you have any questions about your results, please consult your doctor.
+                      </p>
+                    </div>
+                    <div style="background:#f4f4f4; padding:16px; text-align:center; font-size:12px; color:#888;">
+                      © 2026 Doctor Appointment System. All rights reserved.
+                    </div>
+                  </div>
+                </body>
+                </html>
+                """;
+    }
 }
