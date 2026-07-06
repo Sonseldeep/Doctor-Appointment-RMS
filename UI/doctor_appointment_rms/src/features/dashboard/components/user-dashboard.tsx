@@ -135,12 +135,7 @@ export function UserDashboard() {
             >
               <RiCalendar2Line className="mr-2 w-4 h-4" /> Book Appointment
             </Button>
-            <Button variant="outline" className="w-full border-slate-200 text-slate-700 bg-white hover:bg-slate-50 cursor-not-allowed opacity-50">
-              <RiFileListLine className="mr-2 w-4 h-4" /> View Records (Coming Soon)
-            </Button>
-            <Button variant="outline" className="w-full border-slate-200 text-slate-700 bg-white hover:bg-slate-50 cursor-not-allowed opacity-50">
-              <RiCapsuleLine className="mr-2 w-4 h-4" /> View Prescriptions (Coming Soon)
-            </Button>
+           
           </div>
         </div>
       </div>

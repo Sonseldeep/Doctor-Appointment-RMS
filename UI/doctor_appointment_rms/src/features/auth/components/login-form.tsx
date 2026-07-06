@@ -266,9 +266,14 @@ import { RiHeartPulseFill } from "@remixicon/react";
 // Helper function to format the lock message cleanly
 const getLockoutMessage = (utcDateString: string) => {
   const lockTime = new Date(utcDateString);
-  const localTime = lockTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const localDateTime = lockTime.toLocaleString([], { 
+    month: 'short', 
+    day: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
   
-  return `Account locked. Please try again after ${localTime}.`;
+  return `Account locked. Please try again after ${localDateTime}.`;
 };
 
 export function LoginForm() {
@@ -441,7 +446,7 @@ export function LoginForm() {
                       onChange={(e) => form.setValue("email", e.target.value)}
                     />
                     <Button type="button" className="w-full h-12 rounded-xl text-base" onClick={handleForgotPassword} disabled={forgotPassword.isPending}>
-                      {forgotPassword.isPending ? "Sending OTP..." : "Send Reset Link"}
+                      {forgotPassword.isPending ? "Sending OTP..." : "Send Reset OTP"}
                     </Button>
                   </div>
                 </DialogContent>
