@@ -248,38 +248,34 @@ export default function NotificationsPage() {
   const { unreadCount } = useNotificationCount();
 
   const getNotificationStyles = (type: string, isRead: boolean) => {
-    if (isRead) {
-      return {
-        icon: <RiMessage3Line className="text-slate-400 w-5 h-5" />,
-        containerBg: "bg-white border-slate-200 opacity-80 hover:bg-slate-50/50",
-      };
-    }
+    let icon, containerBg;
+
+    // Use a clean white background for read, and a tinted background for unread
+    const baseReadBg = "bg-white border-slate-200 hover:bg-slate-50";
 
     switch (type) {
       case "AppointmentConfirmed":
       case "AppointmentCompleted":
-        return {
-          icon: <RiCalendarCheckLine className="text-emerald-600 w-5 h-5" />,
-          containerBg: "bg-emerald-50/40 border-emerald-100 hover:bg-emerald-50/60",
-        };
+        icon = <RiCalendarCheckLine className={`${isRead ? "text-emerald-500" : "text-emerald-600"} w-5 h-5`} />;
+        containerBg = isRead ? baseReadBg : "bg-emerald-50/40 border-emerald-200 hover:bg-emerald-50/60";
+        break;
       case "AppointmentCancelled":
-        return {
-          icon: <RiCalendarCloseLine className="text-red-600 w-5 h-5" />,
-          containerBg: "bg-red-50/40 border-red-100 hover:bg-red-50/60",
-        };
+        icon = <RiCalendarCloseLine className={`${isRead ? "text-red-500" : "text-red-600"} w-5 h-5`} />;
+        containerBg = isRead ? baseReadBg : "bg-red-50/40 border-red-200 hover:bg-red-50/60";
+        break;
       case "LabReportReady":
       case "NewClinicalNote":
-        return {
-          icon: <RiFileTextLine className="text-indigo-600 w-5 h-5" />,
-          containerBg: "bg-indigo-50/40 border-indigo-100 hover:bg-indigo-50/60",
-        };
+        icon = <RiFileTextLine className={`${isRead ? "text-indigo-500" : "text-indigo-600"} w-5 h-5`} />;
+        containerBg = isRead ? baseReadBg : "bg-indigo-50/40 border-indigo-200 hover:bg-indigo-50/60";
+        break;
       case "AppointmentBooked":
       default:
-        return {
-          icon: <RiNotification3Line className="text-blue-600 w-5 h-5" />,
-          containerBg: "bg-blue-50/40 border-blue-100 hover:bg-blue-50/60",
-        };
+        icon = <RiNotification3Line className={`${isRead ? "text-blue-500" : "text-blue-600"} w-5 h-5`} />;
+        containerBg = isRead ? baseReadBg : "bg-blue-50/40 border-blue-200 hover:bg-blue-50/60";
+        break;
     }
+
+    return { icon, containerBg };
   };
 
   const handleNotificationClick = (item: SystemNotification) => {
@@ -362,12 +358,14 @@ export default function NotificationsPage() {
 
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between gap-4">
-                        <h4 className={`text-sm font-semibold ${item.isRead ? "text-gray-500" : "text-gray-900"}`}>
+                        {/* CHANGED: Adjusted font weight and color for better legibility */}
+                        <h4 className={`text-sm ${item.isRead ? "font-medium text-slate-700" : "font-semibold text-gray-900"}`}>
                           {item.title}
                         </h4>
                         <span className="text-xs text-slate-400 font-medium whitespace-nowrap">{formattedDate}</span>
                       </div>
-                      <p className={`text-sm leading-relaxed ${item.isRead ? "text-slate-400" : "text-slate-600"}`}>
+                      {/* CHANGED: Adjusted text color for the message body */}
+                      <p className={`text-sm leading-relaxed ${item.isRead ? "text-slate-500" : "text-slate-700"}`}>
                         {item.message}
                       </p>
                     </div>

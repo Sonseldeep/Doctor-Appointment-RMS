@@ -429,21 +429,10 @@ export default function AppointmentsPage() {
                             </div>
                           </TableCell>
                           <TableCell className="py-3">
-                            {isDoctor && apt.status === "Pending" ? (
-                              <select
-                                value={apt.status}
-                                onChange={(e) => handleStatusChange(apt.id, e.target.value)}
-                                className={`px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wider border cursor-pointer outline-none focus:ring-2 focus:ring-blue-500/20 ${getStatusBadge(apt.status)}`}
-                              >
-                                <option value="Pending">Pending</option>
-                                <option value="Confirmed">Confirmed</option>
-                              </select>
-                            ) : (
-                              <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${getStatusBadge(apt.status)}`}>
-                                {apt.status}
-                              </span>
-                            )}
-                          </TableCell>
+          <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${getStatusBadge(apt.status)}`}>
+            {apt.status}
+          </span>
+        </TableCell>
                           <TableCell className="py-3 text-right">
                             <div className="flex items-center justify-end gap-2">
                               {/*  Swapped the base view button background if highlighted to make actions pop */}
@@ -457,6 +446,16 @@ export default function AppointmentsPage() {
                               >
                                 View
                               </Button>
+
+                              {isDoctor && apt.status === "Pending" && (
+              <Button 
+                size="sm" 
+                className="h-8 text-xs font-medium bg-blue-600 text-white hover:bg-blue-700" 
+                onClick={() => handleStatusChange(apt.id, "Confirmed")}
+              >
+                Confirm
+              </Button>
+            )}
                               
                               {!isDoctor && ["Pending", "Scheduled", "Confirmed"].includes(apt.status) && (
                                 <Button 
