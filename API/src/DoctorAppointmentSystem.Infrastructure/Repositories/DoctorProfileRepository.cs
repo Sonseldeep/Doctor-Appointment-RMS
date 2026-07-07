@@ -27,25 +27,6 @@ internal sealed class DoctorProfileRepository : IDoctorProfileRepository
     public async Task AddAsync(DoctorProfile profile, CancellationToken cancellationToken)
         => await _db.DoctorProfiles.AddAsync(profile, cancellationToken);
 
-    public async Task<IReadOnlyList<DoctorProfile>> GetActiveAsync(CancellationToken cancellationToken)
-        => await _db.DoctorProfiles
-            .Where(x => x.Status == DoctorStatus.Active)
-            .OrderByDescending(x => x.CreatedAtUtc)
-            .ToListAsync(cancellationToken);
-
-    public async Task<IReadOnlyList<DoctorProfile>> GetAllWithUserAsync(CancellationToken cancellationToken)
-        => await _db.DoctorProfiles
-            .Include(x => x.User)
-            .OrderByDescending(x => x.CreatedAtUtc)
-            .ToListAsync(cancellationToken);
-
-    public async Task<IReadOnlyList<DoctorProfile>> GetActiveWithUserAsync(CancellationToken cancellationToken)
-        => await _db.DoctorProfiles
-            .Include(x => x.User)
-            .Where(x => x.Status == DoctorStatus.Active)
-            .OrderByDescending(x => x.CreatedAtUtc)
-            .ToListAsync(cancellationToken);
-
     public async Task<bool> NmcNumberExistsAsync(string nmcNumber, CancellationToken cancellationToken)
         => await _db.DoctorProfiles.AnyAsync(x => x.NmcNumber == nmcNumber, cancellationToken);
     

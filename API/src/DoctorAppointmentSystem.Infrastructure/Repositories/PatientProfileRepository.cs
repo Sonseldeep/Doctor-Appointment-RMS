@@ -135,6 +135,7 @@ internal sealed class PatientProfileRepository : IPatientProfileRepository
             .Where(joined =>
                 joined.User.FirstName.ToLower().Contains(term) ||
                 joined.User.LastName.ToLower().Contains(term) ||
+                (joined.User.FirstName + " " + joined.User.LastName).Contains(term) ||
                 joined.User.Email.ToLower().Contains(term))
             .Take(10)
             .Select(joined => ValueTuple.Create(joined.Patient, joined.User))
