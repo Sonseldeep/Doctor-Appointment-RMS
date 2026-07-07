@@ -54,9 +54,7 @@ export default function DashboardLayout({
   }, [lastScrollY, mounted]);
 
   
-  // By checking '!mounted' along with auth states, the server and client initial pass 
-  // will render a uniform loading screen. This satisfies Next.js DOM matching rules 
-  // while completely hiding the Sidebar, Navbar, and private children from leaking.
+  
   if (!mounted || isLoading || isError || !data) {
     return (
       <div className="h-screen flex items-center justify-center bg-slate-50 text-sm text-gray-500 font-medium">

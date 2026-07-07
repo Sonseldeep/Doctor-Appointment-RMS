@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 
 interface BookAppointmentFormProps {
   onSuccess?: () => void;
-  preFilledDoctorId?: string;  // Add this
+  preFilledDoctorId?: string;  
 }
 
 export function BookAppointmentForm({
@@ -55,7 +55,7 @@ export function BookAppointmentForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {!preFilledDoctorId && (  // Only show if not pre-filled
+      {!preFilledDoctorId && ( 
         <div>
           <label className="block text-sm font-medium mb-1">Doctor ID *</label>
           <Input

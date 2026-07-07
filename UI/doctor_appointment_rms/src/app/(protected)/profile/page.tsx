@@ -351,7 +351,7 @@ export default function ProfilePage() {
                     )}
                   </div>
 
-                  {/* NEW DOB FIELD */}
+                  {/*  DOB FIELD */}
   <div>
     <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Date of Birth</label>
     {!isEditing ? (

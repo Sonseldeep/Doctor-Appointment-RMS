@@ -21,8 +21,10 @@ export interface LabReportResponse {
 
 export interface PatientSearchResult {
   id: string;
-  name: string;
+  firstName: string;       // Added
+  lastName: string;        // Added
   email: string;
   dateOfBirth: string;
+  profilePhotoUrl?: string | null; // Added
   phoneNumber?: string;
 }
