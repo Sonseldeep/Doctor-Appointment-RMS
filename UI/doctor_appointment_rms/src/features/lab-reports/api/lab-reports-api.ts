@@ -75,6 +75,16 @@ export const labReportsApi = {
     return res.data;
   },
 
+  searchLabPatients: async (query: string): Promise<PatientSearchResult[]> => {
+    const res = await axiosClient.get<PatientSearchResult[]>(
+      "/api/lab-technicians/patients/search",
+      {
+        params: { q: query }, 
+      }
+    );
+    return res.data;
+  },
+
   getPatientLabReports: async (patientId: string): Promise<LabReportResponse[]> => {
     const res = await axiosClient.get<LabReportResponse[]>(
       `/api/doctor/patients/${patientId}/lab-reports`
