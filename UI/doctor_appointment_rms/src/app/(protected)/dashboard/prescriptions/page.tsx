@@ -40,13 +40,13 @@ export default function PrescriptionHistoryPage() {
   const [noFollowUpNeeded, setNoFollowUpNeeded] = useState(false);
   const [dateFilter, setDateFilter] = useState<string>("");
 
-  // Read target ID from URL parameters
+  
   const searchParams = useSearchParams();
   const targetNoteId = searchParams.get("id");
 
   const isDoctor = user?.role?.toLowerCase() === "doctor";
   
-  // Auto-open the note if matched from a notification link
+  
   useEffect(() => {
     if (history && targetNoteId && !selectedNote) {
       const matchingNote = history.find((note: any) => 
@@ -156,7 +156,7 @@ export default function PrescriptionHistoryPage() {
           </div>
         ) : isEditing ? (
           <div className="space-y-6 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 animate-fade-in max-w-3xl mx-auto">
-            {/* Context Profile Banner during Editing */}
+           
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
                 {(isDoctor ? selectedNote.patientPhotoUrl : selectedNote.doctorPhotoUrl) ? (
@@ -324,7 +324,7 @@ export default function PrescriptionHistoryPage() {
           </div>
         ) : selectedNote ? (
           <div className="space-y-5 animate-fade-in max-w-3xl mx-auto">
-            {/* Redesigned Multi-Profile & Diagnosis Main Header Card */}
+            
             <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-slate-100 text-slate-400 overflow-hidden shrink-0 border border-slate-200 shadow-inner">

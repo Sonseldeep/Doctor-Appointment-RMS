@@ -29,20 +29,20 @@ export default function FindADoctorPage() {
     router.push(`/dashboard/appointments/book?doctorId=${selectedDoctor.userId}`);
   };
 
-  // If a doctor is selected, render their full Profile and Reviews panel
+  
   if (selectedDoctor) {
     return (
       <div className="p-6">
         <DoctorProfileView 
           doctor={selectedDoctor}
-          onBack={() => setSelectedDoctor(null)} // Returns user to the search list
-          onProceedToBooking={handleProceedToBooking} // Pushes to the date selector
+          onBack={() => setSelectedDoctor(null)} 
+          onProceedToBooking={handleProceedToBooking} 
         />
       </div>
     );
   }
 
-  // Default Search List View
+  
   return (
     <div className="space-y-6 max-w-6xl mx-auto p-6">
       <div>
@@ -52,13 +52,13 @@ export default function FindADoctorPage() {
         </p>
       </div>
 
-      {/* Renders your live, server-filtered query search component block */}
+      
       <DoctorsList 
       page={page} 
       pageSize={pageSize}
       onSelectDoctor={handleSelectDoctor} />
 
-      {/* 3. Pagination Controls */}
+      
       <div className="flex justify-between items-center mt-6">
         <Button 
           variant="outline" 
