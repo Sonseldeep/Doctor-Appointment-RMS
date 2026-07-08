@@ -31,7 +31,7 @@ export function AppointmentDetailsModal({ appointment, isOpen, onClose, isDoctor
 
   const date = new Date(appointment.startUtc);
   const formattedDate = date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  const formattedTime = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const formattedTime = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
 
   const handleStatusUpdate = async (value: string) => {
     if (value === "Confirmed") {
