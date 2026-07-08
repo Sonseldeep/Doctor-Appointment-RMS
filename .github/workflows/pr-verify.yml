@@ -18,9 +18,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          
 
-               
+      - name: Restore dependencies
+        run: dotnet restore API/src/DoctorAppointment.sln
+
       - name: Build with dotnet
-        run: dotnet build --configuration Release --no-restore
-
+        run: dotnet build API/src/DoctorAppointment.sln --configuration Release --no-restore
