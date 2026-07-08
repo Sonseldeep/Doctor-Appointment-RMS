@@ -77,7 +77,7 @@ export function LoginForm() {
     forgotPassword.mutate({ email: emailValue }, {
       onSuccess: () => {
         toast.success("OTP sent to your email");
-        router.push("/reset-password");
+        router.push(`/reset-password?email=${encodeURIComponent(emailValue)}`);
       },
       onError: () => {
         toast.error("Failed to send OTP");
