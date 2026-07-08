@@ -1,8 +1,10 @@
-﻿name: Pr Verify
+name: Pr Verify
 
 on:
   pull_request:
-    branches: [ "develop" ]
+    branches:
+      - develop
+      - main
 
 jobs:
   build:
@@ -19,7 +21,7 @@ jobs:
           
 
       - name: Restore dependencies
-          run: dotnet restore
+        run: dotnet restore
           
       - name: Build with dotnet
         run: dotnet build --configuration Release
