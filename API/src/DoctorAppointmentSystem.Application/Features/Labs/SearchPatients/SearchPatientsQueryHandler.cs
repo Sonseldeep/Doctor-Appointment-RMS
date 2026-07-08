@@ -7,7 +7,7 @@ namespace DoctorAppointmentSystem.Application.Features.Labs.SearchPatients;
 public sealed class SearchLabPatientsQueryHandler
     : IQueryHandler<SearchLabPatientsQuery, List<LabPatientSearchResponse>>
 {
-    private const int MinSearchTermLength = 1;
+    private const int MinSearchTermLength = 2;
 
     private readonly IPatientProfileRepository _patientRepository;
 
