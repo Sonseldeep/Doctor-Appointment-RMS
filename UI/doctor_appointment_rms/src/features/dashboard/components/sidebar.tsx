@@ -58,6 +58,7 @@ export function Sidebar() {
 
   const doctorNavItems: NavItem[] = [
     { label: "Dashboard", href: "/dashboard", icon: <RiDashboardLine /> },
+    { label: "Calendar Schedule", href: "/dashboard/calendar", icon: <RiCalendarLine /> },
     { label: "Appointments", href: "/dashboard/appointments", icon: <RiCalendarLine /> },
     { label: "Availability", href: "/dashboard/availability", icon: <RiTimeLine /> }, // <--- NEW SIDEBAR LINK
     { label: "Medical Records", href: "/dashboard/medical-records", icon: <RiFileListLine /> },
