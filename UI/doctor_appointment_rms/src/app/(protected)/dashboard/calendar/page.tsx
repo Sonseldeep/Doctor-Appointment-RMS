@@ -1,7 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 
-// Disabling SSR prevents Next.js hydration compilation errors caused by third-party canvas engines
+
 const AppointmentsCalendar = dynamic(
   () => import("@/features/appointments/components/appointments-calendar"),
   {

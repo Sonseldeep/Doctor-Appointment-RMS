@@ -48,14 +48,14 @@ export function RatingModal({ isOpen, onClose, appointment }: RatingModalProps) 
     }
 
     
-    // We send both casing conventions to ensure complete compatibility with your backend DTO
+    
     const payloadData = {
       appointmentId: appointment.id,
       AppointmentId: appointment.id,
       
       score: score,
       stars: score,
-      Stars: score, // Fixes the "Stars must be between 1 and 5" error explicitly
+      Stars: score, 
       
       reviewText: reviewText,
       ReviewText: reviewText,
@@ -70,7 +70,7 @@ export function RatingModal({ isOpen, onClose, appointment }: RatingModalProps) 
 
     mutate({
       doctorUserId: resolvedDoctorUserId,
-      data: payloadData as any // Bypass strict TS local contracts if the type isn't updated yet
+      data: payloadData as any 
     }, {
       onSuccess: () => {
         toast.success("Review submitted successfully!");

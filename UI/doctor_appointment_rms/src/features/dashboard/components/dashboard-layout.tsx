@@ -21,8 +21,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="flex w-full">
       {/* Main Content Wrapper */}
       <div className="flex-1 w-full">
-        {/* UPDATED: Removed duplicate fixed max-width limits and background gradients 
-            so the dashboard elements can seamlessly stretch across your widescreen viewports. */}
+        
         <div className="w-full">
           {children}
         </div>

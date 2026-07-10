@@ -7,14 +7,14 @@ export interface Doctor {
   specialization: string;
   consultationFee: number;
   bio: string;
-  rating?: number;        // Fallback option for display
-  reviewCount?: number;   // Fallback option for display
-  experience?: number;    // Fallback option for display (in years)
+  rating?: number;        
+  reviewCount?: number;   
+  experience?: number;    
   nmcNumber?: string;     
   gender?: string;
 }
 
-// Matches your exact backend API response structure
+
 export interface DoctorsResponse {
   items: Doctor[];
   totalCount: number;

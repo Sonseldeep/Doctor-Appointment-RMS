@@ -13,8 +13,6 @@ import {
   RiTimeLine,
   RiHistoryLine,
   RiCalendar2Line,
-  RiFileListLine,
-  RiCapsuleLine,
 } from "@remixicon/react";
 
 export function UserDashboard() {
@@ -97,7 +95,7 @@ export function UserDashboard() {
                 .filter(apt => 
                   apt.status === "Confirmed" || apt.status === "Scheduled" || apt.status === "Pending"
                 )
-                .slice(0, 5) // Show top 5 items max to prevent vertical overload
+                .slice(0, 5) 
                 .map(apt => (
                   <AppointmentCard 
                     key={apt.id} 
@@ -112,7 +110,7 @@ export function UserDashboard() {
             <div className="rounded-xl border border-dashed p-12 text-center bg-slate-50/20">
               <p className="text-muted-foreground text-sm font-medium">No upcoming or pending appointments active.</p>
               <Button
-                onClick={() => router.push("dashboard/doctors")} // Redirects directly to the doctors page
+                onClick={() => router.push("dashboard/doctors")} 
                 variant="outline"
                 className="mt-4 border-slate-200 hover:bg-slate-50 shadow-sm"
               >
@@ -129,7 +127,7 @@ export function UserDashboard() {
           <div className="space-y-3">
             <h3 className="font-semibold text-lg tracking-tight">Quick Dashboard Actions</h3>
             <Button 
-              onClick={() => router.push("dashboard/doctors")} // Redirects directly to the doctors page
+              onClick={() => router.push("dashboard/doctors")} 
               className="w-full bg-slate-950 hover:bg-slate-900 shadow-sm transition-all" 
               variant="default"
             >

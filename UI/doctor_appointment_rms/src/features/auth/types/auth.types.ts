@@ -24,7 +24,7 @@ export interface AuthResponse {
   role: string;
 }
 
-// Doctor-specific profile - matches /api/doctors/me response
+
 export interface DoctorProfile {
   doctorProfileId: string;
   userId: string;
@@ -40,7 +40,7 @@ export interface DoctorProfile {
   bio: string;
 }
 
-// Patient-specific profile - matches /api/patients/me response
+
 export interface PatientProfile {
   userId: string;
   firstName: string;
@@ -54,7 +54,7 @@ export interface PatientProfile {
   dateOfBirth?: string | Date;
 }
 
-// Admin profile (if needed)
+
 export interface AdminProfile {
   userId: string;
   firstName: string;
