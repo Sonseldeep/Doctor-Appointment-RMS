@@ -60,7 +60,7 @@ export function DoctorMedicalRecords() {
               </TableHeader>
               <TableBody>
                 {patients.map((patient: PatientSearchResult) => {
-                  const displayName = `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Unknown Patient';
+                  const displayName = patient.name || 'Unknown Patient';
                   const initial = displayName.charAt(0).toUpperCase();
 
                   return (
@@ -128,9 +128,7 @@ export function DoctorMedicalRecords() {
       <div className="bg-slate-50 rounded-xl p-5 border border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div>
           <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Patient Case File</span>
-          <h3 className="text-base font-bold text-slate-900 mt-0.5">
-  {`${selectedPatient.firstName || ''} ${selectedPatient.lastName || ''}`.trim() || 'Unknown Patient'}
-</h3>
+          <h3 className="text-base font-bold text-slate-900 mt-0.5">{selectedPatient.name}</h3>
         </div>
         <div>
           <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Date of Birth</span>

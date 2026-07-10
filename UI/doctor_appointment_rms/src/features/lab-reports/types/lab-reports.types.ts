@@ -21,6 +21,7 @@ export interface LabReportResponse {
 
 export interface PatientSearchResult {
   id: string;
+  name: String;
   firstName: string;       
   lastName: string;        
   email: string;
