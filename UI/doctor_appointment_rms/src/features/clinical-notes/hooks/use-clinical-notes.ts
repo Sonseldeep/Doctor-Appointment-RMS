@@ -5,15 +5,13 @@ import { toast } from "sonner";
 import { clinicalNotesApi } from "../api/clinical-notes-api";
 import type { CreateClinicalNoteDto, UpdateClinicalNoteDto } from "../types/clinical-notes.types";
 
-/**
- * Hook to retrieve context-aware clinical notes
- */
+
 export function useGetMyClinicalNotes() {
   return useQuery({
     queryKey: ["clinical-notes", "me"],
     queryFn: clinicalNotesApi.getMyClinicalNotes,
     retry: 1,
-    staleTime: 1000 * 60 * 5, // 5 minutes standard
+    staleTime: 1000 * 60 * 5, 
   });
 }
 
@@ -25,7 +23,7 @@ export function useCreateClinicalNote() {
     mutationFn: clinicalNotesApi.createClinicalNote,
     onSuccess: () => {
       toast.success("Clinical note documented successfully!");
-      // Invalidate clinical notes cache listings & related general records
+      
       queryClient.invalidateQueries({ queryKey: ["clinical-notes"] });
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
@@ -36,9 +34,7 @@ export function useCreateClinicalNote() {
   });
 }
 
-/**
- * Hook to modify an existing clinical note (Doctor Only)
- */
+
 export function useUpdateClinicalNote() {
   const queryClient = useQueryClient();
 
@@ -65,6 +61,6 @@ export function useGetUpcomingFollowUps() {
   return useQuery({
     queryKey: ["clinical-notes", "upcoming-followups"],
     queryFn: clinicalNotesApi.getUpcomingFollowUps,
-    staleTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: 1000 * 60 * 10, 
   });
 }

@@ -11,9 +11,7 @@ export function useUploadProfilePhoto() {
     mutationFn: userApi.uploadProfilePhoto,
 
     onSuccess: () => {
-      //  THE PROFESSIONAL CORRECTION:
-      // Match the exact cache key we set up in useCurrentUser.
-      // This instantly hits the active session layout and forces a smooth live update!
+      
       queryClient.invalidateQueries({
         queryKey: ["auth", "current-user"],
       });

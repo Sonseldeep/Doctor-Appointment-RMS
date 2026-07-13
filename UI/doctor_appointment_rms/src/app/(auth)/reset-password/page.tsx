@@ -117,7 +117,7 @@ function ResetPasswordFormContent() {
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
-            readOnly={!!emailFromUrl} // Prevents editing if data comes from URL
+            readOnly={!!emailFromUrl} 
             className={emailFromUrl ? "bg-muted cursor-not-allowed text-muted-foreground" : ""}
           />
 

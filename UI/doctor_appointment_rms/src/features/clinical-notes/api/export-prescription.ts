@@ -4,7 +4,7 @@ export const exportPrescriptionPdf = async (appointmentId: string): Promise<Blob
   const response = await axiosClient.get(
     `/api/clinical-notes/appointment/${appointmentId}/export-pdf`,
     {
-      responseType: "blob", // This is crucial for binary file downloads
+      responseType: "blob", 
     }
   );
   return response.data;

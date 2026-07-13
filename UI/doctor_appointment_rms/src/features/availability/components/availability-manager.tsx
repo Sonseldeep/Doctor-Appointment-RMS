@@ -84,7 +84,7 @@ export function AvailabilityManager() {
             <input 
               type="date" 
               value={date} 
-              min={today} // This disables past dates in the UI
+              min={today} 
               onChange={(e) => setDate(e.target.value)}
               className="w-full text-sm border p-2.5 rounded-xl bg-slate-50 focus:outline-blue-500" 
               required

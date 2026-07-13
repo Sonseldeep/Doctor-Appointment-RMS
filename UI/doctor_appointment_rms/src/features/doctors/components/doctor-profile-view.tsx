@@ -41,12 +41,10 @@ export function DoctorProfileView({ doctor, onBack, onProceedToBooking }: Doctor
   const updateRatingMutation = useUpdateRating(doctor.userId);
   const deleteRatingMutation = useDeleteRating(doctor.userId);
 
-  // Form controls state tracking
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editComment, setEditComment] = useState("");
   const [editStars, setEditStars] = useState(5);
 
-  // Modern uniform delete confirmation tracking state
   const [reviewIdToDelete, setReviewIdToDelete] = useState<string | null>(null);
 
   const displayRating = ratingData?.summary?.averageRating ? Number(ratingData.summary.averageRating).toFixed(1) : "0.0";
@@ -77,7 +75,7 @@ export function DoctorProfileView({ doctor, onBack, onProceedToBooking }: Doctor
     if (!reviewIdToDelete) return;
     try {
       await deleteRatingMutation.mutateAsync(reviewIdToDelete);
-      setReviewIdToDelete(null); // Clean up state targets
+      setReviewIdToDelete(null); 
     } catch (error) {
       console.error("Failed to complete removal request cycle:", error);
     }
@@ -155,7 +153,7 @@ export function DoctorProfileView({ doctor, onBack, onProceedToBooking }: Doctor
           <h2 className="text-base font-bold text-slate-900">Practice Details</h2>
           <div className="space-y-3.5 text-sm">
 
-            {/* 🩺 Injected Verified NMC Record Block Row */}
+            {/* Injected Verified NMC Record Block Row */}
             {doctor.nmcNumber && (
               <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
                 <span className="text-slate-400">NMC Number</span>
@@ -164,7 +162,7 @@ export function DoctorProfileView({ doctor, onBack, onProceedToBooking }: Doctor
                 </span>
               </div>
             )}
-            {/* 🧬 Injected Gender Record Block Row */}
+            {/* Injected Gender Record Block Row */}
             {doctor.gender && (
               <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
                 <span className="text-slate-400">Gender</span>
@@ -177,10 +175,6 @@ export function DoctorProfileView({ doctor, onBack, onProceedToBooking }: Doctor
               <span className="text-slate-400">Availability</span>
               <span className="font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded text-xs">Mon - Fri</span>
             </div>
-            {/* <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
-              <span className="text-slate-400">Session Mode</span>
-              <span className="font-medium text-slate-700">Video / Audio Call</span>
-            </div> */}
           </div>
         </div>
       </div>
@@ -319,7 +313,7 @@ export function DoctorProfileView({ doctor, onBack, onProceedToBooking }: Doctor
         )}
       </div>
 
-      {/* 💎 UNIFORM HIGH-FIDELITY DELETION DIALOG OVERLAY */}
+      {/* UNIFORM HIGH-FIDELITY DELETION DIALOG OVERLAY */}
       {reviewIdToDelete && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white border border-slate-100 rounded-2xl max-w-md w-full p-6 shadow-xl animate-scale-up space-y-4">

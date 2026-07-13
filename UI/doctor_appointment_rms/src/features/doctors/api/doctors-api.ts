@@ -8,7 +8,7 @@ export const doctorsApi = {
     Page?: number;
     PageSize?: number;
   }): Promise<DoctorsResponse> => {
-    // Passes the dynamic backend query variables safely straight to your server
+    
     const res = await axiosClient.get<DoctorsResponse>("/api/doctors", { params });
     return res.data;
   },

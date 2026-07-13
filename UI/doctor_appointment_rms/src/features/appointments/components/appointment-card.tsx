@@ -48,17 +48,17 @@ export function AppointmentCard({ appointment, onCancel, onClick, isDoctorView =
     Cancelled: "bg-red-50 text-red-600 border-red-100/60",
   }[apt.status] || "bg-slate-50 text-slate-700 border-slate-100";
 
-  // Name Resolution
+  
   const displayName = isDoctorView
     ? (apt.patientName || "Patient")
     : (apt.doctorName ? `Dr. ${apt.doctorName}` : "Medical Practitioner");
 
-  // Subtitle Resolution
+  
   const displaySubtitle = isDoctorView
     ? [apt.patientSex, apt.patientAge ? `${apt.patientAge} yrs` : null].filter(Boolean).join(", ") || "Patient Profile"
     : (apt.doctorSpecialization || "General Practitioner");
 
-  // Routing exact photo URLs directly from your API payload response safely
+  
   const displayAvatarUrl = isDoctorView 
     ? apt.patientPhotoUrl 
     : apt.doctorPhotoUrl;

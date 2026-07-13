@@ -6,7 +6,7 @@ import { DoctorMedicalRecords } from './doctor-medical-records';
 import { RiPulseLine } from '@remixicon/react';
 
 export function MedicalRecordsViewSwitcher() {
-  // Destructure 'data' and alias it as 'user' to match standard query configurations
+ 
   const { data: user, isLoading } = useCurrentUser();
 
   if (isLoading) {

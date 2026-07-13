@@ -93,10 +93,6 @@ export const LabReportsTable = () => {
 
     if (reports.length > 0 && hasActiveQuery && !hasAutoOpened.current) {
       const matchingReport = reports.find((r) => checkReportMatch(r));
-      // if (matchingReport) {
-      //   setSelectedReport(matchingReport);
-      //   hasAutoOpened.current = true; 
-      // }
     }
   }, [reports, searchParams]);
 

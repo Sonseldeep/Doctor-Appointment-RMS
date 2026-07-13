@@ -21,7 +21,7 @@ export default function NotificationsPage() {
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 10;
 
-  // 1. Fetch the paginated feed list natively
+  
   const { 
     notifications, 
     isLoading, 
