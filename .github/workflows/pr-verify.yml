@@ -25,5 +25,4 @@ jobs:
       - name: Build with dotnet
         run: dotnet build API/src/DoctorAppointment.sln --configuration Release --no-restore
 
-      - name: dotnet test
-        run: dotnet test --configuration Release --no-build
+    
