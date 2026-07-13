@@ -62,10 +62,12 @@ internal sealed class BookAppointmentCommandHandler
         {
             return UserErrors.NotFound;
         }
+        
         if (patient.Role != UserRole.Registered)
         {
             return AppointmentErrors.Forbidden;
         }
+        
         if (!patient.IsEmailVerified)
         {
             return UserErrors.NotVerified;

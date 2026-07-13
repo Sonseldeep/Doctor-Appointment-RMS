@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using DoctorAppointmentSystem.Api.Common.Request;
 using DoctorAppointmentSystem.Application.Features.Labs.ReceiveLabPayload;
+using DoctorAppointmentSystem.Domain.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace DoctorAppointmentSystem.Api.Controllers;
 
 [ApiController]
 [Route("api/lab-technicians/lab-results")]
-[Authorize(Roles = "LabTechnician")]
+[Authorize(Roles = nameof(UserRole.LabTechnician))]
 public class LabResultsController : ApiController
 {
     private static readonly JsonSerializerOptions ObservationsJsonOptions = new()

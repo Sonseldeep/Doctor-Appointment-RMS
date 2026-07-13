@@ -10,5 +10,4 @@ public class EmailOptions
     public string Password { get; init; } = string.Empty;
     public string FromEmail { get; init; } = string.Empty;
     public string FromName { get; init; } = string.Empty;
-    public bool UseSsl { get; init; } = true;
 }

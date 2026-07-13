@@ -5,7 +5,7 @@ namespace DoctorAppointmentSystem.Domain.Labs;
 
 public sealed class MedicalRecordAccessLog : Entity
 {
-    private MedicalRecordAccessLog() { } // Required for EF Core
+    private MedicalRecordAccessLog() { } 
 
     public MedicalRecordAccessLog(
         Guid id,
