@@ -31,8 +31,7 @@ export function useUpdatePatientProfile() {
 
   return useMutation({
     mutationFn: async (payload: UpdatePatientDto) => {
-      // Remove the hardcoded fallback "2026-06-10"
-      // If dateOfBirth is an empty string, you might want to send null or undefined
+      
       const finalPayload = {
         ...payload,
         dateOfBirth: payload.dateOfBirth || null, 

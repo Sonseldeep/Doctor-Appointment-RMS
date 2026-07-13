@@ -8,7 +8,7 @@ export interface CreateAppointmentPayload {
 export async function createAppointment(payload: CreateAppointmentPayload): Promise<void> {
 
 
-  // Try to read both common names for now
+
   const token = typeof window !== "undefined" 
     ? (localStorage.getItem("token") || localStorage.getItem("accessToken")) 
     : null;

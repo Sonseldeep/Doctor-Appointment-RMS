@@ -16,11 +16,11 @@ export function AdminDoctorsManagement() {
 
   const { data, isLoading } = useAdminDoctors(pageNumber, pageSize);
 
-  // BACKEND ARRAY AUTO-DETECTOR
+  
   const backendPayload = data as any;
   const doctorsList: AdminDoctor[] = backendPayload?.data || backendPayload?.items || backendPayload?.doctors || [];
 
-  // Extract unique specializations dynamically for the dropdown
+  
   const uniqueSpecializations = Array.from(
     new Set(doctorsList.map((d: AdminDoctor) => d.specialization).filter(Boolean))
   ).sort();

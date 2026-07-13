@@ -30,7 +30,7 @@ export function useCurrentUser() {
     
     staleTime: 1000 * 60 * 30, 
     
-    //  Disable background continuous hammering loops
+    
     refetchInterval: false, 
     refetchOnWindowFocus: false 
   });

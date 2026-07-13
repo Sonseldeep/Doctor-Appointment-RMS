@@ -22,7 +22,7 @@ export function FollowUpList() {
         Upcoming Follow-ups
       </h3>
 
-      {/* Replaced 'return null' with a persistent empty state */}
+      
       {!followUps || followUps.length === 0 ? (
         <div className="bg-slate-50 border border-slate-200 border-dashed rounded-xl p-6 text-center">
           <p className="text-sm text-slate-500 font-medium">No pending follow-ups required.</p>

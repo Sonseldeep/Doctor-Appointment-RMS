@@ -9,7 +9,7 @@ export const useExportPrescription = () => {
     try {
       const blob = await exportPrescriptionPdf(appointmentId);
       
-      // Trigger browser download
+      
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -17,7 +17,7 @@ export const useExportPrescription = () => {
       document.body.appendChild(link);
       link.click();
       
-      // Cleanup
+      
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {

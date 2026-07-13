@@ -25,10 +25,8 @@ axiosClient.interceptors.response.use(
   async (error) => {
     const original = error.config;
 
-    //  FIX: Check if the 401 error is coming from your login request
     const isLoginRequest = original?.url?.includes("/auth/login") || original?.url?.endsWith("/login");
-
-    // Added "!isLoginRequest" constraint to prevent handling bad credentials here
+    
     if (error.response?.status === 401 && !original._retry && !isLoginRequest) {
       original._retry = true;
 
@@ -57,7 +55,7 @@ axiosClient.interceptors.response.use(
       } catch (err) {
         tokenStorage.clear();
         
-        // Safe check: Only hard redirect if the user isn't already on the login page
+        
         if (typeof window !== "undefined" && window.location.pathname !== "/login") {
           window.location.href = "/login";
         }
@@ -68,7 +66,7 @@ axiosClient.interceptors.response.use(
       }
     }
 
-    // Bad credential requests will now fall straight down here instantly
+    
     return Promise.reject(error);
   }
 );
