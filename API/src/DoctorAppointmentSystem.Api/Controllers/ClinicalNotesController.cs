@@ -5,6 +5,7 @@ using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetClinicalNote
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetMyClinicalNotes;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetUpcomingFollowUps;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.UpdateClinicalNote;
+using DoctorAppointmentSystem.Domain.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public sealed class ClinicalNotesController : ApiController
 
    
     [HttpPost]
-    [Authorize(Roles = "Doctor")]
+    [Authorize(Roles = nameof(UserRole.Doctor))]
     public async Task<IActionResult> Add([FromBody] AddClinicalNoteRequest request, CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var doctorUserId))
@@ -48,11 +49,8 @@ public sealed class ClinicalNotesController : ApiController
     }
 
     [HttpPut("{clinicalNoteId:guid}")]
-    [Authorize(Roles = "Doctor")]
-    public async Task<IActionResult> Update(
-        Guid clinicalNoteId,
-        [FromBody] UpdateClinicalNoteRequest request,
-        CancellationToken cancellationToken)
+    [Authorize(Roles = nameof(UserRole.Doctor))]
+    public async Task<IActionResult> Update(Guid clinicalNoteId, [FromBody] UpdateClinicalNoteRequest request, CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var doctorUserId))
         {

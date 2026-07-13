@@ -4,6 +4,7 @@ using DoctorAppointmentSystem.Application.Features.Availability.DeleteAvailabili
 using DoctorAppointmentSystem.Application.Features.Availability.GetDoctoreSlots;
 using DoctorAppointmentSystem.Application.Features.Availability.GetMyAvailability;
 using DoctorAppointmentSystem.Application.Features.Availability.UpdateAvailability;
+using DoctorAppointmentSystem.Domain.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ public sealed class AvailabilityController : ApiController
 
 
     [HttpPost("availability")]
-    [Authorize(Roles = "Doctor")]
+    [Authorize(Roles = nameof(UserRole.Doctor))]
     public async Task<IActionResult> Create([FromBody] CreateAvailabilityRequest request, CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var doctorUserId))
@@ -41,7 +42,7 @@ public sealed class AvailabilityController : ApiController
 
    
     [HttpPut("availability/{availabilityId:guid}")]
-    [Authorize(Roles = "Doctor")]
+    [Authorize(Roles = nameof(UserRole.Doctor))]
     public async Task<IActionResult> Update(Guid availabilityId, [FromBody] UpdateAvailabilityRequest request, CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var doctorUserId))
@@ -57,7 +58,7 @@ public sealed class AvailabilityController : ApiController
 
   
     [HttpDelete("availability/{availabilityId:guid}")]
-    [Authorize(Roles = "Doctor")]
+    [Authorize(Roles = nameof(UserRole.Doctor))]
     public async Task<IActionResult> Delete(Guid availabilityId, CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var doctorUserId))
@@ -74,7 +75,7 @@ public sealed class AvailabilityController : ApiController
 
    
     [HttpGet("availability/me")]
-    [Authorize(Roles = "Doctor")]
+    [Authorize(Roles = nameof(UserRole.Doctor))]
     public async Task<IActionResult> GetMyAvailability(CancellationToken cancellationToken)
     {
         if (!TryGetCurrentUserId(out var doctorUserId))

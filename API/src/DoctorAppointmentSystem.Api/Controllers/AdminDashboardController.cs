@@ -21,7 +21,9 @@ public sealed class AdminDashboardController : ApiController
     public async Task<IActionResult> GetOverview([FromQuery] int trendDays, CancellationToken cancellationToken)
     {
         var query = new GetDashboardOverviewQuery(trendDays == 0 ? 14 : trendDays);
+        
         var result = await _sender.Send(query, cancellationToken);
+        
         return result.Match(Ok, Problem);
     }
 }
