@@ -1,6 +1,7 @@
 ﻿using DoctorAppointmentSystem.Application.Features.Admin.Doctor.ApproveDoctor;
 using DoctorAppointmentSystem.Application.Features.Admin.Doctor.GetAllDoctors;
 using DoctorAppointmentSystem.Application.Features.Admin.Doctor.SuspendDoctor;
+using DoctorAppointmentSystem.Domain.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DoctorAppointmentSystem.Api.Controllers;
 
 [Route("api/admin/doctors")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = nameof(UserRole.Admin))]
 public sealed class AdminDoctorsController : ApiController
 {
     private readonly ISender _sender;

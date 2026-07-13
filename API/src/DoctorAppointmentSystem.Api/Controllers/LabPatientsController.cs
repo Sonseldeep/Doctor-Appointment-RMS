@@ -1,4 +1,5 @@
 ﻿using DoctorAppointmentSystem.Application.Features.Labs.SearchPatients;
+using DoctorAppointmentSystem.Domain.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DoctorAppointmentSystem.Api.Controllers;
 
 [ApiController]
-[Authorize(Roles = "LabTechnician")]
+[Authorize(Roles = nameof(UserRole.LabTechnician))]
 [Route("api/lab-technicians/patients")]
 public class LabPatientsController : ApiController
 {

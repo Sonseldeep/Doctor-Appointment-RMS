@@ -28,7 +28,8 @@ internal sealed class OtpRequestLimiter : IOtpRequestLimiter
     {
         email = email.Trim().ToLowerInvariant();
 
-        var entity = await _dbContext.OtpRequestLimits
+        var entity = await
+            _dbContext.OtpRequestLimits
             .SingleOrDefaultAsync(x => x.Email == email && x.Purpose == purpose, cancellationToken);
 
         if (entity is null)
