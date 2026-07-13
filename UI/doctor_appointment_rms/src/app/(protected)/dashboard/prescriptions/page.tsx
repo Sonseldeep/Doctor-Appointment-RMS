@@ -698,7 +698,7 @@ export default function PrescriptionHistoryPage() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-6 min-h-screen bg-slate-50/30">
+    <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 min-h-screen bg-slate-50/30">
       
       {/* Header section remains unchanged */}
       <div className="flex items-center justify-between border-b border-slate-200 py-4 md:py-3 px-5 md:px-6 sticky top-0 bg-white/90 backdrop-blur-md z-20 transition-all rounded-3xl shadow-sm">
@@ -741,7 +741,7 @@ export default function PrescriptionHistoryPage() {
           </div>
         ) : isEditing ? (
           // Editing View - Unchanged
-          <div className="space-y-6 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 animate-fade-in max-w-3xl mx-auto">
+          <div className="space-y-6 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 animate-fade-in w-full">
             {/* ... Existing Edit Form (Unmodified) ... */}
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
@@ -910,7 +910,7 @@ export default function PrescriptionHistoryPage() {
           </div>
         ) : selectedNote ? (
           // Detail View - Unchanged
-          <div className="space-y-5 animate-fade-in max-w-3xl mx-auto">
+          <div className="space-y-5 animate-fade-in w-full">
             {/* ... Existing Detail View (Unmodified) ... */}
             <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
               <div className="flex items-center gap-4">
@@ -1061,7 +1061,7 @@ export default function PrescriptionHistoryPage() {
             </div>
           </div>
         ) : (
-          <div className="space-y-6 max-w-3xl mx-auto">
+          <div className="space-y-6 w-[95%] mx-auto">
             {/* Filter Input */}
             <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
               <div className="flex items-center gap-2 text-sm font-bold text-slate-700">
