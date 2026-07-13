@@ -1,12 +1,13 @@
 ﻿using DoctorAppointmentSystem.Application.Features.Doctors.Patients.GetPatientRecords;
 using DoctorAppointmentSystem.Application.Features.Doctors.Patients.SearchPatients;
+using DoctorAppointmentSystem.Domain.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DoctorAppointmentSystem.Api.Controllers;
 
-[Authorize(Roles = "Doctor")]
+[Authorize(Roles = nameof(UserRole.Doctor))]
 [Route("api/doctor/patients")]
 public class DoctorPatientsController : ApiController
 {

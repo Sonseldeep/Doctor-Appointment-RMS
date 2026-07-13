@@ -4,6 +4,7 @@ using DoctorAppointmentSystem.Application;
 using DoctorAppointmentSystem.Infrastructure;
 using DoctorAppointmentSystem.Infrastructure.Hubs;
 using Hangfire;
+
 using Scalar.AspNetCore;
 using Serilog;
 using QuestPDF.Infrastructure;
@@ -17,6 +18,7 @@ builder.Services
     .AddApplication()
     .AddPresentation(builder.Configuration)
     .AddInfrastructure(builder.Configuration);
+
 QuestPDF.Settings.License = LicenseType.Community;
 
 
