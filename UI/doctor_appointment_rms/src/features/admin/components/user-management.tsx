@@ -63,11 +63,11 @@ export function UserManagement() {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold flex items-center gap-2 text-gray-800">
             <RiFilter3Line size={18} className="text-blue-600" />
-            Filter Records
+            Filter Patients
           </CardTitle>
-          <CardDescription>
+          {/* <CardDescription>
             Narrow down administrative search parameters on system user registries.
-          </CardDescription>
+          </CardDescription> */}
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">

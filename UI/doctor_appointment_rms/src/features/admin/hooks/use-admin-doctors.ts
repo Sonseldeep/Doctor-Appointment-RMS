@@ -5,10 +5,20 @@ import { toast } from "sonner";
 import { adminDoctorsApi } from "@/features/admin/api/admin-doctor-api";
 import type { AdminActionType } from "../types/admin-doctor.types";
 
-export function useAdminDoctors(pageNumber: number = 1, pageSize: number = 10) {
+
+export interface DoctorFilterParams {
+  Page?: number;
+  PageSize?: number;
+  SearchTerm?: string;
+  Specialization?: string;
+  Status?: string;
+  [key: string]: any;
+}
+
+export function useAdminDoctors(params: DoctorFilterParams) {
   return useQuery({
-    queryKey: ["admin", "doctors", pageNumber, pageSize],
-    queryFn: () => adminDoctorsApi.getAllDoctors(pageNumber, pageSize),
+    queryKey: ["admin", "doctors", params], 
+    queryFn: () => adminDoctorsApi.getAllDoctors(params),
   });
 }
 
@@ -18,7 +28,7 @@ export function useApproveDoctorMutation() {
   return useMutation({
     mutationFn: (doctorId: string) => adminDoctorsApi.approveDoctors(doctorId),
     onSuccess: () => {
-      // Invalidate query to refetch
+      
       queryClient.invalidateQueries({ queryKey: ["admin", "doctors"] });
       toast.success("Doctor approved successfully!");
     },

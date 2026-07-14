@@ -137,26 +137,6 @@ export default function ProfilePage() {
               <h1 className="text-3xl font-bold text-gray-900 tracking-tight">My Profile</h1>
               <p className="text-sm text-muted-foreground mt-0.5">Manage your digital account details and profile fields.</p>
             </div>
-            
-            {user?.role !== "Admin" && (!isEditing ? (
-              <Button onClick={() => setIsEditing(true)} variant="default" className="shadow-sm">
-                {isDoctor && !hasDoctorProfileRecord ? "Setup Profile" : "Edit Profile"}
-              </Button>
-            ) : (
-              <div className="flex gap-2">
-                <Button variant="outline" disabled={isSaving} onClick={() => setIsEditing(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveProfile} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white">
-                  {isSaving 
-                    ? "Saving..." 
-                    : isDoctor && !hasDoctorProfileRecord 
-                      ? "Create Profile" 
-                      : "Save Changes"}
-                </Button>
-              </div>
-            )
-            )}
           </div>
 
           {/* CORE IDENTITY CARD */}
@@ -211,8 +191,27 @@ export default function ProfilePage() {
           {/* DOCTOR-SPECIFIC PROFESSIONAL PROFILE VIEW */}
           {user && isDoctorProfile(user) && (
             <Card className="shadow-sm border-blue-100 bg-white">
-              <CardHeader className="bg-blue-50/50 border-b border-blue-100/40">
+              <CardHeader className="bg-blue-50/50 border-b border-blue-100/40 flex flex-row items-center justify-between space-y-0 py-4">
                 <CardTitle className="text-lg text-blue-900 font-bold">Professional System Attributes</CardTitle>
+                
+                {!isEditing ? (
+                  <Button onClick={() => setIsEditing(true)} variant="default" size="sm" className="shadow-sm bg-blue-600 hover:bg-blue-700 text-white">
+                    {hasDoctorProfileRecord ? "Edit Profile" : "Setup Profile"}
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" disabled={isSaving} onClick={() => setIsEditing(false)}>
+                      Cancel
+                    </Button>
+                    <Button size="sm" onClick={handleSaveProfile} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white">
+                      {isSaving 
+                        ? "Saving..." 
+                        : hasDoctorProfileRecord 
+                          ? "Save Changes" 
+                          : "Create Profile"}
+                    </Button>
+                  </div>
+                )}
               </CardHeader>
               <CardContent className="pt-6 space-y-5">
                 <div className="grid gap-5 md:grid-cols-2">
@@ -232,52 +231,28 @@ export default function ProfilePage() {
                   </div>
 
                   <div>
-  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
-    Clinical Area Specialization
-  </label>
-  {!isEditing ? (
-    <p className="font-semibold text-gray-800 mt-1.5">
-      {user.specialization || "General"}
-    </p>
-  ) : (
-    <select
-      className="
-        mt-1
-        flex
-        h-10
-        w-full
-        rounded-md
-        border
-        border-input
-        bg-background
-        px-3
-        py-2
-        text-sm
-        ring-offset-background
-        file:border-0
-        file:bg-transparent
-        file:text-sm
-        file:font-medium
-        placeholder:text-muted-foreground
-        focus-visible:outline-none
-        focus-visible:ring-2
-        focus-visible:ring-ring
-        focus-visible:ring-offset-2
-        disabled:cursor-not-allowed
-        disabled:opacity-50
-      "
-      value={doctorForm.specialization || "General"}
-      onChange={(e) =>
-        setDoctorForm({ ...doctorForm, specialization: e.target.value })
-      }
-    >
-      <option value="General">General</option>
-      <option value="Cardiologist">Cardiologist</option>
-      <option value="Dermatologist">Dermatologist</option>
-      <option value="Orthopedic">Orthopedic</option>
-    </select>
-  )}
-</div>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+                      Clinical Area Specialization
+                    </label>
+                    {!isEditing ? (
+                      <p className="font-semibold text-gray-800 mt-1.5">
+                        {user.specialization || "General"}
+                      </p>
+                    ) : (
+                      <select
+                        className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        value={doctorForm.specialization || "General"}
+                        onChange={(e) =>
+                          setDoctorForm({ ...doctorForm, specialization: e.target.value })
+                        }
+                      >
+                        <option value="General">General</option>
+                        <option value="Cardiologist">Cardiologist</option>
+                        <option value="Dermatologist">Dermatologist</option>
+                        <option value="Orthopedic">Orthopedic</option>
+                      </select>
+                    )}
+                  </div>
 
                   <div>
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Consultation Fee Rate (NPR)</label>
@@ -303,7 +278,7 @@ export default function ProfilePage() {
                   ) : (
                     <textarea 
                       rows={4} 
-                      className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring mt-1 border-slate-200" 
+                      className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring mt-1" 
                       value={doctorForm.bio} 
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDoctorForm({ ...doctorForm, bio: e.target.value })} 
                     />
@@ -316,8 +291,23 @@ export default function ProfilePage() {
           {/* PATIENT-SPECIFIC PROFILE VIEW */}
           {user && isPatientProfile(user) && (
             <Card className="shadow-sm border-emerald-100 bg-white">
-              <CardHeader className="bg-emerald-50/50 border-b border-emerald-100/40">
+              <CardHeader className="bg-emerald-50/50 border-b border-emerald-100/40 flex flex-row items-center justify-between space-y-0 py-4">
                 <CardTitle className="text-lg text-emerald-900 font-bold">Medical Record Profile Ledger</CardTitle>
+                
+                {!isEditing ? (
+                  <Button onClick={() => setIsEditing(true)} variant="default" size="sm" className="shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white">
+                    Edit Profile
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" disabled={isSaving} onClick={() => setIsEditing(false)}>
+                      Cancel
+                    </Button>
+                    <Button size="sm" onClick={handleSaveProfile} disabled={isSaving} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                      {isSaving ? "Saving..." : "Save Changes"}
+                    </Button>
+                  </div>
+                )}
               </CardHeader>
               <CardContent className="pt-6 space-y-5">
                 <div className="grid gap-5 md:grid-cols-2">
@@ -351,22 +341,22 @@ export default function ProfilePage() {
                     )}
                   </div>
 
-                  {/*  DOB FIELD */}
-  <div>
-    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Date of Birth</label>
-    {!isEditing ? (
-      <p className="font-semibold text-gray-800 mt-1.5">
-        {user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : "—"}
-      </p>
-    ) : (
-      <Input 
-        type="date"
-        className="mt-1" 
-        value={patientForm.dateOfBirth} 
-        onChange={(e) => setPatientForm({ ...patientForm, dateOfBirth: e.target.value })} 
-      />
-    )}
-  </div>
+                  {/* DOB FIELD */}
+                  <div>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Date of Birth</label>
+                    {!isEditing ? (
+                      <p className="font-semibold text-gray-800 mt-1.5">
+                        {user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : "—"}
+                      </p>
+                    ) : (
+                      <Input 
+                        type="date"
+                        className="mt-1" 
+                        value={patientForm.dateOfBirth} 
+                        onChange={(e) => setPatientForm({ ...patientForm, dateOfBirth: e.target.value })} 
+                      />
+                    )}
+                  </div>
                 </div>
 
                 <div>
