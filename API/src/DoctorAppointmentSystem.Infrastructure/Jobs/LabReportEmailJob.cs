@@ -1,4 +1,5 @@
-﻿using DoctorAppointmentSystem.Application.Abstractions.Authentication;
+﻿using DoctorAppointmentSystem.Application.Abstractions.Appointments;
+using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Email;
 using DoctorAppointmentSystem.Application.Abstractions.Jobs;
 using DoctorAppointmentSystem.Application.Abstractions.Labs;
@@ -13,6 +14,7 @@ internal sealed class LabReportEmailJob : ILabReportEmailJob
     private readonly ILabReportRepository _labReports;
     private readonly IUserRepository _users;
     private readonly IPatientProfileRepository _patientProfiles;
+    private readonly IAppointmentRepository _appointments;
     private readonly IEmailService _emailService;
     private readonly ILogger<LabReportEmailJob> _logger;
 
@@ -20,12 +22,14 @@ internal sealed class LabReportEmailJob : ILabReportEmailJob
         ILabReportRepository labReports,
         IUserRepository users,
         IPatientProfileRepository patientProfiles,
+        IAppointmentRepository appointments,
         IEmailService emailService,
         ILogger<LabReportEmailJob> logger)
     {
         _labReports = labReports;
         _users = users;
         _patientProfiles = patientProfiles;
+        _appointments = appointments;
         _emailService = emailService;
         _logger = logger;
     }
@@ -62,7 +66,14 @@ internal sealed class LabReportEmailJob : ILabReportEmailJob
         {
             var profile = await _patientProfiles.GetByUserIdAsync(report.PatientId, cancellationToken);
 
-            var pdfBytes = LabReportPdfBuilder.Build(report, patient, profile);
+            var associatedAppointment = await LabReportDoctorResolver.ResolveAssociatedAppointmentAsync(
+                _appointments, report.PatientId, report.ObservationDateTime, cancellationToken);
+
+            var associatedDoctor = associatedAppointment is not null
+                ? await _users.GetByIdAsync(associatedAppointment.DoctorUserId, cancellationToken)
+                : null;
+
+            var pdfBytes = LabReportPdfBuilder.Build(report, patient, profile, associatedDoctor);
             var fileName = $"Lab-Report-{report.PanelName}-{report.ObservationDateTime:yyyyMMdd}.pdf"
                 .Replace(' ', '-');
 
@@ -82,7 +93,7 @@ internal sealed class LabReportEmailJob : ILabReportEmailJob
         }
         catch (Exception ex)
         {
-      
+            
             _logger.LogError(
                 ex,
                 "Failed to email lab report {LabReportId} to patient {PatientId}.",
