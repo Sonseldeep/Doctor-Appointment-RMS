@@ -1,6 +1,8 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Appointments;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
+using DoctorAppointmentSystem.Application.Abstractions.Availability;
 using DoctorAppointmentSystem.Application.Abstractions.ClinicalNotes;
+using DoctorAppointmentSystem.Application.Abstractions.Data;
 using DoctorAppointmentSystem.Application.Abstractions.Messaging;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.Common;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.Contracts;
@@ -15,18 +17,24 @@ internal sealed class UpdateClinicalNoteCommandHandler
 {
     private readonly IClinicalNoteRepository _clinicalNotes;
     private readonly IAppointmentRepository _appointments;
+    private readonly IDoctorAvailabilityRepository _availability;
     private readonly IUserRepository _users;
+    private readonly IUnitOfWork _uow;
     private readonly IDateTimeProvider _clock;
 
     public UpdateClinicalNoteCommandHandler(
         IClinicalNoteRepository clinicalNotes,
         IAppointmentRepository appointments,
+        IDoctorAvailabilityRepository availability,
         IUserRepository users,
+        IUnitOfWork uow,
         IDateTimeProvider clock)
     {
         _clinicalNotes = clinicalNotes;
         _appointments = appointments;
+        _availability = availability;
         _users = users;
+        _uow = uow;
         _clock = clock;
     }
 
@@ -43,13 +51,42 @@ internal sealed class UpdateClinicalNoteCommandHandler
             return ClinicalNoteErrors.Forbidden;
         }
 
+        var appointment = await _appointments.GetByIdAsync(note.AppointmentId, cancellationToken);
+
+        var utcNow = _clock.UtcNow;
+
+        var followUpDate = note.FollowUpDate;
+        
+        if (request.FollowUpSlotId is { } followUpSlotId)
+        {
+            var reservation = await FollowUpSlotBooking.ReserveAsync(
+                _availability,
+                _appointments,
+                doctorUserId: note.DoctorUserId,
+                patientUserId: note.PatientUserId,
+                slotId: followUpSlotId,
+                utcNow: utcNow,
+                notes: $"Follow-up for appointment on {appointment?.StartUtc:dd MMM yyyy}.",
+                cancellationToken: cancellationToken);
+
+            if (reservation.IsError)
+            {
+                return reservation.Errors;
+            }
+
+    
+            await _uow.SaveChangesAsync(cancellationToken);
+
+            followUpDate = reservation.Value.StartUtc;
+        }
+        
         note.UpdateDetails(
             diagnosis: request.Diagnosis,
             observations: request.Observations,
             treatmentSummary: request.TreatmentSummary,
-            followUpDate: request.FollowUpDate,
+            followUpDate: followUpDate,
             followUpInstructions: request.FollowUpInstructions,
-            utcNow: _clock.UtcNow);
+            utcNow: utcNow);
 
         var medications = request.Medications ?? [];
 
@@ -63,10 +100,10 @@ internal sealed class UpdateClinicalNoteCommandHandler
             return UserErrors.NotFound;
         }
 
-        var appointment = await _appointments.GetByIdAsync(note.AppointmentId, cancellationToken);
         var appointmentDate = appointment?.StartUtc ?? note.CreatedAtUtc;
 
         note.ClearMedications();
+        
         foreach (var m in medications)
         {
             note.AddMedication(m.Name, m.Dosage, m.Frequency, m.DurationInDays, m.Instructions);
