@@ -39,7 +39,7 @@ public sealed class ClinicalNotesController : ApiController
             request.Diagnosis,
             request.Observations,
             request.TreatmentSummary,
-            request.FollowUpDate,
+            request.FollowUpSlotId,
             request.FollowUpInstructions,
             request.Medications);
 
@@ -63,7 +63,7 @@ public sealed class ClinicalNotesController : ApiController
             request.Diagnosis,
             request.Observations,
             request.TreatmentSummary,
-            request.FollowUpDate,
+            request.FollowUpSlotId,
             request.FollowUpInstructions,
             request.Medications);
 
@@ -115,7 +115,7 @@ public sealed class ClinicalNotesController : ApiController
     }
 
     [HttpGet("upcoming-followups")]
-    [Authorize(Roles = "Registered")]
+    [Authorize(Roles = nameof(UserRole.Registered))]
     public async Task<IActionResult> GetUpcomingFollowUps(CancellationToken cancellationToken)
     {
 

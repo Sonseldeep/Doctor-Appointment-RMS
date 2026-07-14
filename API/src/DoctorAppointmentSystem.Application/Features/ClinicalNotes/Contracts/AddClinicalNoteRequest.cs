@@ -6,7 +6,7 @@ public sealed record AddClinicalNoteRequest(
     string Diagnosis,
     string? Observations,
     string? TreatmentSummary,
-    DateTimeOffset? FollowUpDate,
+    Guid? FollowUpSlotId,
     string? FollowUpInstructions,
     List<MedicationRequest>? Medications
 );

@@ -1,5 +1,6 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Appointments;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
+using DoctorAppointmentSystem.Application.Abstractions.Availability;
 using DoctorAppointmentSystem.Application.Abstractions.ClinicalNotes;
 using DoctorAppointmentSystem.Application.Abstractions.Data;
 using DoctorAppointmentSystem.Application.Abstractions.Doctors;
@@ -23,6 +24,7 @@ internal sealed class AddClinicalNoteCommandHandler
     private readonly IClinicalNoteRepository _clinicalNotes;
     private readonly IUserRepository _users;
     private readonly IDoctorProfileRepository _doctorProfiles;
+    private readonly IDoctorAvailabilityRepository _availability;
     private readonly IUnitOfWork _uow;
     private readonly IDateTimeProvider _clock;
     private readonly INotificationRepository _notificationRepository;
@@ -33,6 +35,7 @@ internal sealed class AddClinicalNoteCommandHandler
         IClinicalNoteRepository clinicalNotes,
         IUserRepository users,
         IDoctorProfileRepository doctorProfiles,
+        IDoctorAvailabilityRepository availability,
         IUnitOfWork uow,
         IDateTimeProvider clock,
         INotificationRepository notificationRepository,
@@ -42,6 +45,7 @@ internal sealed class AddClinicalNoteCommandHandler
         _clinicalNotes = clinicalNotes;
         _users = users;
         _doctorProfiles = doctorProfiles;
+        _availability = availability;
         _uow = uow;
         _clock = clock;
         _notificationRepository = notificationRepository;
@@ -51,6 +55,7 @@ internal sealed class AddClinicalNoteCommandHandler
     public async Task<ErrorOr<ClinicalNoteResponse>> Handle(AddClinicalNoteCommand request, CancellationToken cancellationToken)
     {
         var doctor = await _users.GetByIdAsync(request.DoctorUserId, cancellationToken);
+        
         if (doctor is null)
         {
             return UserErrors.NotFound;
@@ -58,6 +63,7 @@ internal sealed class AddClinicalNoteCommandHandler
 
         var profile = await _doctorProfiles.GetByUserIdAsync(request.DoctorUserId, cancellationToken);
         var approval = DoctorAccessGuards.EnsureApprovedForDoctorActions(doctor, profile);
+        
         if (approval.IsError)
         {
             return approval.Errors;
@@ -93,6 +99,27 @@ internal sealed class AddClinicalNoteCommandHandler
 
         var utcNow = _clock.UtcNow;
 
+        DateTimeOffset? followUpDate = null;
+        if (request.FollowUpSlotId is { } followUpSlotId)
+        {
+            var reservation = await FollowUpSlotBooking.ReserveAsync(
+                _availability,
+                _appointments,
+                doctorUserId: appointment.DoctorUserId,
+                patientUserId: appointment.PatientUserId,
+                slotId: followUpSlotId,
+                utcNow: utcNow,
+                notes: $"Follow-up for appointment on {appointment.StartUtc:dd MMM yyyy}.",
+                cancellationToken: cancellationToken);
+
+            if (reservation.IsError)
+            {
+                return reservation.Errors;
+            }
+
+            followUpDate = reservation.Value.StartUtc;
+        }
+
         var clinicalNote = ClinicalNote.Create(
             appointmentId: appointment.Id,
             doctorUserId: appointment.DoctorUserId,
@@ -100,7 +127,7 @@ internal sealed class AddClinicalNoteCommandHandler
             diagnosis: request.Diagnosis,
             observations: request.Observations,
             treatmentSummary: request.TreatmentSummary,
-            followUpDate: request.FollowUpDate,
+            followUpDate: followUpDate,
             followUpInstructions: request.FollowUpInstructions,
             utcNow: utcNow);
 
