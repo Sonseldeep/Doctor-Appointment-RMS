@@ -27,7 +27,10 @@ export const availabilityApi = {
   deleteAvailability: async (id: string): Promise<void> => {
     await axiosClient.delete(`/api/availability/${id}`);
   },
-
+getDoctorAvailableDates: async (doctorId: string): Promise<any> => {
+    const res = await axiosClient.get(`/api/availability/doctor/${doctorId}`);
+    return res.data;
+},
   // 5. Patient-facing endpoint to browse a specific doctor's slots by date
   getDoctorAvailabilityByDate: async (doctorUserId: string, date: string): Promise<AvailabilitySlot[]> => {
     const res = await axiosClient.get<AvailabilitySlot[]>(`/api/doctors/${doctorUserId}/availability/${date}`);
