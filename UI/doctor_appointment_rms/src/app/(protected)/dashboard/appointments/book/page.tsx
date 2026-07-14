@@ -473,7 +473,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-
+import { useMemo } from "react";
 import { DoctorsList } from "@/features/doctors/components/doctors-list";
 import { Doctor } from "@/features/doctors/types/doctor.types";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
@@ -763,33 +763,44 @@ function DateTimePicker({
   doctorId: string; 
   onConfirm: (dateStr: string, startTime: string, endTime: string, slotId: string, dateLabel: string) => void 
 }) {
-  const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
 
-  
-  // We now use React Query to hit your centralized Axios API instance.
-  const { data: dayAvailability, isLoading } = useQuery({
-    queryKey: ["availability", doctorId, selectedDate],
-    queryFn: () => availabilityApi.getDoctorAvailabilityByDate(doctorId, selectedDate),
-    enabled: !!doctorId && !!selectedDate, // Only run if we have a doctor and a date
+  // 1. Fetch available dates dynamically
+  const { data: availableDates, isLoading: isLoadingDates } = useQuery<any>({
+    queryKey: ["available-dates", doctorId],
+    queryFn: () => availabilityApi.getDoctorAvailableDates(doctorId),
+    enabled: !!doctorId,
   });
 
+  // 2. Fetch time slots for the selected date
+  const { data: dayAvailability, isLoading: isLoadingSlots } = useQuery({
+    queryKey: ["availability-slots", doctorId, selectedDate],
+    queryFn: () => availabilityApi.getDoctorAvailabilityByDate(doctorId, selectedDate),
+    enabled: !!doctorId && !!selectedDate, 
+  });
+
+  // 3. Dynamically normalize available dates to a standard string array, preventing any crashes
+  const datesList: string[] = useMemo(() => {
+    if (!availableDates) return [];
+    if (Array.isArray(availableDates)) {
+      return availableDates
+        .map((item) => {
+          if (typeof item === "string") return item;
+          if (item && typeof item === "object" && "date" in item) return (item as any).date;
+          return null;
+        })
+        .filter((d): d is string => typeof d === "string");
+    }
+    return [];
+  }, [availableDates]);
+
+  // 4. Auto-select the first available date when data loads
   useEffect(() => {
-    const dates: string[] = [];
-    for (let i = 0; i < 7; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() + i);
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      dates.push(`${yyyy}-${mm}-${dd}`);
+    if (datesList.length > 0 && !selectedDate) {
+      setSelectedDate(datesList[0]);
     }
-    setAvailableDates(dates);
-    if (dates.length > 0) {
-      setSelectedDate(dates[0]);
-    }
-  }, []);
+  }, [datesList, selectedDate]);
 
   const formatDateLabel = (dateStr: string) => {
     if (!dateStr) return "Unknown Date";
@@ -800,7 +811,6 @@ function DateTimePicker({
     return date.toLocaleDateString("en-US", { weekday: 'long', month: 'short', day: 'numeric' });
   };
   
-  // Safely extract the slots array regardless of whether the API returns an object with a slots array or just the array
   const slotsList: Slot[] = Array.isArray(dayAvailability) ? dayAvailability : (dayAvailability as any)?.slots || [];
 
   return (
@@ -808,49 +818,67 @@ function DateTimePicker({
       {/* Select Date Side */}
       <div className="space-y-4 text-left">
         <h3 className="text-base font-bold text-slate-900">Select Date</h3>
-        <div className="space-y-2.5 max-h-[350px] overflow-y-auto pr-1">
-          {availableDates.map((dateStr) => {
-            const isSelected = selectedDate === dateStr;
-            return (
-              <button
-                key={dateStr}
-                type="button"
-                onClick={() => {
-                  setSelectedDate(dateStr);
-                  setSelectedSlot(null); // Reset selected slot when date changes
-                }}
-                className={`w-full text-left p-4 rounded-xl border text-sm font-semibold transition-all duration-150 ${
-                  isSelected
-                    ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm"
-                    : "border-slate-200/80 bg-white text-slate-800 hover:border-slate-300"
-                }`}
-              >
-                {formatDateLabel(dateStr)}
-              </button>
-            );
-          })}
-        </div>
+        
+        {isLoadingDates && (
+          <div className="space-y-2.5">
+            {[1, 2, 3].map((idx) => (
+              <div key={idx} className="h-13.5 bg-slate-100 rounded-xl animate-pulse" />
+            ))}
+          </div>
+        )}
+
+        {!isLoadingDates && datesList.length === 0 && (
+          <div className="p-8 text-center border border-dashed rounded-xl text-sm text-slate-400 bg-slate-50/50">
+            No upcoming dates available for this doctor.
+          </div>
+        )}
+
+        {!isLoadingDates && datesList.length > 0 && (
+          <div className="space-y-2.5 max-h-87.5 overflow-y-auto pr-1">
+            {datesList.map((dateStr) => {
+              const isSelected = selectedDate === dateStr;
+              
+              return (
+                <button
+                  key={dateStr}
+                  type="button"
+                  onClick={() => {
+                    setSelectedDate(dateStr);
+                    setSelectedSlot(null); // Reset slot when date changes
+                  }}
+                  className={`w-full text-left p-4 rounded-xl border text-sm font-semibold transition-all duration-150 ${
+                    isSelected
+                      ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm"
+                      : "border-slate-200/80 bg-white text-slate-800 hover:border-slate-300"
+                  }`}
+                >
+                  <span>{formatDateLabel(dateStr)}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Select Time Side */}
       <div className="space-y-4 text-left">
         <h3 className="text-base font-bold text-slate-900">Select Time</h3>
         
-        {isLoading && (
+        {!selectedDate ? (
+          <div className="p-8 text-center border border-dashed rounded-xl text-sm text-slate-400 bg-slate-50/50">
+            Please select a date first.
+          </div>
+        ) : isLoadingSlots ? (
           <div className="grid grid-cols-2 gap-3">
             {[1, 2, 3, 4].map((idx) => (
               <div key={idx} className="h-[52px] bg-slate-100 rounded-xl animate-pulse" />
             ))}
           </div>
-        )}
-
-        {!isLoading && slotsList.length === 0 && (
+        ) : slotsList.length === 0 ? (
           <div className="p-8 text-center border border-dashed rounded-xl text-sm text-slate-400 bg-slate-50/50">
-            This practitioner has not opened up calendar dates yet.
+            All slots are booked for this date.
           </div>
-        )}
-
-        {!isLoading && slotsList.length > 0 && (
+        ) : (
           <div className="grid grid-cols-2 gap-3">
             {slotsList.map((slot) => {
               const isSelected = selectedSlot?.slotId === slot.slotId;
@@ -878,7 +906,8 @@ function DateTimePicker({
         )}
       </div>
 
-      {dayAvailability && selectedSlot && (
+      {/* Confirm Button */}
+      {selectedDate && selectedSlot && (
         <div className="col-span-2 flex justify-end pt-4 border-t border-slate-100">
           <button
             type="button"
@@ -891,7 +920,7 @@ function DateTimePicker({
             )}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2.5 px-6 rounded-xl transition-all"
           >
-            Next →
+            Next &rarr;
           </button>
         </div>
       )}
