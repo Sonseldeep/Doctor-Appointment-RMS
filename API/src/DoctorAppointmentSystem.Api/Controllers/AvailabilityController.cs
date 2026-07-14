@@ -104,6 +104,19 @@ public sealed class AvailabilityController : ApiController
 
         return result.Match(Ok, Problem);
     }
+    
+    [HttpGet("{doctorId:guid}/availability")]
+    [Authorize(Roles = nameof(UserRole.Registered))]
+    public async Task<IActionResult> GetDoctorAvailability(
+        Guid doctorId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new GetMyAvailabilityQuery(doctorId),
+            cancellationToken);
+
+        return result.Match(Ok, Problem);
+    }
 }
 
 
