@@ -106,7 +106,7 @@ public sealed class AvailabilityController : ApiController
     }
     
     [HttpGet("{doctorId:guid}/availability")]
-    [Authorize(Roles = $"{nameof(UserRole.Doctor)},{nameof(UserRole.Registered)}")]
+    [Authorize(Roles = nameof(UserRole.Registered))]
     public async Task<IActionResult> GetDoctorAvailability(
         Guid doctorId,
         CancellationToken cancellationToken)
