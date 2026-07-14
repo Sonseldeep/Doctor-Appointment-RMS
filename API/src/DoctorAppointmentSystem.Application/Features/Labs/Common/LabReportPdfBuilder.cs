@@ -9,7 +9,7 @@ namespace DoctorAppointmentSystem.Application.Features.Labs.Common;
 
 public static class LabReportPdfBuilder
 {
-    public static byte[] Build(LabReport report, User user, PatientProfile? profile)
+    public static byte[] Build(LabReport report, User user, PatientProfile? profile, User? associatedDoctor = null)
     {
         string? ageDisplay = null;
         if (profile is not null && profile.DateOfBirth != default)
@@ -132,6 +132,14 @@ public static class LabReportPdfBuilder
                         {
                             c.Item().Text("TEST PANEL NAME").FontSize(9).SemiBold().FontColor(Colors.Blue.Medium);
                             c.Item().Text(report.PanelName).FontSize(12).Bold();
+                        });
+                        row.RelativeItem().Column(c =>
+                        {
+                            c.Item().Text("ASSOCIATED DOCTOR").FontSize(9).SemiBold().FontColor(Colors.Blue.Medium);
+                            c.Item().Text(associatedDoctor is not null
+                                    ? $"Dr. {associatedDoctor.FirstName} {associatedDoctor.LastName}"
+                                    : "Not available")
+                                .FontSize(12).Bold();
                         });
                     });
 
