@@ -5,10 +5,6 @@ using ErrorOr;
 
 namespace DoctorAppointmentSystem.Application.Features.Availability.GetMyAvailability;
 
-
-
-
-
 internal sealed class GetMyAvailabilityQueryHandler
     : IQueryHandler<GetMyAvailabilityQuery, IReadOnlyList<AvailabilitySummaryResponse>>
 {
