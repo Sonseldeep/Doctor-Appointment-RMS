@@ -213,10 +213,16 @@ export function UserManagement() {
                           </span>
                         </TableCell>
                         <TableCell className="text-foreground font-medium py-3">
-                          {patient.age ? `${patient.age} yrs` : "—"}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground max-w-xs truncate py-3" title={patient.address}>
-                          {patient.address || "—"}
+                          {(() => {
+                            const val = patient.age;
+                           
+                            if (val === null || val === undefined) return "—";
+                           
+                            const isBirthYear = val > 150;
+                            const realAge = isBirthYear ? new Date().getFullYear() - val : val;
+                          
+                            return realAge < 0 ? "0 yrs" : `${realAge} yrs`;
+                          })()}
                         </TableCell>
                       </TableRow>
                     );
