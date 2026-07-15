@@ -195,6 +195,34 @@ public static class LabReportPdfBuilder
                             }
                         }
                     });
+
+                    if (report.Documents.Count > 0)
+                    {
+                        col.Item().PaddingTop(20).Text("Attached Files & Images")
+                            .FontSize(14).SemiBold().FontColor(Colors.Blue.Medium);
+
+                        col.Item().PaddingTop(6).Column(docsCol =>
+                        {
+                            foreach (var document in report.Documents.OrderBy(d => d.SortOrder))
+                            {
+                                docsCol.Item().PaddingBottom(4).Row(row =>
+                                {
+                                    row.AutoItem().Width(8).Height(8).AlignMiddle()
+                                        .Background(document.IsImage ? Colors.Blue.Medium : Colors.Grey.Darken1);
+
+                                    row.RelativeItem().PaddingLeft(8).Text(t =>
+                                    {
+                                        t.Span(document.FileName).SemiBold();
+                                        t.Span($"  ({document.DocumentType})").FontColor(Colors.Grey.Darken1).FontSize(9);
+                                    });
+                                });
+                            }
+
+                            docsCol.Item().PaddingTop(4).Text(
+                                    "Full-resolution images are available in the patient portal and via the original delivery email.")
+                                .FontSize(9).Italic().FontColor(Colors.Grey.Darken1);
+                        });
+                    }
                 });
 
                 page.Footer().PaddingTop(20).Column(col =>

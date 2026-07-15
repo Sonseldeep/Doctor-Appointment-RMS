@@ -5,10 +5,15 @@ public record LabReportResponse(
     string LabName,
     string PanelName,
     DateTime ObservationDateTime,
-    string? DocumentUrl,
-    string? DocumentType,
-    string? MimeType,
+    List<LabReportDocumentResponse> Documents,
     List<ObservationResponse> Observations);
+
+public record LabReportDocumentResponse(
+    Guid Id,
+    string DocumentUrl,
+    string FileName,
+    string DocumentType,
+    string MimeType);
 
 public record ObservationResponse(
     string TestName,

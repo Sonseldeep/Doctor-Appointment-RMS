@@ -25,9 +25,10 @@ public sealed class GetLabReportsQueryHandler : IQueryHandler<GetLabReportsQuery
             r.LabName,
             r.PanelName,
             r.ObservationDateTime,
-            r.DocumentUrl,   
-            r.DocumentType,  
-            r.MimeType,      
+            r.Documents
+                .OrderBy(d => d.SortOrder)
+                .Select(d => new LabReportDocumentResponse(d.Id, d.DocumentUrl, d.FileName, d.DocumentType, d.MimeType))
+                .ToList(),
             r.Observations.Select(o => new ObservationResponse(
                 o.TestName,
                 o.Value,
