@@ -18,6 +18,8 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 
     public DbSet<LabReport> LabReports { get; set; }
     public DbSet<LabObservation> LabObservations { get; set; }
+    public DbSet<LabReportDocument> LabReportDocuments => Set<LabReportDocument>(); 
+
     public DbSet<MedicalRecordAccessLog> MedicalRecordAccessLogs => Set<MedicalRecordAccessLog>();
     public DbSet<UserRefreshToken> UserRefreshTokens => Set<UserRefreshToken>();
 

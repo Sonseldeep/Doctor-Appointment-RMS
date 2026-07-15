@@ -20,6 +20,7 @@ public class LabReportRepository : ILabReportRepository
     {
         return await _context.LabReports
             .Include(r => r.Observations)
+            .Include(r => r.Documents)
             .Where(r => r.PatientId == patientId)
             .OrderByDescending(r => r.ObservationDateTime)
             .AsNoTracking()
@@ -29,7 +30,8 @@ public class LabReportRepository : ILabReportRepository
     public async Task<LabReport?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.LabReports
-            .Include(r => r.Observations) // Vital for loading individual test rows
+            .Include(r => r.Observations) 
+            .Include(r => r.Documents)
             .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
 }
