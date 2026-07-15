@@ -9,8 +9,8 @@ public class LabReport : Entity
     public string PanelName { get; private set; } = string.Empty;
     public DateTime ObservationDateTime { get; private set; }
 
-    public List<LabObservation> Observations { get; private set; } = new();
-    public List<LabReportDocument> Documents { get; private set; } = new();
+    public List<LabObservation> Observations { get; private set; } = [];
+    public List<LabReportDocument> Documents { get; private set; } = [];
 
     private LabReport() { }
 
