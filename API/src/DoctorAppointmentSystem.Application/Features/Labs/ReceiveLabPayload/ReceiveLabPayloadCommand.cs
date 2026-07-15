@@ -10,6 +10,6 @@ public record ReceiveLabPayloadCommand(
     string PanelName,
     DateTime ObservationDate,
     List<ObservationDto> Observations,
-    FileDto? Document = null) : ICommand; 
+    List<FileDto>? Documents = null) : ICommand;
 
 public record ObservationDto(string TestName, string Value, string Unit, string ReferenceRange, bool IsAbnormal);

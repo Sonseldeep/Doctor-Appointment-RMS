@@ -9,11 +9,8 @@ public class LabReport : Entity
     public string PanelName { get; private set; } = string.Empty;
     public DateTime ObservationDateTime { get; private set; }
 
-    public string? DocumentUrl { get; private set; }
-    public string? DocumentType { get; private set; } 
-    public string? MimeType { get; private set; }     
-
-    public List<LabObservation> Observations { get; private set; } = new();
+    public List<LabObservation> Observations { get; private set; } = [];
+    public List<LabReportDocument> Documents { get; private set; } = [];
 
     private LabReport() { }
 
@@ -34,10 +31,16 @@ public class LabReport : Entity
         Observations.Add(new LabObservation(this.Id, testName, value, unit, referenceRange, isAbnormal));
     }
 
-    public void AttachDocument(string documentUrl, string documentType, string mimeType)
+   
+    public void AddDocument(string documentUrl, string fileName, string documentType, string mimeType, DateTime uploadedAtUtc)
     {
-        DocumentUrl = documentUrl;
-        DocumentType = documentType;
-        MimeType = mimeType;
+        Documents.Add(new LabReportDocument(
+            this.Id,
+            documentUrl,
+            fileName,
+            documentType,
+            mimeType,
+            sortOrder: Documents.Count,
+            uploadedAtUtc));
     }
 }

@@ -27,12 +27,10 @@ public class LabResultsController : ApiController
 
     [HttpPost("ingest")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> IngestLabResults(
-        [FromForm] LabResultRequest request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> IngestLabResults([FromForm] LabResultRequest request, CancellationToken cancellationToken)
     {
         var observations = ParseObservations(request.ObservationsJson);
-        var document = ToFileDto(request.Document);
+        var documents = ToFileDtos(request.Documents);
 
         var command = new ReceiveLabPayloadCommand(
             request.LabName,
@@ -40,7 +38,7 @@ public class LabResultsController : ApiController
             request.PanelName,
             request.ObservationDate,
             observations,
-            document);
+            documents);
 
         var result = await _sender.Send(command, cancellationToken);
 
@@ -57,17 +55,16 @@ public class LabResultsController : ApiController
         return JsonSerializer.Deserialize<List<ObservationDto>>(observationsJson, ObservationsJsonOptions) ?? [];
     }
 
-    private static FileDto? ToFileDto(IFormFile? file)
+    private static List<FileDto>? ToFileDtos(List<IFormFile>? files)
     {
-        if (file is null || file.Length == 0)
+        if (files is null or { Count: 0 })
         {
             return null;
         }
 
-        return new FileDto(
-            file.OpenReadStream(),
-            file.FileName,
-            file.ContentType,
-            file.Length);
+        return files
+            .Where(f => f.Length > 0)
+            .Select(f => new FileDto(f.OpenReadStream(), f.FileName, f.ContentType, f.Length))
+            .ToList();
     }
 }

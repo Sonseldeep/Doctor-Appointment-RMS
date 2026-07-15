@@ -9,5 +9,5 @@ public class LabResultRequest
     
     public string ObservationsJson { get; set; } = string.Empty; 
 
-    public IFormFile? Document { get; set; }
+    public List<IFormFile>? Documents { get; set; }
 }

@@ -60,19 +60,26 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
             report.AddObservation(obs.TestName, obs.Value, obs.Unit, obs.ReferenceRange, obs.IsAbnormal);
         }
 
-        if (request.Document is not null && request.Document.Length > 0)
+        if (request.Documents is { Count: > 0 } documents)
         {
-            var documentUrl = await _fileStorageService.UploadAsync(
-                request.Document.Content,
-                request.Document.FileName,
-                request.Document.ContentType,
-                cancellationToken);
-            
-            var mimeType = request.Document.ContentType;
-            
-            var documentType = mimeType.StartsWith("image/") ? "XRAY" : "PDF";
+            foreach (var document in documents)
+            {
+                if (document.Length == 0)
+                {
+                    continue;
+                }
 
-            report.AttachDocument(documentUrl, documentType, mimeType);
+                var documentUrl = await _fileStorageService.UploadAsync(
+                    document.Content,
+                    document.FileName,
+                    document.ContentType,
+                    cancellationToken);
+
+                var mimeType = document.ContentType;
+                var documentType = mimeType.StartsWith("image/") ? "XRAY" : "PDF";
+
+                report.AddDocument(documentUrl, document.FileName, documentType, mimeType, DateTime.UtcNow);
+            }
         }
         
 
@@ -84,9 +91,10 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
             report.LabName,
             report.PanelName,
             report.ObservationDateTime,
-            report.DocumentUrl,
-            report.DocumentType,
-            report.MimeType,
+            report.Documents
+                .OrderBy(d => d.SortOrder)
+                .Select(d => new LabReportDocumentResponse(d.Id, d.DocumentUrl, d.FileName, d.DocumentType, d.MimeType))
+                .ToList(),
             report.Observations.Select(o => new ObservationResponse(
                 o.TestName,
                 o.Value,
