@@ -291,11 +291,11 @@ export default function ProfilePage() {
           {/* PATIENT-SPECIFIC PROFILE VIEW */}
           {user && isPatientProfile(user) && (
             <Card className="shadow-sm border-emerald-100 bg-white">
-              <CardHeader className="bg-emerald-50/50 border-b border-emerald-100/40 flex flex-row items-center justify-between space-y-0 py-4">
-                <CardTitle className="text-lg text-emerald-900 font-bold">Medical Record Profile Ledger</CardTitle>
+             <CardHeader className="bg-blue-50/50 border-b border-blue-100/40 flex flex-row items-center justify-between space-y-0 py-4">
+                <CardTitle className="text-lg text-blue-900 font-bold">Medical Record Profile Attributes </CardTitle>
                 
                 {!isEditing ? (
-                  <Button onClick={() => setIsEditing(true)} variant="default" size="sm" className="shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white">
+                  <Button onClick={() => setIsEditing(true)} variant="default" size="sm" className="shadow-sm bg-blue-600 hover:bg-blue-700 text-white">
                     Edit Profile
                   </Button>
                 ) : (

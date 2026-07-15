@@ -57,3 +57,11 @@ export function useDoctorAvailability(doctorId: string | null) {
     enabled: !!doctorId, 
   });
 }
+
+export function useDoctorAvailabilityByDate(doctorId: string | undefined, date: string | null) {
+  return useQuery({
+    queryKey: ["availability", doctorId, date],
+    queryFn: () => availabilityApi.getDoctorAvailabilityByDate(doctorId!, date!),
+    enabled: !!doctorId && !!date, // Only run when both exist
+  });
+}

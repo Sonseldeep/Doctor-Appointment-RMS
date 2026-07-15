@@ -39,7 +39,7 @@ export interface CompleteAppointmentDto {
   diagnosis: string;
   observations: string;
   treatmentSummary: string;
-  followUpDate: string;
+  followUpSlotId?: string | null;
   followUpInstructions: string;
   medications: Array<{
     name: string;
