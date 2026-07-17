@@ -1,12 +1,51 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+const roleRoutes: Record<string, string[]> = {
+  Admin: [
+    '/dashboard/admin',
+    '/dashboard/profile',
+    '/dashboard/settings'
+  ],
+  Doctor: [
+    '/dashboard/appointments',
+    '/dashboard/calendar',
+    '/dashboard/availability',
+    '/dashboard/prescriptions',
+    '/dashboard/medical-records',
+    '/dashboard/lab',
+    '/dashboard/notifications',
+    '/dashboard/profile',
+    '/dashboard/settings'
+  ],
+  Registered: [ 
+    '/dashboard/appointments',
+    '/dashboard/medical-records',
+    '/dashboard/prescriptions',
+    '/dashboard/lab',
+    '/dashboard/notifications',
+    '/dashboard/doctors',
+    '/dashboard/profile',
+    '/dashboard/settings'
+  ],
+  LabTechnician: [
+    '/dashboard/lab',
+    '/dashboard/profile',
+    '/dashboard/settings'
+  ],
+};
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. Protect all paths starting with /dashboard
+  // Allow ingest/analytics routes to pass natively
+  if (pathname.startsWith('/ingest')) {
+    return NextResponse.next();
+  }
+
+  // Protect all paths starting with /dashboard
   if (pathname.startsWith('/dashboard')) {
-    const token = request.cookies.get('Access_token')?.value;
+    const token = request.cookies.get('access_token')?.value;
 
     if (!token) {
       const loginUrl = new URL('/login', request.url);
@@ -14,48 +53,39 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // 2. Decode JWT to extract the Role (Edge-compatible parsing)
     try {
-      // Split the JWT to get the payload (second part)
+      // Decode JWT to extract the Role
       const payloadBase64Url = token.split('.')[1];
-      
-      // Fix base64url encoding characters to standard base64 characters
       const payloadBase64 = payloadBase64Url.replace(/-/g, '+').replace(/_/g, '/');
-      
-      // Decode using Edge-safe atob
       const decodedJson = atob(payloadBase64);
       const payload = JSON.parse(decodedJson);
 
-      // Extract role (Checking both standard 'role' and .NET specific claim URIs)
       const userRole = payload.role || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
 
-      // RBAC RULE A: LabTechnicians MUST stay in /dashboard/lab
-      if (userRole === 'LabTechnician' && pathname !== '/dashboard/lab') {
-        return NextResponse.redirect(new URL('/dashboard/lab', request.url));
+      // RULE 1: Everyone is allowed on the root dashboard page
+      if (pathname === '/dashboard') {
+        return NextResponse.next();
       }
 
-      // RBAC RULE B: Non-LabTechnicians CANNOT access /dashboard/lab
-      if (userRole !== 'LabTechnician' && pathname.startsWith('/dashboard/lab')) {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
-      }
+      // RULE 2: Get the allowed routes for the current user's role
+      const allowedRoutes = roleRoutes[userRole] || [];
 
-      // RBAC RULE C: Only Admins can access /dashboard/admin
-      if (userRole !== 'Admin' && pathname.startsWith('/dashboard/admin')) {
+      // RULE 3: Check if the current pathname matches any allowed routes
+      // .some() checks if the current URL starts with any of the allowed base paths
+      const isAllowed = allowedRoutes.some(route => pathname.startsWith(route));
+
+      if (!isAllowed) {
+        // DENY BY DEFAULT: If the route isn't in their list, redirect to root dashboard
         return NextResponse.redirect(new URL('/dashboard', request.url));
       }
 
     } catch (error) {
-      // If token decoding fails (malformed token), clear it and force re-login
+      // Token is invalid or malformed
       const loginUrl = new URL('/login', request.url);
       const response = NextResponse.redirect(loginUrl);
-      response.cookies.delete('Access_token');
+      response.cookies.delete('access_token');
       return response;
     }
-  }
-
-  // 3. Allow /ingest to pass natively 
-  if (pathname.startsWith('/ingest')) {
-    return NextResponse.next();
   }
 
   return NextResponse.next();

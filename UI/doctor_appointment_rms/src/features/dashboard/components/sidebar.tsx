@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -48,7 +46,7 @@ export function Sidebar() {
   const adminNavItems: NavItem[] = [
     { label: "Dashboard", href: "/dashboard", icon: <RiDashboardLine /> },
     { label: "Doctor Management", href: "/dashboard/admin/doctors", icon: <RiStethoscopeLine /> },
-    { label: "Users", href: "/dashboard/admin/users", icon: <RiGroupLine /> },
+    { label: "Patients", href: "/dashboard/admin/users", icon: <RiGroupLine /> },
     // { label: "Reports", href: "/dashboard/admin/reports", icon: <RiBarChart2Line /> },
   ];
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useForm, useFieldArray } from "react-hook-form";
 import { labReportsApi, IngestLabReportDto } from "@/features/lab-reports/api/lab-reports-api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,20 +17,23 @@ import {
   RiImage2Line,
   RiCheckLine,
   RiSearchLine,
-  RiCloseLine
+  RiCloseLine,
+  RiDeleteBinLine,
+  RiAddLine,
+  RiFilePdf2Line
 } from "@remixicon/react";
 import { PatientSearchResult } from "@/features/lab-reports/types/lab-reports.types";
 
 const DOCK_PANELS = {
   "Full Blood Count": [
-    { name: "Hemoglobin and Red Blood Cell (RBC)", unit: "g/dL", range: "13.8-17.2" },
-    { name: "White Blood Cell (WBC)", unit: "x10^3/µL", range: "4.5-11.0" },
-    { name: "Platelet Count", unit: "x10^3/µL", range: "150-450" }
+    { testName: "Hemoglobin and Red Blood Cell (RBC)", unit: "g/dL", referenceRange: "13.8-17.2", value: "", isAbnormal: false },
+    { testName: "White Blood Cell (WBC)", unit: "x10^3/µL", referenceRange: "4.5-11.0", value: "", isAbnormal: false },
+    { testName: "Platelet Count", unit: "x10^3/µL", referenceRange: "150-450", value: "", isAbnormal: false }
   ],
   "Lipid Panel": [
-    { name: "Total Cholesterol", unit: "mg/dL", range: "< 200" },
-    { name: "HDL Cholesterol", unit: "mg/dL", range: "> 40" },
-    { name: "LDL Cholesterol", unit: "mg/dL", range: "< 100" }
+    { testName: "Total Cholesterol", unit: "mg/dL", referenceRange: "< 200", value: "", isAbnormal: false },
+    { testName: "HDL Cholesterol", unit: "mg/dL", referenceRange: "> 40", value: "", isAbnormal: false },
+    { testName: "LDL Cholesterol", unit: "mg/dL", referenceRange: "< 100", value: "", isAbnormal: false }
   ]
 };
 
@@ -45,42 +49,60 @@ const formatDate = (dateString?: string) => {
 const checkIsAbnormal = (valueStr: string, rangeStr: string): boolean => {
   const val = parseFloat(valueStr);
   if (isNaN(val)) return false; 
-
   const cleanRange = rangeStr.replace(/\s+/g, '');
   
-  if (cleanRange.startsWith('<')) {
-    return val >= parseFloat(cleanRange.substring(1));
-  }
-  if (cleanRange.startsWith('>')) {
-    return val <= parseFloat(cleanRange.substring(1));
-  }
+  if (cleanRange.startsWith('<')) return val >= parseFloat(cleanRange.substring(1));
+  if (cleanRange.startsWith('>')) return val <= parseFloat(cleanRange.substring(1));
   if (cleanRange.includes('-')) {
     const [minStr, maxStr] = cleanRange.split('-');
     return val < parseFloat(minStr) || val > parseFloat(maxStr);
   }
-  
   return false;
 };
 
+// Define the shape of our form for React Hook Form
+type FormValues = {
+  labName: string;
+  panelName: string;
+  observations: {
+    testName: string;
+    unit: string;
+    referenceRange: string;
+    value: string;
+    isAbnormal: boolean;
+  }[];
+};
+
 export default function LabIngestPage() {
+  // Patient Search State
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const [patientEmail, setPatientEmail] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [patientEmail, setPatientEmail] = useState("");
-  const [labName, setLabName] = useState("Apex Diagnostics");
-  const [panelName, setPanelName] = useState("Lipid Panel");
-  const [testRows, setTestRows] = useState(DOCK_PANELS["Lipid Panel"]);
-  const [testValues, setTestValues] = useState<Record<string, string>>({});
-  const [abnormalMap, setAbnormalMap] = useState<Record<string, boolean>>({});
-  const [document, setDocument] = useState<File | null>(null);
+  // File Array State
+  const [documents, setDocuments] = useState<File[]>([]);
+
+  // React Hook Form Initialization
+  const { register, control, handleSubmit, setValue, getValues, watch, reset } = useForm<FormValues>({
+    defaultValues: {
+      labName: "Apex Diagnostics",
+      panelName: "Lipid Panel",
+      observations: DOCK_PANELS["Lipid Panel"]
+    }
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "observations"
+  });
+
+  // Watch panel changes
+  const selectedPanel = watch("panelName");
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-    }, 300);
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 300);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
@@ -96,11 +118,15 @@ export default function LabIngestPage() {
       toast.success("Ingestion Completed", {
         description: "Medical lab report has been recorded safely.",
       });
+      // Reset everything on success
       setPatientEmail("");
       setSearchTerm("");
-      setTestValues({});
-      setAbnormalMap({});
-      setDocument(null);
+      setDocuments([]);
+      reset({
+        labName: getValues("labName"),
+        panelName: getValues("panelName"),
+        observations: DOCK_PANELS[getValues("panelName") as keyof typeof DOCK_PANELS] || []
+      });
     },
     onError: () => {
       toast.error("Ingestion Failed", {
@@ -115,60 +141,54 @@ export default function LabIngestPage() {
     setIsDropdownOpen(false);
   };
 
-  const clearSelection = () => {
-    setPatientEmail("");
-    setSearchTerm("");
-    setIsDropdownOpen(false);
-    
-    setTimeout(() => {
-      searchInputRef.current?.focus();
-    }, 10);
-  };
-
-  const handlePanelSwitch = (chosenPanel: string) => {
-    setPanelName(chosenPanel);
+  // UPDATED: Appends panels instead of replacing them
+  const handleAddPanel = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const chosenPanel = e.target.value;
     const targetRows = DOCK_PANELS[chosenPanel as keyof typeof DOCK_PANELS] || [];
-    setTestRows(targetRows);
-    setTestValues({});
-    setAbnormalMap({});
+    append(targetRows);
   };
 
-  const onFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleFileDrop = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setDocuments(prev => [...prev, ...newFiles]);
+    }
+  }, []);
 
+  const removeFile = (indexToRemove: number) => {
+    setDocuments(prev => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const onSubmit = (data: FormValues) => {
     if (!patientEmail) {
-      toast.error("Validation Error", {
-        description: "Please search and select a registered patient profile.",
-      });
+      toast.error("Validation Error", { description: "Please search and select a registered patient profile." });
       return;
     }
 
     const payload: IngestLabReportDto = {
       patientEmail,
-      labName,
-      panelName,
+      labName: data.labName,
+      panelName: data.panelName,
       observationDate: new Date().toISOString(),
-      observations: testRows.map(row => ({
-        testName: row.name,
-        value: testValues[row.name] || "0.0",
-        unit: row.unit,
-        referenceRange: row.range,
-        isAbnormal: !!abnormalMap[row.name]
+      // Ensure empty values default to "0.0"
+      observations: data.observations.map(obs => ({
+        ...obs,
+        value: obs.value || "0.0",
       })),
-      document,
+      documents: documents,
     };
 
     uploadReport(payload);
   };
 
-  // Helper variable to determine if UI should show a loading/waiting state
   const showSpinner = searchTerm.length > 0 && (searchTerm.length < 2 || isSearching);
 
   return (
     <div className="space-y-6">
-      <form onSubmit={onFormSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
+          {/* PATIENT & LAB INFO */}
           <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm">
             <div className="px-6 py-4 border-b border-slate-100 flex gap-2 items-center text-slate-800">
               <RiIdCardLine className="w-4 h-4 text-blue-600" />
@@ -176,12 +196,12 @@ export default function LabIngestPage() {
             </div>
             <div className="p-6 space-y-5">
               
+              {/* PATIENT SEARCH */}
               <div className="space-y-1.5 relative z-20">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Patient Email Address
                 </label>
                 <div className="relative flex items-center">
-                  {/* CHANGED: Icon turns into a spinner immediately upon typing */}
                   {showSpinner ? (
                     <RiLoader4Line className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 animate-spin" />
                   ) : (
@@ -190,7 +210,6 @@ export default function LabIngestPage() {
                   
                   <Input
                     ref={searchInputRef}
-                    required={!patientEmail}
                     type="text"
                     value={searchTerm}
                     onChange={(e) => {
@@ -208,21 +227,17 @@ export default function LabIngestPage() {
                   {searchTerm && (
                     <button
                       type="button"
-                      onMouseDown={(e) => {
-                        e.preventDefault(); 
-                        clearSelection();
-                      }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors focus:outline-none"
+                      onMouseDown={(e) => { e.preventDefault(); setSearchTerm(""); setPatientEmail(""); setIsDropdownOpen(false); }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
                     >
                       <RiCloseLine className="w-4 h-4" />
                     </button>
                   )}
                 </div>
 
+                {/* SEARCH RESULTS DROPDOWN */}
                 {isDropdownOpen && searchTerm.length > 0 && (
-                  <div className="absolute z-30 w-full left-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-72 overflow-y-auto">
-                    
-                    {/* CHANGED: Shows spinner when typing < 2 characters OR actively searching */}
+                  <div className="absolute w-full left-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-72 overflow-y-auto">
                     {showSpinner ? (
                       <div className="p-8 text-sm text-slate-500 flex flex-col items-center justify-center gap-2">
                         <RiLoader4Line className="animate-spin w-6 h-6 text-blue-600" />
@@ -231,7 +246,7 @@ export default function LabIngestPage() {
                     ) : searchResults && searchResults.length > 0 ? (
                       <ul className="py-1">
                         {searchResults.map((patient: PatientSearchResult) => {
-                          const initial = patient.firstName ? patient.firstName.charAt(0).toUpperCase() : "?";
+                          const imageUrl = patient.profilePhotoUrl || (patient as any).profilePictureUrl || (patient as any).profilePhoto || (patient as any).photoUrl;
                           
                           return (
                             <li 
@@ -239,32 +254,23 @@ export default function LabIngestPage() {
                               onMouseDown={() => handlePatientSelect(patient.email)} 
                               className="px-4 py-3 hover:bg-slate-50 cursor-pointer flex items-center transition-colors border-b border-slate-50 last:border-b-0"
                             >
-                              <div className="relative shrink-0 w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100 overflow-hidden text-blue-600 font-bold text-sm">
-                                {patient.profilePhotoUrl ? (
-                                  <img 
-                                    src={patient.profilePhotoUrl} 
-                                    alt={`${patient.firstName} ${patient.lastName}`}
-                                    className="w-full h-full object-cover"
-                                  />
+                              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 overflow-hidden border border-slate-200">
+                                {imageUrl ? (
+                                  <img src={imageUrl} alt={patient.firstName} className="w-full h-full object-cover" />
                                 ) : (
-                                  <span>{initial}</span>
+                                  <span className="text-blue-700 font-semibold text-sm">
+                                    {patient.firstName?.charAt(0)}{patient.lastName?.charAt(0)}
+                                  </span>
                                 )}
                               </div>
 
-                              <div className="ml-3 flex flex-col flex-1 truncate">
-                                <span className="text-sm font-bold text-slate-800 truncate">
-                                  {patient.firstName} {patient.lastName}
-                                </span>
-                                <span className="text-xs text-slate-500 truncate mt-0.5">
-                                  {patient.email}
-                                </span>
+                              <div className="ml-3 flex flex-col flex-1">
+                                <span className="text-sm font-bold text-slate-800">{patient.firstName} {patient.lastName}</span>
+                                <span className="text-xs text-slate-500 mt-0.5">{patient.email}</span>
                               </div>
-
-                              <div className="shrink-0 ml-2">
-                                <span className="inline-block px-2 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-semibold rounded-md">
-                                  DOB: {formatDate(patient.dateOfBirth)}
-                                </span>
-                              </div>
+                              <span className="px-2 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-semibold rounded-md">
+                                DOB: {formatDate(patient.dateOfBirth)}
+                              </span>
                             </li>
                           );
                         })}
@@ -273,36 +279,26 @@ export default function LabIngestPage() {
                       <div className="p-6 text-center space-y-2">
                         <RiSearchLine className="w-6 h-6 text-slate-300 mx-auto" />
                         <p className="text-sm text-slate-700 font-semibold">No matches found</p>
-                        <p className="text-xs text-slate-400 max-w-[280px] mx-auto leading-normal">
-                          We couldn't find a registered patient matching <span className="font-medium text-slate-600">"{searchTerm}"</span>
-                        </p>
                       </div>
                     )}
                   </div>
                 )}
               </div>
 
+              {/* LAB NAME & PANEL (Restored Dropdown) */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  Lab Facility
-                </label>
-                <Input
-                  required
-                  value={labName}
-                  onChange={(e) => setLabName(e.target.value)}
-                  className="rounded-xl h-10 border-slate-200"
-                />
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Lab Facility</label>
+                <Input required {...register("labName")} className="rounded-xl h-10 border-slate-200" />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  Test Panel Template
-                </label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Add Test Panel Template</label>
                 <select
-                  value={panelName}
-                  onChange={(e) => handlePanelSwitch(e.target.value)}
+                  value="" 
+                  onChange={handleAddPanel}
                   className="w-full bg-white border border-slate-200 h-10 px-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 >
+                  <option value="" disabled>Select a panel to add...</option>
                   <option value="Full Blood Count">Full Blood Count</option>
                   <option value="Lipid Panel">Lipid Panel</option>
                 </select>
@@ -310,99 +306,165 @@ export default function LabIngestPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-             <div className="px-6 py-4 border-b border-slate-100 flex gap-2 items-center text-slate-800">
+          {/* MULTI-FILE UPLOAD ZONE */}
+          <div className="lg:col-span-1 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+              <div className="px-6 py-4 border-b border-slate-100 flex gap-2 items-center text-slate-800 shrink-0">
               <RiFileUploadLine className="w-4 h-4 text-blue-600" />
-              <h3 className="font-bold text-sm">Supporting Document</h3>
+              <h3 className="font-bold text-sm">Supporting Documents</h3>
             </div>
-            <div className="p-6">
-               <label className="border-2 border-dashed border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors rounded-xl h-45 flex flex-col items-center justify-center cursor-pointer mb-4">
+            <div className="p-6 flex-1 flex flex-col">
+               <label className="border-2 border-dashed border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer mb-4">
                   <RiUploadCloud2Line className="w-6 h-6 text-slate-400 mb-2" />
                   <span className="text-sm font-semibold text-slate-700">Drag & Drop</span>
-                  <span className="text-xs text-slate-400 mt-1">or click to upload</span>
+                  <span className="text-xs text-slate-400 mt-1">or click to add files</span>
                   <input 
                     type="file" 
+                    multiple
                     className="hidden" 
                     accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => setDocument(e.target.files?.[0] ?? null)}
+                    onChange={handleFileDrop}
                   />
                </label>
                
-               {document ? (
-                  <div className="text-xs font-medium text-emerald-600 bg-emerald-50 p-2 rounded-lg truncate border border-emerald-100">
-                    File: {document.name}
-                  </div>
+               {/* Document Roster */}
+               {documents.length > 0 ? (
+                 <div className="space-y-2 flex-1 overflow-y-auto max-h-[160px] pr-1">
+                    {documents.map((doc, idx) => (
+                      <div key={idx} className="flex items-center justify-between bg-white border border-slate-200 p-2.5 rounded-lg shadow-sm">
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <RiFilePdf2Line className="w-4 h-4 text-red-500 shrink-0" />
+                          <span className="text-xs font-medium text-slate-700 truncate">{doc.name}</span>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => removeFile(idx)}
+                          className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-1 rounded transition-colors"
+                        >
+                          <RiCloseLine className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                 </div>
                ) : (
-                  <div className="space-y-1.5">
-                    <p className="text-[11px] text-slate-500 flex items-center gap-1.5"><RiImage2Line className="w-3.5 h-3.5" /> Supports: PDF, JPG, PNG</p>
-                    <p className="text-[11px] text-slate-500 flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M21 8V20.9932C21 21.5501 20.5552 22 20.0066 22H3.9934C3.44495 22 3 21.556 3 21.0082V2.9918C3 2.44405 3.44476 2 3.9934 2H14.9968L21 8ZM19 9H14V4H5V20H19V9ZM8 7H11V9H8V7ZM8 11H16V13H8V11ZM8 15H16V17H8V15Z"></path></svg> Max size: 10 MB</p>
-                  </div>
+                 <div className="space-y-1.5 mt-auto">
+                   <p className="text-[11px] text-slate-500 flex items-center gap-1.5"><RiImage2Line className="w-3.5 h-3.5" /> Supports: PDF, JPG, PNG</p>
+                 </div>
                )}
             </div>
           </div>
         </div>
 
+        {/* DYNAMIC OBSERVATION TABLE */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
             <h3 className="font-bold text-sm text-slate-800">Observation Data Entry</h3>
-            <span className="bg-slate-100 text-slate-600 text-[11px] font-bold px-2.5 py-1 rounded-full">{testRows.length} Tests</span>
+            <span className="bg-slate-100 text-slate-600 text-[11px] font-bold px-2.5 py-1 rounded-full">{fields.length} Tests</span>
           </div>
           
           <div className="overflow-x-auto">
-            <div className="min-w-[700px]">
-              <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-slate-100 bg-white">
-                <div className="col-span-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Test Name</div>
-                <div className="col-span-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Reference Range</div>
-                <div className="col-span-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Value</div>
+            <div className="min-w-[850px]">
+              <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-slate-100 bg-white items-center">
+                <div className="col-span-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Test Name</div>
+                <div className="col-span-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Unit</div>
+                <div className="col-span-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Ref. Range</div>
+                <div className="col-span-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Value</div>
                 <div className="col-span-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</div>
+                <div className="col-span-1 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</div>
               </div>
 
               <div className="divide-y divide-slate-100 bg-white">
-                {testRows.map((row, idx) => {
-                   const isAbnormal = abnormalMap[row.name];
+                {fields.map((field, idx) => {
+                   const isAbnormal = watch(`observations.${idx}.isAbnormal`);
+                   
                    return (
-                    <div key={idx} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50/50 transition-colors">
-                      <div className="col-span-4">
-                        <h4 className="text-sm font-bold text-slate-800">{row.name}</h4>
-                        <p className="text-[11px] text-slate-500 font-medium mt-0.5">Unit: {row.unit}</p>
-                      </div>
+                    <div key={field.id} className="grid grid-cols-12 gap-4 px-6 py-3 items-center hover:bg-slate-50/50 transition-colors">
+                      
+                      {/* Name */}
                       <div className="col-span-3">
-                          <span className="text-sm text-slate-600 bg-slate-50 px-3 py-1 rounded-md border border-slate-100">{row.range}</span>
+                        <Input required {...register(`observations.${idx}.testName`)} className="h-9 text-sm" placeholder="e.g., Hemoglobin" />
                       </div>
-                      <div className="col-span-3">
+                      
+                      {/* Unit */}
+                      <div className="col-span-2">
+                        <Input {...register(`observations.${idx}.unit`)} className="h-9 text-sm" placeholder="e.g., g/dL" />
+                      </div>
+
+                      {/* Reference Range */}
+                      <div className="col-span-2">
+                        <Input 
+                           {...register(`observations.${idx}.referenceRange`)} 
+                           className="h-9 text-sm bg-slate-50 border-slate-200" 
+                           placeholder="e.g., 13.8-17.2"
+                           onChange={(e) => {
+                             // Re-evaluate abnormality if range changes
+                             setValue(`observations.${idx}.referenceRange`, e.target.value);
+                             const currentVal = getValues(`observations.${idx}.value`);
+                             if (currentVal) {
+                               setValue(`observations.${idx}.isAbnormal`, checkIsAbnormal(currentVal, e.target.value));
+                             }
+                           }}
+                        />
+                      </div>
+
+                      {/* Value (Auto-flagging logic inside) */}
+                      <div className="col-span-2">
                         <Input 
                           required 
                           placeholder="0.0"
-                          value={testValues[row.name] || ""}
+                          {...register(`observations.${idx}.value`)}
                           onChange={e => {
-                            const newValue = e.target.value;
-                            setTestValues(prev => ({ ...prev, [row.name]: newValue }));
-                            setAbnormalMap(prev => ({ 
-                              ...prev, 
-                              [row.name]: checkIsAbnormal(newValue, row.range) 
-                            }));
+                            const val = e.target.value;
+                            setValue(`observations.${idx}.value`, val);
+                            const currentRange = getValues(`observations.${idx}.referenceRange`);
+                            setValue(`observations.${idx}.isAbnormal`, checkIsAbnormal(val, currentRange));
                           }}
-                          className="w-24 h-9 rounded-lg border-slate-200 text-sm"
+                          className="w-full h-9 rounded-lg border-slate-200 text-sm font-medium"
                         />
                       </div>
+
+                      {/* Status Toggle */}
                       <div className="col-span-2">
                         <button 
                           type="button" 
-                          onClick={() => setAbnormalMap(prev => ({ ...prev, [row.name]: !isAbnormal }))} 
-                          className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-full border transition-colors ${
-                             isAbnormal 
-                             ? "bg-red-50 text-red-600 border-red-200" 
-                             : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                          onClick={() => setValue(`observations.${idx}.isAbnormal`, !isAbnormal)} 
+                          className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-full border transition-colors w-full justify-center ${
+                              isAbnormal 
+                              ? "bg-red-50 text-red-600 border-red-200" 
+                              : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
                           }`}
                         >
                           <RiCheckLine className="w-3.5 h-3.5" />
                           {isAbnormal ? "Abnormal" : "Normal"}
                         </button>
                       </div>
+
+                      {/* Remove Row Action */}
+                      <div className="col-span-1 flex justify-end">
+                         <button 
+                           type="button" 
+                           onClick={() => remove(idx)}
+                           className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                         >
+                           <RiDeleteBinLine className="w-4 h-4" />
+                         </button>
+                      </div>
                     </div>
                    )
                 })}
               </div>
+
+              {/* ADD CUSTOM TEST ROW */}
+              <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-100">
+                 <button
+                   type="button"
+                   onClick={() => append({ testName: "", unit: "", referenceRange: "", value: "", isAbnormal: false })}
+                   className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors"
+                 >
+                    <RiAddLine className="w-4 h-4" />
+                    Add Custom Test
+                 </button>
+              </div>
+
             </div>
           </div>
         </div>
@@ -410,7 +472,7 @@ export default function LabIngestPage() {
         <div className="bg-[#f0f5ff] text-blue-800 p-4 rounded-xl flex gap-3 items-start text-sm border border-[#d6e4ff]">
           <RiInformationLine className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
           <p className="leading-relaxed">
-            <span className="font-bold">Smart Auto-Flagging:</span> Values outside the reference range are automatically flagged as abnormal. You can manually toggle this status with the button in the Status column.
+            <span className="font-bold">Smart Auto-Flagging:</span> Values outside the reference range are automatically flagged as abnormal. You can manually toggle this status or add unlimited custom test rows below the template.
           </p>
         </div>
 
