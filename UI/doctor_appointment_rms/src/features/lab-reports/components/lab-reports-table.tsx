@@ -183,19 +183,19 @@ export const LabReportsTable = () => {
                 </TableCell>
 
                 <TableCell>
-                  {report.documentType ? (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-medium uppercase tracking-wider">
-                      {report.documentType === 'PDF' || report.mimeType?.includes('pdf') ? (
-                        <RiFilePdf2Line size={14} className="text-red-500" />
-                      ) : (
-                        <RiImageLine size={14} className="text-blue-500" />
-                      )}
-                      {report.documentType}
-                    </span>
-                  ) : (
-                    <span className="text-slate-400 text-sm">-</span>
-                  )}
-                </TableCell>
+  {report.documents && report.documents.length > 0 ? (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-medium uppercase tracking-wider">
+      {report.documents[0].documentType === 'PDF' || report.documents[0].mimeType?.includes('pdf') ? (
+        <RiFilePdf2Line size={14} className="text-red-500" />
+      ) : (
+        <RiImageLine size={14} className="text-blue-500" />
+      )}
+      {report.documents.length > 1 ? `${report.documents[0].documentType} (+${report.documents.length - 1})` : report.documents[0].documentType}
+    </span>
+  ) : (
+    <span className="text-slate-400 text-sm">-</span>
+  )}
+</TableCell>
 
                 <TableCell className="text-right">
                   <button
@@ -277,7 +277,9 @@ export const LabReportsTable = () => {
                       </div>
                       <div className="rounded-xl border border-slate-200 p-4 bg-white shadow-sm">
                         <p className="text-[10px] tracking-wider uppercase text-slate-500 font-bold mb-1">Doc Type</p>
-                        <p className="text-lg font-bold text-slate-800 mt-2">{selectedReport.documentType || "N/A"}</p>
+                        <p className="text-lg font-bold text-slate-800 mt-2">
+                          {selectedReport.documents && selectedReport.documents.length > 0 ? selectedReport.documents[0].documentType : "N/A"}
+                        </p>
                       </div>
                       <div className="rounded-xl border border-green-200 p-4 bg-green-50/50 shadow-sm">
                         <p className="text-[10px] tracking-wider uppercase text-green-700 font-bold mb-1">Normal</p>
@@ -390,45 +392,66 @@ export const LabReportsTable = () => {
                       </div>
                     </div>
 
-                    {/* Document Preview */}
-                    {selectedReport.documentUrl && (
-                      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm mt-8">
-                        <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex items-center gap-2 text-sm font-bold text-slate-700">
-                          {selectedReport.documentType?.toLowerCase() === "pdf" || selectedReport.mimeType?.includes("pdf") ? (
-                            <RiFilePdf2Line size={18} className="text-red-500" />
-                          ) : (
-                            <RiImageLine size={18} className="text-blue-500" />
-                          )}
-                          Supporting Document
+                    {/* Document Preview Section */}
+                    {selectedReport.documents && selectedReport.documents.length > 0 && (
+                      <div className="mt-8">
+                        <div className="flex items-center gap-2 mb-4">
+                          <RiFilePdf2Line className="text-blue-600" size={20} />
+                          <h3 className="text-lg font-bold text-slate-900">
+                            Supporting Documents ({selectedReport.documents.length})
+                          </h3>
                         </div>
 
-                        <div className="p-1">
-                          {selectedReport.documentType?.toLowerCase() === "pdf" || selectedReport.mimeType?.includes("pdf") ? (
-                            <div className="p-10 flex flex-col items-center justify-center text-center bg-slate-50/50 m-4 rounded-lg border border-dashed border-slate-300">
-                              <RiFilePdf2Line className="w-16 h-16 text-slate-300 mb-4" />
-                              <h4 className="text-lg font-bold text-slate-800">PDF Report Attached</h4>
-                              <p className="text-slate-500 text-sm mt-1 mb-6 max-w-sm">
-                                This record includes a standardized PDF document. Click below to securely view or download it.
-                              </p>
-                              <a
-                                href={selectedReport.documentUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 bg-white text-blue-600 border border-slate-200 shadow-sm px-6 py-2.5 rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors font-semibold text-sm"
-                              >
-                                <RiExternalLinkLine size={18} />
-                                View PDF Document
-                              </a>
-                            </div>
-                          ) : selectedReport.mimeType?.includes("image") || selectedReport.documentType?.toLowerCase() === "xray" ? (
-                            <div className="bg-slate-100 flex justify-center rounded-b-xl">
-                              <img
-                                src={selectedReport.documentUrl}
-                                alt="Medical Document"
-                                className="w-full max-w-full h-auto max-h-150 object-contain"
-                              />
-                            </div>
-                          ) : null}
+                        <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+                          <Table>
+                            <TableHeader className="bg-slate-50 border-b border-slate-200">
+                              <TableRow className="hover:bg-transparent">
+                                <TableHead className="font-semibold text-slate-600">File Name</TableHead>
+                                <TableHead className="font-semibold text-slate-600">Type</TableHead>
+                                <TableHead className="text-right font-semibold text-slate-600">Action</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {selectedReport.documents.map((doc) => {
+                                const isPdf = doc.mimeType?.includes("pdf") || doc.documentType === 'PDF';
+                                
+                                return (
+                                  <TableRow key={doc.id} className="hover:bg-slate-50/50">
+                                    <TableCell className="font-medium text-slate-900">
+                                      <div className="flex items-center gap-2">
+                                        {isPdf ? (
+                                          <RiFilePdf2Line size={16} className="text-red-500 shrink-0" />
+                                        ) : (
+                                          <RiImageLine size={16} className="text-blue-500 shrink-0" />
+                                        )}
+                                        <span className="truncate max-w-[200px] sm:max-w-[300px]">
+                                          {doc.fileName || "Document"}
+                                        </span>
+                                      </div>
+                                    </TableCell>
+                                    
+                                    <TableCell className="text-slate-600 text-sm">
+                                      <span className="px-2 py-1 rounded bg-slate-100 text-[11px] font-bold uppercase tracking-wider">
+                                        {doc.documentType || (isPdf ? "PDF" : "Image")}
+                                      </span>
+                                    </TableCell>
+                                    
+                                    <TableCell className="text-right">
+                                      <a
+                                        href={doc.documentUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-blue-700 hover:border-blue-300 hover:bg-blue-50 transition-colors text-xs font-semibold shadow-sm"
+                                      >
+                                        <RiExternalLinkLine size={14} />
+                                        View
+                                      </a>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                            </TableBody>
+                          </Table>
                         </div>
                       </div>
                     )}

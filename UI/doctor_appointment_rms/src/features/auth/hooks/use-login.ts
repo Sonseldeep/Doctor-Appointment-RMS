@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient  } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -11,7 +11,7 @@ import { userRoleStorage } from "../utils/user-role-storage";
 
 export function useLogin() {
   const router = useRouter();
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: authApi.login,
 
@@ -27,6 +27,7 @@ export function useLogin() {
 
         // STEP 2: Now fetch user profile (token is available)
         const user = await userApi.me(data.role);
+        queryClient.setQueryData(["auth", "current-user"], user);
 
         // STEP 3: Store the role (UPDATED to support all valid roles)
         if (user && user.role) {
@@ -38,13 +39,13 @@ export function useLogin() {
         // STEP 4: Navigate to specific dashboard based on role (UPDATED)
         switch (user.role) {
           case "LabTechnician":
-            router.push("/dashboard/lab");
+            router.replace("/dashboard/lab");
             break;
           case "Admin":
-            router.push("/dashboard");
+            router.replace("/dashboard");
             break;
           default:
-            router.push("/dashboard"); 
+            router.replace("/dashboard"); 
         }
 
       } catch (error) {

@@ -334,7 +334,7 @@ export default function AppointmentsPage() {
                       <TableHead className="font-semibold text-slate-700 h-11">{isDoctor ? "Patient Details" : "Doctor Details"}</TableHead>
                       <TableHead className="font-semibold text-slate-700 h-11">Schedule Date & Time</TableHead>
                       <TableHead className="font-semibold text-slate-700 h-11">Current Status</TableHead>
-                      <TableHead className="font-semibold text-slate-700 h-11 text-right">Actions</TableHead>
+                      <TableHead className="font-semibold text-slate-700 h-11 text-right pr-10">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

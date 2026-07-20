@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { RiCalendarLine, RiMessage2Line } from "@remixicon/react";
 import { RatingModal } from "@/features/ratings/components/rating-modal";
 
-// Fully defined flat object structure from your API payload response
 interface ExtendedAppointment {
   id: string;
   patientUserId: string;
@@ -25,14 +24,14 @@ interface ExtendedAppointment {
 }
 
 interface AppointmentCardProps {
-  appointment: any; // Accepts base Appointment from dashboard safely without type friction
+  appointment: any; 
   onCancel?: (id: string) => void;
   onClick?: () => void;
   isDoctorView?: boolean; 
 }
 
 export function AppointmentCard({ appointment, onCancel, onClick, isDoctorView = false }: AppointmentCardProps) {
-  // Safely cast to ExtendedAppointment inside the component body to resolve unused type errors
+  
   const apt = appointment as ExtendedAppointment;
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   
