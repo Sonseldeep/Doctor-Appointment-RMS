@@ -2,7 +2,6 @@ import axios from "@/lib/axios";
 import { Patient, PatientFilterParams, PaginatedResponse } from "../types";
 
 export const getPatients = async (params: PatientFilterParams): Promise<PaginatedResponse<Patient>> => {
-  // Cleans out empty values so they aren't sent as blank string queries to the backend
   const cleanedParams = Object.fromEntries(
     Object.entries(params).filter(([_, value]) => value !== undefined && value !== "")
   );

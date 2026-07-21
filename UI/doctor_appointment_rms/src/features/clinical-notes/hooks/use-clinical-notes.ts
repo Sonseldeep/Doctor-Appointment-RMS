@@ -15,7 +15,6 @@ export function useGetMyClinicalNotes() {
   });
 }
 
-
 export function useCreateClinicalNote() {
   const queryClient = useQueryClient();
 
@@ -33,7 +32,6 @@ export function useCreateClinicalNote() {
     },
   });
 }
-
 
 export function useUpdateClinicalNote() {
   const queryClient = useQueryClient();

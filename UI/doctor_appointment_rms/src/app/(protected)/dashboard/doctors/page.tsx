@@ -9,23 +9,18 @@ import { Button } from "@/components/ui/button";
 
 export default function FindADoctorPage() {
   const router = useRouter();
-  
-  // Track which doctor is currently being viewed in detail
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-
   const [page, setPage] = useState(1);
   const [pageSize] = useState(6);
 
   const handleSelectDoctor = (doctor: Doctor) => {
     console.log("Successfully selected doctor user instance ID:", doctor.userId);
-    // Open the intermediate profile view instead of redirecting immediately
+
     setSelectedDoctor(doctor);
   };
 
   const handleProceedToBooking = () => {
     if (!selectedDoctor) return;
-    
-    // Redirects the user to your booking screen, passing the selected doctor's User ID in the URL
     router.push(`/dashboard/appointments/book?doctorId=${selectedDoctor.userId}`);
   };
 

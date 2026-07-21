@@ -23,7 +23,6 @@ export default function MedicalRecordsPage() {
 
       {/* Main Content Area */}
       <main className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        {/* Swaps elegantly depending on who's visiting */}
         <MedicalRecordsViewSwitcher />
       </main>
     </div>

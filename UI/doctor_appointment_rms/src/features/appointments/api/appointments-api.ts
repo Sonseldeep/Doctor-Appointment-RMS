@@ -28,7 +28,6 @@ export const appointmentsApi = {
     return res.data;
   },
 
-  // Ensure this is inside the exported object
   completeAppointment: async (payload: CompleteAppointmentDto): Promise<void> => {
     console.log("API: completeAppointment called with:", payload);
     await axiosClient.post(`/api/appointments/${payload.appointmentId}/complete`, payload);

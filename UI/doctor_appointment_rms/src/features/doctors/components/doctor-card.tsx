@@ -13,14 +13,10 @@ interface DoctorCardProps {
 export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
   const fullName = `Dr. ${doctor.firstName} ${doctor.lastName}`;
   
-  // Fetch real dynamic rating data
   const { data: ratingData, isLoading: isLoadingRatings } = useDoctorRatings(doctor.userId);
 
-  // Use the API data if available, fallback to 0 instead of random numbers
   const displayRating = ratingData?.summary?.averageRating ? Number(ratingData.summary.averageRating).toFixed(1) : "0.0";
   const displayReviews = ratingData?.summary?.totalRatings ?? 0;
-  
-  // Experience is still safe fallback if not provided by backend
   const displayExperience = doctor.experience ?? 10;
 
   return (

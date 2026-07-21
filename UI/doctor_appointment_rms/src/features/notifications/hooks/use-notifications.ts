@@ -23,26 +23,21 @@ export function useNotifications(params: GetNotificationsParams = {}) {
   const pageSize = params.pageSize ?? 10;
   const isRead = params.isRead;
 
-  // Query 1: Fetches the paginated list for the current active feed window
   const notificationsQuery = useQuery({
     queryKey: ["notifications", "list", { page, pageSize, isRead }],
     queryFn: () => notificationsApi.getNotifications({ page, pageSize, isRead }),
     staleTime: Infinity,
-    placeholderData: (previousData) => previousData, // Smooth pagination transitions
+    placeholderData: (previousData) => previousData, 
   });
 
-  // Mutation: Mark a single notification row item as read
   const markAsReadMutation = useMutation({
     mutationFn: notificationsApi.markAsRead,
     onSuccess: () => {
-      // Invalidate the entire root partition so counters and feeds sync up simultaneously
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 
   
-
-
   const markAllAsReadMutation = useMutation({
     mutationFn: notificationsApi.markAllAsRead,
     onSuccess: () => {

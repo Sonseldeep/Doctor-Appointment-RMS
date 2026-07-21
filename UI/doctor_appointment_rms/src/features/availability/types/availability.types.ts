@@ -1,8 +1,8 @@
 export interface AvailabilitySlot {
   availabilityId: string;
-  date: string; // YYYY-MM-DD
-  startTime: string; // ISO String / HH:mm:ss
-  endTime: string; // ISO String / HH:mm:ss
+  date: string;
+  startTime: string;
+  endTime: string; 
   slotDurationMinutes: number;
 }
 

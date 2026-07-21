@@ -8,8 +8,6 @@ export const useExportPrescription = () => {
     setIsLoading(true);
     try {
       const blob = await exportPrescriptionPdf(appointmentId);
-      
-      
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

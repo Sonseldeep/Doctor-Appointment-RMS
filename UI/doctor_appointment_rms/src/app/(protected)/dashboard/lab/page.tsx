@@ -60,7 +60,6 @@ const checkIsAbnormal = (valueStr: string, rangeStr: string): boolean => {
   return false;
 };
 
-// Define the shape of our form for React Hook Form
 type FormValues = {
   labName: string;
   panelName: string;
@@ -285,7 +284,7 @@ export default function LabIngestPage() {
                 )}
               </div>
 
-              {/* LAB NAME & PANEL (Restored Dropdown) */}
+              {/* LAB NAME & PANEL */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Lab Facility</label>
                 <Input required {...register("labName")} className="rounded-xl h-10 border-slate-200" />
@@ -354,7 +353,7 @@ export default function LabIngestPage() {
           </div>
         </div>
 
-        {/* DYNAMIC OBSERVATION TABLE */}
+        {/* OBSERVATION TABLE */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
             <h3 className="font-bold text-sm text-slate-800">Observation Data Entry</h3>
@@ -396,7 +395,7 @@ export default function LabIngestPage() {
                            className="h-9 text-sm bg-slate-50 border-slate-200" 
                            placeholder="e.g., 13.8-17.2"
                            onChange={(e) => {
-                             // Re-evaluate abnormality if range changes
+       
                              setValue(`observations.${idx}.referenceRange`, e.target.value);
                              const currentVal = getValues(`observations.${idx}.value`);
                              if (currentVal) {
@@ -406,7 +405,6 @@ export default function LabIngestPage() {
                         />
                       </div>
 
-                      {/* Value (Auto-flagging logic inside) */}
                       <div className="col-span-2">
                         <Input 
                           required 
@@ -422,7 +420,6 @@ export default function LabIngestPage() {
                         />
                       </div>
 
-                      {/* Status Toggle */}
                       <div className="col-span-2">
                         <button 
                           type="button" 
@@ -438,7 +435,6 @@ export default function LabIngestPage() {
                         </button>
                       </div>
 
-                      {/* Remove Row Action */}
                       <div className="col-span-1 flex justify-end">
                          <button 
                            type="button" 
@@ -453,7 +449,6 @@ export default function LabIngestPage() {
                 })}
               </div>
 
-              {/* ADD CUSTOM TEST ROW */}
               <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-100">
                  <button
                    type="button"

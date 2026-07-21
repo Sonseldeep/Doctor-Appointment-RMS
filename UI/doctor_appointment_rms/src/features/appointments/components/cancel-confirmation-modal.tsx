@@ -25,7 +25,7 @@ export function CancelConfirmationModal({ isOpen, onClose, onConfirm }: CancelCo
 
       {/* Modal Card Box */}
       <div className="relative w-full max-w-md p-6 bg-white rounded-2xl shadow-xl border border-slate-100 transform transition-all scale-100">
-        {/* Top Right Cross Close Button */}
+        {/* Close Button */}
         <button
           type="button"
           onClick={onClose}

@@ -21,7 +21,7 @@ export function AppointmentDetailsModal({ appointment, isOpen, onClose, isDoctor
   const confirmMutation = useConfirmAppointment();
   const [localStatus, setLocalStatus] = useState<string>("");
   const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
-  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false); // 2. State to track the rating layout visibility
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false); 
 
   useEffect(() => {
     if (appointment) setLocalStatus(appointment.status);

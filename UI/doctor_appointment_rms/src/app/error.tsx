@@ -1,4 +1,4 @@
-"use client"; // Error boundaries must be Client Components
+"use client";
 
 import { useEffect } from "react";
 import { AlertTriangle, RefreshCcw } from "lucide-react";
@@ -11,7 +11,6 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // We will hook this up to Sentry in Step 2
     console.error("Caught by Next.js Error Boundary:", error);
   }, [error]);
 
