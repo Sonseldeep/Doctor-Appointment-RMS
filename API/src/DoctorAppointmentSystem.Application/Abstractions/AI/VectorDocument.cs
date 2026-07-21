@@ -1,5 +1,4 @@
-﻿// File: src/DoctorAppointmentSystem.Application/Abstractions/AI/VectorDocument.cs
-namespace DoctorAppointmentSystem.Application.Abstractions.AI;
+﻿namespace DoctorAppointmentSystem.Application.Abstractions.AI;
 
 public record VectorDocument
 {

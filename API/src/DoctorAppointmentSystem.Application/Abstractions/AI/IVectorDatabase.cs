@@ -15,6 +15,5 @@ public interface IVectorDatabase
 
     Task InsertRecordAsync(Guid patientId, string textContent, float[] embedding, CancellationToken ct);
 
-    // Fixed: Now correctly returns the historical collection of text contents
     Task<IEnumerable<string>> GetAllPatientTextRecordsAsync(Guid patientId, CancellationToken ct);
 }

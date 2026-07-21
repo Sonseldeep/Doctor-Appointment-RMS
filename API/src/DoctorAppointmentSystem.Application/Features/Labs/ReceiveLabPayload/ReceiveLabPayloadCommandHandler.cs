@@ -156,7 +156,7 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
     private readonly ILabReportNotificationScheduler _labReportNotificationScheduler;
     private readonly IUserContext _userContext;
 
-    // Injecting the new AI RAG Components
+    // AI RAG Components
     private readonly IVectorDatabase _vectorDatabase;
     private readonly ITextEmbeddingGenerationService _embeddingService;
 
@@ -168,6 +168,7 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
         INotificationRepository notificationRepository,
         IFileStorageService fileStorageService,
         ILabReportNotificationScheduler labReportNotificationScheduler,
+        IUserContext userContext,
         IVectorDatabase vectorDatabase,
         ITextEmbeddingGenerationService embeddingService)
     {
@@ -178,6 +179,7 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
         _notificationRepository = notificationRepository;
         _fileStorageService = fileStorageService;
         _labReportNotificationScheduler = labReportNotificationScheduler;
+        _userContext = userContext;
         _vectorDatabase = vectorDatabase;
         _embeddingService = embeddingService;
     }
@@ -191,9 +193,15 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
             return Error.NotFound("Lab.PatientNotFound", "Patient verification context failed.");
         }
 
-        var report = LabReport.Create(user.Id, request.LabName, request.PanelName, request.ObservationDate);
+        // Restored _userContext.UserId from Code 1
+        var report = LabReport.Create(
+            user.Id,
+            request.LabName,
+            request.PanelName,
+            request.ObservationDate,
+            _userContext.UserId);
 
-        // 1. Build a textual summary of the lab report context for the LLM to understand later
+        // 1. Build a textual summary of the lab report context for the LLM RAG workflow
         var reportTextBuilder = new StringBuilder();
         reportTextBuilder.AppendLine($"Lab Report Panel: {request.PanelName} executed at {request.LabName} on {request.ObservationDate:yyyy-MM-dd}.");
         reportTextBuilder.AppendLine("Results Breakdown:");
@@ -202,7 +210,7 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
         {
             report.AddObservation(obs.TestName, obs.Value, obs.Unit, obs.ReferenceRange, obs.IsAbnormal);
 
-            // Appending structured lines cleanly so the chunk vector maps semantic contexts correctly
+            // Append structured lines for vector semantic context mapping
             reportTextBuilder.AppendLine($"- Test: {obs.TestName} | Value: {obs.Value} {obs.Unit} | Reference Range: ({obs.ReferenceRange}) | Flagged Abnormal: {obs.IsAbnormal}");
         }
 
@@ -225,29 +233,26 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
             }
         }
 
-        // Save traditional entities
+        // Save traditional database entities
         await _labRepository.AddAsync(report, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // 2. GENERATE AND SAVE VECTORS FOR THE RAG ENGINE
+        // 2. Generate and save vectors for the RAG engine
         try
         {
             string fullLabContextString = reportTextBuilder.ToString();
 
-            // Calls your text-embedding-004 endpoint registered in DependencyInjection
             var memoryEmbedding = await _embeddingService.GenerateEmbeddingAsync(fullLabContextString, cancellationToken: cancellationToken);
             float[] vectorArray = memoryEmbedding.ToArray();
 
-            // Insert directly into the SQL vector records table
             await _vectorDatabase.InsertRecordAsync(user.Id, fullLabContextString, vectorArray, cancellationToken);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            // Logging step or fallback so a failure in the optional AI layer doesn't crash core clinical delivery
-            // Console.WriteLine($"AI Vector Generation skipped: {ex.Message}");
+            // Log exception if needed. Safe fallback ensures AI failures do not interrupt core processing.
         }
 
-        // --- Keep all existing notification/email payload building logic below untouched ---
+        // 3. Notification & background processing logic
         var reportPayload = new LabReportResponse(
             report.Id,
             report.LabName,
