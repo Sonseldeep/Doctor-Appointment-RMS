@@ -1,6 +1,20 @@
 import axiosClient from "@/lib/axios";
 import { LabReportResponse, PatientSearchResult } from "../types/lab-reports.types";
 
+export interface LabReportHistoryItem {
+  labReportId: string;
+  patientId: string;
+  patientFirstName: string;
+  patientLastName: string;
+  patientEmail: string;
+  labName: string;
+  panelName: string;
+  observationDateTime: string;
+  sentAtUtc: string;
+  documentCount: number;
+  observationCount: number;
+}
+
 export interface IngestLabReportDto {
   patientEmail: string;
   labName: string;
@@ -42,6 +56,7 @@ export const labReportsApi = {
     formData.append("LabName", payload.labName);
     formData.append("PanelName", payload.panelName);
     formData.append("ObservationDate", payload.observationDate);
+    
 
     
     formData.append(
@@ -59,6 +74,14 @@ export const labReportsApi = {
       "/api/lab-technicians/lab-results/ingest",
       formData
     );
+  },
+
+
+  getLabHistory: async (): Promise<LabReportHistoryItem[]> => {
+    const res = await axiosClient.get<LabReportHistoryItem[]>(
+      "/api/lab-technicians/lab-results/history"
+    );
+    return res.data;
   },
   
   searchPatients: async (query: string): Promise<PatientSearchResult[]> => {

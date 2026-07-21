@@ -19,6 +19,7 @@ import {
   RiLogoutBoxLine,
   RiTestTubeLine,
   RiTimeLine,
+  RiHistoryLine,
 } from "@remixicon/react";
 
 interface NavItem {
@@ -52,6 +53,7 @@ export function Sidebar() {
 
   const labNavItems: NavItem[] = [
     { label: "Lab Portal", href: "/dashboard/lab", icon: <RiTestTubeLine /> },
+    { label: "See History", href: "/dashboard/lab/history", icon: <RiHistoryLine /> },
   ];
 
   const doctorNavItems: NavItem[] = [
