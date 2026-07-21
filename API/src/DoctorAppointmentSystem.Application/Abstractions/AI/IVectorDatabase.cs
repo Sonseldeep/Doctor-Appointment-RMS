@@ -1,21 +1,19 @@
-﻿namespace DoctorAppointmentSystem.Application.Abstractions.AI;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace DoctorAppointmentSystem.Application.Abstractions.AI;
 
 public interface IVectorDatabase
 {
-    Task UpsertAsync(IEnumerable<VectorDocument> documents, CancellationToken cancellationToken = default);
-
-    Task<List<VectorDocument>> SearchAsync(
-        float[] queryEmbedding,
+    Task<IEnumerable<VectorDocument>> SearchAsync(
+        float[] embedding,
         VectorSearchFilter filter,
-        int topK = 5,
-        CancellationToken cancellationToken = default);
+        int topK,
+        CancellationToken ct);
 
-    Task DeleteBySourceIdAsync(Guid sourceDocumentId, CancellationToken cancellationToken = default);
-}
+    Task InsertRecordAsync(Guid patientId, string textContent, float[] embedding, CancellationToken ct);
 
-public record VectorSearchFilter
-{
-    public required Guid PatientId { get; init; }
-    public Guid? DoctorId { get; init; } // Optional: strict for doctors, null if patient is querying their own data
-    public List<string>? DocumentTypes { get; init; }
+    Task<IEnumerable<string>> GetAllPatientTextRecordsAsync(Guid patientId, CancellationToken ct);
 }

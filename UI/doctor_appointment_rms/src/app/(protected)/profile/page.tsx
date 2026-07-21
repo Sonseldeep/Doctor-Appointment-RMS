@@ -303,7 +303,7 @@ export default function ProfilePage() {
                     <Button variant="outline" size="sm" disabled={isSaving} onClick={() => setIsEditing(false)}>
                       Cancel
                     </Button>
-                    <Button size="sm" onClick={handleSaveProfile} disabled={isSaving} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <Button size="sm" onClick={handleSaveProfile} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white">
                       {isSaving ? "Saving..." : "Save Changes"}
                     </Button>
                   </div>

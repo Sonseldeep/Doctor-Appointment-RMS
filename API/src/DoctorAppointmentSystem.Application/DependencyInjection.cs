@@ -1,7 +1,7 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Behaviors;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-
+using DoctorAppointmentSystem.Application.Features.AI;
 namespace DoctorAppointmentSystem.Application;
 
 public static class DependencyInjection
@@ -17,6 +17,8 @@ public static class DependencyInjection
         });
         
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly, includeInternalTypes: true);
+
+        services.AddScoped<AiQueryService>();
         return services;
     }
 }

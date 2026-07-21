@@ -43,7 +43,7 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 
     public DbSet<ClinicalNote> ClinicalNotes => Set<ClinicalNote>();
     public DbSet<Medication> Medications => Set<Medication>();
-
+    public DbSet<AiVectorRecord> AiVectorRecords { get; set; }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
     }
