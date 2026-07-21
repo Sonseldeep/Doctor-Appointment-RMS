@@ -1,6 +1,6 @@
 ﻿
-using System.Text;
 using DoctorAppointmentSystem.Application.Abstractions.Admin;
+using DoctorAppointmentSystem.Application.Abstractions.AI;
 using DoctorAppointmentSystem.Application.Abstractions.Appointments;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Availability;
@@ -29,6 +29,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.SemanticKernel;
+using System.Text;
 
 namespace DoctorAppointmentSystem.Infrastructure;
 
@@ -53,6 +55,8 @@ public static class DependencyInjection
         services.AddHangfireInfrastructure(connectionString);
         services.AddNotificationInfrastructure();
         services.AddRatingInfrastructure();
+
+        services.AddAiInfrastructure(configuration);
 
         return services;
     }
@@ -150,6 +154,7 @@ public static class DependencyInjection
         services.AddScoped<IMedicalRecordAccessLogRepository, MedicalRecordAccessLogRepository>();
         services.AddScoped<IDashboardRepository, DashboardRepository>();
 
+        services.AddScoped<IVectorDatabase, SqlVectorDatabase>();
 
         return services;
     }
@@ -200,6 +205,23 @@ public static class DependencyInjection
     {
         services.AddScoped<IRatingRepository, RatingRepository>();
         services.AddScoped<IRatingSummaryRepository, RatingSummaryRepository>();
+        return services;
+    }
+
+    private static IServiceCollection AddAiInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    {
+        var apiKey = configuration["AI:ApiKey"] ?? throw new InvalidOperationException("AI ApiKey is missing.");
+
+        var kernelBuilder = services.AddKernel();
+
+#pragma warning disable SKEXP0070
+        // FIX: Update Chat model to the active Gemini 3.5 generation
+        kernelBuilder.AddGoogleAIGeminiChatCompletion("gemini-3.5-flash", apiKey);
+
+        // Keep the working embedding model we fixed previously
+        kernelBuilder.AddGoogleAIEmbeddingGeneration("gemini-embedding-001", apiKey);
+#pragma warning restore SKEXP0070
+
         return services;
     }
 }

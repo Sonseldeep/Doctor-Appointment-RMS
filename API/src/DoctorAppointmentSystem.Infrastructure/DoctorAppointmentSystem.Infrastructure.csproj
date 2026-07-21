@@ -26,6 +26,7 @@
       </PackageReference>
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.8" />
       <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.18.0" />
+      <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.78.0-alpha" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
     </ItemGroup>
 
