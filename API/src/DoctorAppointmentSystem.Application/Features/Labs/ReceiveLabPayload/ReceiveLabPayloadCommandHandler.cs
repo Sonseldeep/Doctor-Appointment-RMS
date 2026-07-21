@@ -127,8 +127,7 @@
 //    }
 //}
 
-// File: src/DoctorAppointmentSystem.Application/Features/Labs/ReceiveLabPayload/ReceiveLabPayloadCommandHandler.cs
-using DoctorAppointmentSystem.Application.Abstractions.AI; // Access IVectorDatabase
+using DoctorAppointmentSystem.Application.Abstractions.AI;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using DoctorAppointmentSystem.Application.Abstractions.Data;
 using DoctorAppointmentSystem.Application.Abstractions.Jobs;
@@ -140,8 +139,8 @@ using DoctorAppointmentSystem.Application.Features.Labs.GetLabReports;
 using DoctorAppointmentSystem.Domain.Labs;
 using DoctorAppointmentSystem.Domain.Notifications;
 using ErrorOr;
-using Microsoft.SemanticKernel.Embeddings; // Access ITextEmbeddingGenerationService
-using System.Text; // For StringBuilder
+using Microsoft.SemanticKernel.Embeddings; 
+using System.Text; 
 
 namespace DoctorAppointmentSystem.Application.Features.Labs.ReceiveLabPayload;
 
