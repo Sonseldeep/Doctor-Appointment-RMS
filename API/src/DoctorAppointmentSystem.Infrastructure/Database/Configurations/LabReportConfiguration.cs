@@ -20,5 +20,9 @@ public class LabReportConfiguration : IEntityTypeConfiguration<LabReport>
             .WithOne(d => d.LabReport)
             .HasForeignKey(d => d.LabReportId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        
+        builder.HasIndex(x => x.SentByLabTechnicianId);
+
     }
 }

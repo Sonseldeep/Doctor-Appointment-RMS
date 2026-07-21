@@ -154,6 +154,7 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
     private readonly INotificationRepository _notificationRepository;
     private readonly IFileStorageService _fileStorageService;
     private readonly ILabReportNotificationScheduler _labReportNotificationScheduler;
+    private readonly IUserContext _userContext;
 
     // Injecting the new AI RAG Components
     private readonly IVectorDatabase _vectorDatabase;
