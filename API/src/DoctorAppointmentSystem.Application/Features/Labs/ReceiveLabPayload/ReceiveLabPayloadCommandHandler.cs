@@ -21,6 +21,7 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
     private readonly INotificationRepository _notificationRepository;
     private readonly IFileStorageService _fileStorageService; 
     private readonly ILabReportNotificationScheduler _labReportNotificationScheduler;
+    private readonly IUserContext _userContext;
 
 
     public ReceiveLabPayloadCommandHandler(
@@ -30,7 +31,8 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
         INotificationService notificationService,
         INotificationRepository notificationRepository,
         IFileStorageService fileStorageService,
-        ILabReportNotificationScheduler labReportNotificationScheduler) 
+        ILabReportNotificationScheduler labReportNotificationScheduler,
+        IUserContext userContext) 
     {
         _labRepository = labRepository;
         _userRepository = userRepository;
@@ -39,6 +41,7 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
         _notificationRepository = notificationRepository;
         _fileStorageService = fileStorageService;
         _labReportNotificationScheduler = labReportNotificationScheduler;
+        _userContext = userContext;
     }
 
     public async Task<ErrorOr<Success>> Handle(ReceiveLabPayloadCommand request, CancellationToken cancellationToken)
@@ -50,7 +53,12 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
             return Error.NotFound("Lab.PatientNotFound", "Patient verification context failed.");
         }
         
-        var report = LabReport.Create(user.Id, request.LabName, request.PanelName, request.ObservationDate);
+        var report = LabReport.Create(
+            user.Id,
+            request.LabName,
+            request.PanelName,
+            request.ObservationDate,
+            _userContext.UserId);
 
         
 

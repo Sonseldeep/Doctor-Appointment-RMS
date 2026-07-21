@@ -1,5 +1,6 @@
 ﻿using DoctorAppointmentSystem.Application.Abstractions.Labs;
 using DoctorAppointmentSystem.Domain.Labs;
+using DoctorAppointmentSystem.Domain.Users;
 using DoctorAppointmentSystem.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,5 +34,24 @@ public class LabReportRepository : ILabReportRepository
             .Include(r => r.Observations) 
             .Include(r => r.Documents)
             .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+    }
+
+    public async Task<List<(LabReport Report, User Patient)>> GetSentHistoryByLabTechnicianIdAsync(
+        Guid labTechnicianId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.LabReports
+            .Include(r => r.Observations)
+            .Include(r => r.Documents)
+            .AsNoTracking()
+            .Where(r => r.SentByLabTechnicianId == labTechnicianId)
+            .Join(
+                _context.Users.AsNoTracking(),
+                report => report.PatientId,
+                user => user.Id,
+                (report, user) => new { Report = report, Patient = user })
+            .OrderByDescending(joined => joined.Report.SentAtUtc)
+            .Select(joined => ValueTuple.Create(joined.Report, joined.Patient))
+            .ToListAsync(cancellationToken);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using DoctorAppointmentSystem.Api.Common.Request;
+using DoctorAppointmentSystem.Application.Features.Labs.GetLabTechnicianSendHistory;
 using DoctorAppointmentSystem.Application.Features.Labs.ReceiveLabPayload;
 using DoctorAppointmentSystem.Domain.Users;
 using MediatR;
@@ -43,6 +44,21 @@ public class LabResultsController : ApiController
         var result = await _sender.Send(command, cancellationToken);
 
         return result.Match(_ => Ok(), Problem);
+    }
+
+    [HttpGet("history")]
+    public async Task<IActionResult> GetSendHistory(CancellationToken cancellationToken)
+    {
+        if (!TryGetCurrentUserId(out var labTechnicianId))
+        {
+            return Unauthorized();
+        }
+
+        var query = new GetLabTechnicianSendHistoryQuery(labTechnicianId);
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        return result.Match(Ok, Problem);
     }
 
     private static List<ObservationDto> ParseObservations(string? observationsJson)

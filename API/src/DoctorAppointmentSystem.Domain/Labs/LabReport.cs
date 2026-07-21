@@ -8,13 +8,23 @@ public class LabReport : Entity
     public string LabName { get; private set; } = string.Empty;
     public string PanelName { get; private set; } = string.Empty;
     public DateTime ObservationDateTime { get; private set; }
+    
+    public Guid SentByLabTechnicianId { get; private set; }
+    public DateTime SentAtUtc { get; private set; }
+    
+    
 
     public List<LabObservation> Observations { get; private set; } = [];
     public List<LabReportDocument> Documents { get; private set; } = [];
 
     private LabReport() { }
 
-    public static LabReport Create(Guid patientId, string labName, string panelName, DateTime observationDateTime)
+    public static LabReport Create(
+        Guid patientId,
+        string labName,
+        string panelName, 
+        DateTime observationDateTime,
+        Guid sentByLabTechnicianId)
     {
         return new LabReport
         {
@@ -22,7 +32,11 @@ public class LabReport : Entity
             PatientId = patientId,
             LabName = labName,
             PanelName = panelName,
-            ObservationDateTime = observationDateTime
+            ObservationDateTime = observationDateTime,
+            SentByLabTechnicianId = sentByLabTechnicianId,
+            SentAtUtc = DateTime.UtcNow
+
+
         };
     }
 
