@@ -49,7 +49,6 @@ export function useSuspendDoctorMutation() {
   return useMutation({
     mutationFn: (doctorId: string) => adminDoctorsApi.suspendDoctor(doctorId),
     onSuccess: () => {
-      // Invalidate query to refetch
       queryClient.invalidateQueries({ queryKey: ["admin", "doctors"] });
       toast.success("Doctor suspended successfully!");
     },

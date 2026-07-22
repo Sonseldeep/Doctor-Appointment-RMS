@@ -20,13 +20,8 @@ export function useLogout() {
       } catch (error) {
         console.error("Logout error:", error);
       } finally {
-        // Clear token
         tokenStorage.clear();
-        
-        // Clear role
         userRoleStorage.clear();
-        
-        // Clear React Query cache
         queryClient.clear();
 
         toast.success("Logged out successfully");

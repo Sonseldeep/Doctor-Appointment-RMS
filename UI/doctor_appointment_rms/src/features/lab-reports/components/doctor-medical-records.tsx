@@ -437,8 +437,6 @@ import {
 export function DoctorMedicalRecords() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPatient, setSelectedPatient] = useState<PatientSearchResult | null>(null);
-  
-  // Updated from activeReportForChat to a global boolean toggle
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const { data: patients, isLoading: searchLoading } = useDoctorPatientSearch(searchTerm);

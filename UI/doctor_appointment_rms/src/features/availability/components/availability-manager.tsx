@@ -8,7 +8,6 @@ import {
 } from "../hooks/use-availability";
 import { RiCalendarLine, RiTimeLine, RiDeleteBin6Line, RiAddLine, RiBookOpenLine } from "@remixicon/react";
 
-// Helper to safely format "09:00:00" style strings into clean "09:00 AM" text
 const formatTimeString = (timeStr: string) => {
   if (!timeStr) return "";
   const [hours, minutes] = timeStr.split(":");
@@ -18,7 +17,6 @@ const formatTimeString = (timeStr: string) => {
   return `${displayHour}:${minutes} ${ampm}`;
 };
 
-// Helper to format "2026-06-11" into something nicer like "Thu, Jun 11"
 const formatDateString = (dateStr: string) => {
   const dateObj = new Date(dateStr);
   if (isNaN(dateObj.getTime())) return dateStr;
@@ -37,15 +35,14 @@ interface AvailabilitySlot {
 }
 
 export function AvailabilityManager() {
-  const { data: slots, isLoading } = useMyAvailability() as { data: AvailabilitySlot[] | undefined, isLoading: boolean };
+  //const { data: slots, isLoading } = useMyAvailability() as { data: AvailabilitySlot[] | undefined, isLoading: boolean };
+  const { data: slots, isLoading } = useMyAvailability()
   const createMutation = useCreateAvailability();
   const deleteMutation = useDeleteAvailability();
 
-  // Get Today's Date in YYYY-MM-DD format based on local timezone
   const today = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
 
-  // Form State
-  const [date, setDate] = useState(today); // Default to today
+  const [date, setDate] = useState(today); 
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
   const [duration, setDuration] = useState(30);

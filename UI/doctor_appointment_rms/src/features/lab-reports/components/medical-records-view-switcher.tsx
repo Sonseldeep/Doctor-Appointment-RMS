@@ -18,7 +18,6 @@ export function MedicalRecordsViewSwitcher() {
     );
   }
 
-  // Check if user exists and has the doctor assignment
   if (user && 'role' in user && user.role === 'Doctor') {
     return <DoctorMedicalRecords />;
   }

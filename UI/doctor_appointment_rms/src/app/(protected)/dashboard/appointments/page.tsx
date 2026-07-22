@@ -560,9 +560,7 @@ import { AppointmentsFilters } from "@/features/appointments/components/appointm
 import { AppointmentsTable } from "@/features/appointments/components/appointments-table";
 import { AppointmentsEmptyState } from "@/features/appointments/components/appointments-empty-state";
 
-// Fetched once as a larger batch, then segmented into tabs client-side.
-// TODO: once the API supports from/to/status query params, replace this with
-// a per-tab server-side fetch (better performance once appointment counts grow).
+
 const FETCH_BATCH_SIZE = 50;
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
 
@@ -583,8 +581,6 @@ export default function AppointmentsPage() {
   const searchParams = useSearchParams();
   const targetAppointmentId = searchParams.get("id");
 
-  // Assumes useGetMyAppointments' `data` resolves to PagedResult<Appointment>.
-  // If your hook wraps the response differently, adjust the two lines below.
   const { data: myAppointments, isLoading, isError } = useGetMyAppointments(1, FETCH_BATCH_SIZE);
   const { mutate: cancelAppointment } = useCancelAppointment();
   const { mutate: confirmAppointment } = useConfirmAppointment();

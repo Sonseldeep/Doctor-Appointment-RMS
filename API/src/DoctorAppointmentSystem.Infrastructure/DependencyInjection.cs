@@ -1,5 +1,4 @@
-﻿
-using DoctorAppointmentSystem.Application.Abstractions.Admin;
+﻿using DoctorAppointmentSystem.Application.Abstractions.Admin;
 using DoctorAppointmentSystem.Application.Abstractions.AI;
 using DoctorAppointmentSystem.Application.Abstractions.Appointments;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;

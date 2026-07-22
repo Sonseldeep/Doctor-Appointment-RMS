@@ -15,11 +15,9 @@ export default function DashboardLayout({
   const { data, isLoading, isError } = useCurrentUser();
 
   const [mounted, setMounted] = useState(false);
-  // Interactive navbar scrolling states
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Sync component mounting state to safely bypass Next.js SSR hydration checks
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -30,18 +28,14 @@ export default function DashboardLayout({
     }
   }, [isLoading, isError, data, router, mounted]);
 
-  // Track scroll direction to hide/show navbar dynamically
   useEffect(() => {
     if (!mounted) return;
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
-      // Hide navbar if scrolling down past its height threshold (64px)
       if (currentScrollY > lastScrollY && currentScrollY > 64) {
         setIsNavbarVisible(false);
-      } 
-      // Show navbar instantly when scrolling up
+      }
       else if (currentScrollY < lastScrollY) {
         setIsNavbarVisible(true);
       }

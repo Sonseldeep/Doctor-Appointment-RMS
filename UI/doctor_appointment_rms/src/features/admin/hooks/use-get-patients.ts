@@ -6,6 +6,6 @@ export const useGetPatients = (params: PatientFilterParams) => {
   return useQuery({
     queryKey: ["admin", "patients", params],
     queryFn: () => getPatients(params),
-    placeholderData: (previousData) => previousData, // Prevents layout flickering during pagination
+    placeholderData: (previousData) => previousData, 
   });
 };

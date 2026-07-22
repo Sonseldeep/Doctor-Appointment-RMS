@@ -23,15 +23,10 @@ export const userApi = {
  
   me: async (role?: any): Promise<CurrentUser> => {
     try {
-      // 1. Always fetch the core authenticated account profile first
       const res = await axiosClient.get<any>("/users/me");
       const baseUser = res.data;
-
-      // 2. Extract the authoritative role from the server payload.
-      // Falls back to string parameter only if it is not an object passed by TanStack Query.
       const actualRole = baseUser.role || (typeof role === "string" ? role : undefined);
 
-      // 3. Dynamically fetch supplemental profiles based on the verified role
       if (actualRole === "Doctor") {
         try {
           const doctorData = await userApi.meDoctor();
@@ -52,7 +47,6 @@ export const userApi = {
         }
       }
 
-      // 4. Return base profile directly for Admin or other administrative accounts
       return baseUser;
     } catch (error) {
       console.error("[userApi] Failed to fetch user profile:", error);

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { availabilityApi } from "../api/availability-api";
 import { CreateAvailabilityRequest, UpdateAvailabilityRequest } from "../types/availability.types";
+import axiosClient from "@/lib/axios";
 
 export function useMyAvailability() {
   return useQuery({
@@ -41,18 +42,30 @@ export function useDeleteAvailability() {
 }
 
 
+// export function useDoctorAvailability(doctorId: string | null) {
+//   return useQuery({
+//     queryKey: ["availability", doctorId],
+//     queryFn: async () => {
+//       if (!doctorId) return null;
+      
+      
+//       const res = await fetch(`https://localhost:5001/api/doctors/${doctorId}/availabilities`);
+//       if (!res.ok) {
+//         throw new Error("Doctor availability not found.");
+//       }
+//       return res.json();
+//     },
+//     enabled: !!doctorId, 
+//   });
+// }
+
 export function useDoctorAvailability(doctorId: string | null) {
   return useQuery({
     queryKey: ["availability", doctorId],
     queryFn: async () => {
       if (!doctorId) return null;
-      
-      
-      const res = await fetch(`https://localhost:5001/api/doctors/${doctorId}/availabilities`);
-      if (!res.ok) {
-        throw new Error("Doctor availability not found.");
-      }
-      return res.json();
+      const res = await axiosClient.get(`/api/doctors/${doctorId}/availabilities`);
+      return res.data;
     },
     enabled: !!doctorId, 
   });

@@ -45,7 +45,6 @@ export default function VerifyEmailPage() {
 
         <CardContent className="space-y-6">
           
-          {/* OTP INPUT */}
           <div className="flex justify-center">
             <InputOTP
               maxLength={6}
@@ -63,7 +62,6 @@ export default function VerifyEmailPage() {
             </InputOTP>
           </div>
 
-          {/* VERIFY BUTTON */}
           <Button
             className="w-full"
             onClick={handleVerify}
@@ -72,7 +70,6 @@ export default function VerifyEmailPage() {
             {verifyEmail.isPending ? "Verifying..." : "Verify Email"}
           </Button>
 
-          {/* RESEND OTP */}
           <Button
             variant="outline"
             className="w-full"
@@ -82,14 +79,12 @@ export default function VerifyEmailPage() {
             {resendOtp.isPending ? "Resending..." : "Resend OTP"}
           </Button>
 
-          {/* ERROR MESSAGE */}
           {verifyEmail.isError && (
             <p className="text-sm text-red-500 text-center">
               Invalid OTP. Please try again.
             </p>
           )}
 
-          {/* SUCCESS MESSAGE */}
           {resendOtp.isSuccess && (
             <p className="text-sm text-green-600 text-center">
               OTP sent successfully

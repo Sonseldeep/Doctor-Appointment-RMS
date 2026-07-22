@@ -18,25 +18,21 @@ interface Props {
 export function ClinicalNotesModal({ isOpen, onClose, appointmentId }: Props) {
   const clinicalNotesMutation = useCreateClinicalNotes();
   const completeMutation = useCompleteAppointment();
-  
-  // Auth & Availability Data
+ 
   const { data: currentUser } = useCurrentUser();
   const { data: availableDates, isLoading: isLoadingDates } = useMyAvailability();
   
   const [currentSection, setCurrentSection] = useState<1 | 2 | 3>(1);
   const [noFollowUpNeeded, setNoFollowUpNeeded] = useState(false);
-  
-  // Slot Selection State
+
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
 
-  // Fetch slots when a date is selected
   const { data: slotData, isLoading: isLoadingSlots } = useDoctorAvailabilityByDate(
     (currentUser as any)?.id || (currentUser as any)?.userId, 
     selectedDate
   );
 
-  // Safely extract slots regardless of API return structure to satisfy TypeScript
   const availableSlots = Array.isArray(slotData) 
     ? slotData 
     : (slotData as any)?.slots || (slotData as any)?.data || [];
@@ -83,7 +79,6 @@ export function ClinicalNotesModal({ isOpen, onClose, appointmentId }: Props) {
   };
 
   const handleSave = async () => {
-    // 1. Validation
     if (!formData.diagnosis || !formData.treatmentSummary) {
       toast.error("Please provide at least a diagnosis and treatment summary.");
       return;
@@ -92,9 +87,7 @@ export function ClinicalNotesModal({ isOpen, onClose, appointmentId }: Props) {
       toast.error("Please select a follow-up time slot or check 'No follow-up required'.");
       return;
     }
-    
-    // 2. Separate Payloads
-    // Create the full payload for the notes endpoint
+
     const notesPayload = { 
       appointmentId, 
       diagnosis: formData.diagnosis,
@@ -105,20 +98,15 @@ export function ClinicalNotesModal({ isOpen, onClose, appointmentId }: Props) {
         ? "" 
         : formData.followUpInstructions,
       medications: medications
-    };// Cast as any if other local types haven't refreshed, preserving TS safety
-
+    };
     const completionPayload = { 
       appointmentId 
     };
 
     try {
-      // 3. Sequential Mutations
-      // First, save the notes
+
       await clinicalNotesMutation.mutateAsync(notesPayload as any);
-      
-      // Then, complete the appointment
       await completeMutation.mutateAsync(completionPayload as any);
-      
       toast.success("Clinical notes saved and appointment completed.");
       onClose();
     } catch (error: any) {
@@ -140,14 +128,12 @@ export function ClinicalNotesModal({ isOpen, onClose, appointmentId }: Props) {
 
   const showSubmitButton = currentSection === 3 || (currentSection === 2 && noFollowUpNeeded);
 
-  // Helper to format date cleanly (e.g., "Thursday, Jul 16")
   const formatDateString = (dateString: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'short', day: 'numeric' }).format(date);
   };
 
-  // Helper to format time cleanly (e.g., "13:00")
   const formatTimeStr = (timeString: string) => {
     if (!timeString) return "";
     if (timeString.includes("T")) {
@@ -376,7 +362,7 @@ export function ClinicalNotesModal({ isOpen, onClose, appointmentId }: Props) {
             </section>
           )}
 
-          {/* Section 3: Follow-up Details (Dynamic Time Slots) */}
+          {/* Section 3: Follow-up Details */}
           {currentSection === 3 && (
             <section className="space-y-5 animate-slide-up">
               <div className="flex items-center gap-2 mb-5">
@@ -422,7 +408,7 @@ export function ClinicalNotesModal({ isOpen, onClose, appointmentId }: Props) {
                   )}
                 </div>
                 
-                {/* Right Column: Select Time */}
+                {/* Select Time */}
                 <div className="space-y-3">
                   <label className="block text-sm font-bold text-slate-800 mb-2 flex items-center justify-between">
                     Select Time

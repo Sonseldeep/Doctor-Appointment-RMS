@@ -16,7 +16,6 @@ export function DoctorsList({ onSelectDoctor, page, pageSize }: DoctorsListProps
   const [searchTerm, setSearchTerm] = useState("");
   const [specialization, setSpecialization] = useState("");
 
-  // Server-side searching handles data requests seamlessly across network frames
   const { data, isLoading, isError } = useDoctors({
     searchTerm,
     specialization,

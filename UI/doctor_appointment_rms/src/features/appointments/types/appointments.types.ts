@@ -8,23 +8,17 @@ export interface Appointment {
   endUtc: string;
   status: AppointmentStatus;
   notes: string;
-  
-  // Doctor/Practitioner Meta Context
   doctorName?: string;
   doctorSpecialization?: string;
   specialty?: string; 
-
-  // Patient Profile Meta Context
   patientName?: string;
   patientSex?: string;
   patientAge?: number;
 
-  // Structural UI Layout Fields
   location?: string;
   appointmentType?: string;
 }
 
-// Data Transfer Object for creating new appointments
 export interface CreateAppointmentDto {
   slotId?: string;
   doctorUserId: string;
@@ -33,7 +27,6 @@ export interface CreateAppointmentDto {
   notes: string;
 }
 
-// ADD THIS INTERFACE HERE
 export interface CompleteAppointmentDto {
   appointmentId: string;
   diagnosis: string;

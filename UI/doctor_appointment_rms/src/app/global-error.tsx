@@ -10,7 +10,6 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  // Automatically report the error to Sentry when the component mounts
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);
