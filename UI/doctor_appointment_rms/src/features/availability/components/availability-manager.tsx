@@ -35,7 +35,8 @@ interface AvailabilitySlot {
 }
 
 export function AvailabilityManager() {
-  const { data: slots, isLoading } = useMyAvailability() as { data: AvailabilitySlot[] | undefined, isLoading: boolean };
+  //const { data: slots, isLoading } = useMyAvailability() as { data: AvailabilitySlot[] | undefined, isLoading: boolean };
+  const { data: slots, isLoading } = useMyAvailability()
   const createMutation = useCreateAvailability();
   const deleteMutation = useDeleteAvailability();
 

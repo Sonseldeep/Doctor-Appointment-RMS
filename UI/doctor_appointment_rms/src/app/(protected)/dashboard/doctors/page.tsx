@@ -23,7 +23,6 @@ export default function FindADoctorPage() {
     if (!selectedDoctor) return;
     router.push(`/dashboard/appointments/book?doctorId=${selectedDoctor.userId}`);
   };
-
   
   if (selectedDoctor) {
     return (
@@ -36,7 +35,6 @@ export default function FindADoctorPage() {
       </div>
     );
   }
-
   
   return (
     <div className="space-y-6 max-w-6xl mx-auto p-6">

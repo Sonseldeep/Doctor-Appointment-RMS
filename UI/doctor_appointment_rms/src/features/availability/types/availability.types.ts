@@ -4,6 +4,9 @@ export interface AvailabilitySlot {
   startTime: string;
   endTime: string; 
   slotDurationMinutes: number;
+  totalSlots: number;
+  bookedSlots: number;
+  freeSlots: number;
 }
 
 export interface CreateAvailabilityRequest {
