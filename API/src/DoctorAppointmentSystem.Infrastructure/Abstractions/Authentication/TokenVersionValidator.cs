@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using DoctorAppointmentSystem.Application.Abstractions.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
 
 namespace DoctorAppointmentSystem.Infrastructure.Abstractions.Authentication;
 
@@ -25,7 +24,8 @@ internal sealed class TokenVersionValidator
     public async Task ValidateAsync(TokenValidatedContext context)
     {
         var principal = context.Principal!;
-        var userIdValue = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdValue = principal.FindFirstValue(
+            ClaimTypes.NameIdentifier);
         var tokenVersionValue = principal.FindFirstValue(AuthClaimTypes.TokenVersion);
 
         var parsedUserId = Guid.TryParse(userIdValue, out var userId);
@@ -49,18 +49,5 @@ internal sealed class TokenVersionValidator
             context.Fail("Token revoked.");
             return;
         }
-    }
-    
-    private static bool IsOnPasswordExpiryAllowList(PathString path)
-    {
-        foreach (var allowed in PasswordExpiryAllowList)
-        {
-            if (path.StartsWithSegments(allowed, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

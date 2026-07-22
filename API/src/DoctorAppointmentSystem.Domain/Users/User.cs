@@ -49,9 +49,22 @@ public sealed class User : Entity
     public DateTimeOffset? LockedOutUntil { get; private set; }
 
 
-    public static User Create(string firstName, string lastName, string email, string passwordHash, UserRole role, DateTimeOffset now)
+    public static User Create(
+        string firstName,
+        string lastName,
+        string email,
+        string passwordHash,
+        UserRole role,
+        DateTimeOffset now)
     {
-        var user = new User(Guid.NewGuid(), firstName, lastName, email, passwordHash, role,now);
+        var user = new User(
+            Guid.NewGuid(),
+            firstName,
+            lastName,
+            email,
+            passwordHash,
+            role,now);
+        
         return user;
     }
     
@@ -85,7 +98,10 @@ public sealed class User : Entity
         return LockedOutUntil is not null && LockedOutUntil.Value > now;
     }
 
-    public bool RecordFailedLoginAttempt(int maxAttempts, TimeSpan lockoutDuration, DateTimeOffset now)
+    public bool RecordFailedLoginAttempt(
+        int maxAttempts,
+        TimeSpan lockoutDuration,
+        DateTimeOffset now)
     {
         FailedLoginAttempts++;
 

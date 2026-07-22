@@ -24,7 +24,9 @@ public sealed class OtpRequestLimit : Entity
     public int RequestCount { get; private set; }
 
     public static OtpRequestLimit Create(string email, OtpPurpose purpose, DateTimeOffset windowStartUtc)
-        => new(email, purpose, windowStartUtc, 0);
+    {
+        return new OtpRequestLimit(email, purpose, windowStartUtc, 0);
+    }
 
     public bool IsInWindow(DateTimeOffset utcNow, TimeSpan window)
         => WindowStartUtc.Add(window) > utcNow;

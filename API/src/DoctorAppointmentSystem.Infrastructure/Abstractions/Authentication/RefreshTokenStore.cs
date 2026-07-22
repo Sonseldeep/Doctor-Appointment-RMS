@@ -14,7 +14,11 @@ internal sealed class RefreshTokenStore : IRefreshTokenStore
         _dbContext = dbContext;
     }
 
-    public async Task StoreActiveAsync(Guid userId, string refreshToken, DateTimeOffset expiresAt, CancellationToken cancellationToken)
+    public async Task StoreActiveAsync(
+        Guid userId,
+        string refreshToken,
+        DateTimeOffset expiresAt,
+        CancellationToken cancellationToken)
     {
         var tokenHash = RefreshTokenHash.Compute(refreshToken);
 

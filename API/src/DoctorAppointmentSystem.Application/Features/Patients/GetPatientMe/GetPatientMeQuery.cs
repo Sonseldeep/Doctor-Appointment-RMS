@@ -2,4 +2,5 @@
 
 namespace DoctorAppointmentSystem.Application.Features.Patients.GetPatientMe;
 
-public sealed record GetPatientMeQuery(Guid UserId) : IQuery<PatientMeResponse>;
+public sealed record GetPatientMeQuery(Guid UserId)
+    : IQuery<PatientMeResponse>;

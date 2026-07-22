@@ -37,7 +37,9 @@ public sealed class DoctorAvailabilitySlot : Entity
         Guid availabilityId,
         TimeOnly startTime,
         TimeOnly endTime)
-        => new(availabilityId, startTime, endTime);
+    {
+        return new DoctorAvailabilitySlot(availabilityId, startTime, endTime);
+    }
 
 
     public ErrorOr<Success> Book(Guid appointmentId)

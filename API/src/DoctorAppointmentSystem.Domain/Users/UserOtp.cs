@@ -39,7 +39,12 @@ public sealed class UserOtp : Entity
 
     public int FailedAttempts { get; private set; }
 
-    public static UserOtp Create(Guid userId, OtpPurpose purpose, string otpHash, DateTimeOffset expiresAt, DateTimeOffset createdAt)
+    public static UserOtp Create(
+        Guid userId,
+        OtpPurpose purpose,
+        string otpHash,
+        DateTimeOffset expiresAt,
+        DateTimeOffset createdAt)
     {
         return new UserOtp(userId, purpose, otpHash, expiresAt, createdAt);
     }

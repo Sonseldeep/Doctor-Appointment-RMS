@@ -5,7 +5,6 @@ using DoctorAppointmentSystem.Application.Abstractions.Ratings;
 using DoctorAppointmentSystem.Application.Features.Doctors.Common;
 using DoctorAppointmentSystem.Application.Features.Doctors.Contract;
 using DoctorAppointmentSystem.Domain.Doctor;
-using DoctorAppointmentSystem.Domain.Users;
 using ErrorOr;
 
 namespace DoctorAppointmentSystem.Application.Features.Doctors.GetDoctorByUserId;

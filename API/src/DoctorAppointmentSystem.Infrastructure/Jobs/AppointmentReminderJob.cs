@@ -33,12 +33,12 @@ internal sealed class AppointmentReminderJob : IAppointmentReminderJob
     {
         var appointment = await _appointments.GetByIdAsync(appointmentId, cancellationToken);
 
-        // Appointment was cancelled after the job was scheduled — skip silently
         if (appointment is null || appointment.Status == AppointmentStatus.Cancelled)
         {
             _logger.LogInformation(
                 "Skipping {ReminderType} reminder for appointment {AppointmentId} — not found or cancelled.",
                 reminderType, appointmentId);
+            
             return;
         }
 

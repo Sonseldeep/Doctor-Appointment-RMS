@@ -20,7 +20,11 @@ internal sealed class JwtTokenGenerator : IJwtTokenGenerator
     {
         var keyBytes = Encoding.UTF8.GetBytes(_options.Secret);
         var signingKey = new SymmetricSecurityKey(keyBytes);
-        var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+        
+        var signingCredentials = new SigningCredentials(
+            signingKey, 
+            SecurityAlgorithms.HmacSha256
+            );
 
         var utcNow = DateTime.UtcNow;
         var expiresAtUtc = utcNow.AddMinutes(_options.AccessTokenMinutes);

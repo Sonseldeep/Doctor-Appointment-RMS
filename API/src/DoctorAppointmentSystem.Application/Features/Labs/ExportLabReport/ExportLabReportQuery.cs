@@ -2,4 +2,5 @@
 
 namespace DoctorAppointmentSystem.Application.Features.Labs.ExportLabReport;
 
-public record ExportLabReportQuery(Guid LabReportId) : IQuery<byte[]>;
+public record ExportLabReportQuery(Guid LabReportId) 
+    : IQuery<byte[]>;

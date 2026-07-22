@@ -2,10 +2,21 @@
 
 internal static class EmailTemplates
 {
-    private static string BrandHeader(string bannerColor, string bannerTitle) => $"""
+    private static string BrandHeader(string bannerColor, string bannerTitle) =>
+        $"""
         <div style="background:#ffffff; padding:16px 32px; border-bottom:1px solid #e5e7eb;">
-          <span style="font-size:20px; font-weight:700; color:#2563eb;">Medi<span style="color:#0D5FC4;">Link</span></span>
-          <span style="font-size:12px; color:#888; margin-left:10px;">Hospital &amp; Medical Center</span>
+          <span style="font-size:20px; font-weight:700; color:#2563eb;">
+          Medi
+          <span style="color:#0D5FC4;">
+          Link
+          </span>
+          </span>
+          <span
+           style="font-size:12px;
+            color:#888;
+             margin-left:10px;">
+             Hospital &amp; Medical Center
+             </span>
         </div>
         <div style="background:{bannerColor}; padding:24px 32px; text-align:center;">
           <h1 style="color:#ffffff; margin:0; font-size:20px;">{bannerTitle}</h1>

@@ -51,7 +51,9 @@ public sealed class DoctorProfile : Entity
         string bio,
         Specialization specialization,
         decimal consultationFee)
-        => new(userId, nmcNumber, bio, specialization, consultationFee);
+    { 
+        return  new DoctorProfile(userId, nmcNumber, bio, specialization, consultationFee);
+    }
 
     public void Update(string bio, Specialization specialization, decimal consultationFee)
     {
