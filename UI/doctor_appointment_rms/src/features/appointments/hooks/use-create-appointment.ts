@@ -11,7 +11,6 @@ export function useCreateAppointment() {
     mutationFn: appointmentsApi.createAppointment,
 
     onSuccess: async () => {
-      // Refresh appointment caches immediately
       await queryClient.invalidateQueries({
         queryKey: ["appointments"],
       });

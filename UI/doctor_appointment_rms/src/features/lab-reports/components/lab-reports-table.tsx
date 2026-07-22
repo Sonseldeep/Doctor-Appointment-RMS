@@ -86,7 +86,6 @@ export const LabReportsTable = () => {
   };
 
   useEffect(() => {
-    // Determine if any applicable parameter is present in the current URL context
     const hasActiveQuery = ["id", "reportId", "labReportId", "appointmentId", "noteId", "clinicalNoteId"].some(
       (param) => !!searchParams.get(param)
     );

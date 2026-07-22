@@ -17,26 +17,17 @@ export function useLogin() {
 
     onSuccess: async (data) => {
       try {
-        // STEP 1: Store token FIRST (before any API calls)
         if (data?.accessToken) {
           tokenStorage.setAccessToken(data.accessToken);
-          
-          // Creates an HTTP-readable cookie for your server-side middleware
           document.cookie = `Access_token=${data.accessToken}; path=/; max-age=604800; SameSite=Lax;`;
         }
-
-        // STEP 2: Now fetch user profile (token is available)
         const user = await userApi.me(data.role);
         queryClient.setQueryData(["auth", "current-user"], user);
-
-        // STEP 3: Store the role (UPDATED to support all valid roles)
         if (user && user.role) {
           userRoleStorage.setUserRole(user.role);
         }
 
         toast.success("Login successful");
-
-        // STEP 4: Navigate to specific dashboard based on role (UPDATED)
         switch (user.role) {
           case "LabTechnician":
             router.replace("/dashboard/lab");
@@ -51,8 +42,6 @@ export function useLogin() {
       } catch (error) {
         console.error("Error after login:", error);
         toast.error("Login failed: Could not fetch profile");
-
-        // Clear token if profile fetch failed
         tokenStorage.clear();
         document.cookie = "Access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
       }

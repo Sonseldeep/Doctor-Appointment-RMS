@@ -103,9 +103,8 @@ export const labReportsApi = {
     return res.data;
   },
 
-  // Update the signature to accept patientId
 askAi: async (patientId: string, question: string): Promise<{ answer: string }> => {
-  // Update the URL to match your backend's Swagger definition
+
   const res = await axiosClient.post(`/api/ai/patients/${patientId}/ask`, { 
     question 
   });

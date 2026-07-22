@@ -53,7 +53,7 @@ export const RagChatWidget = ({ patientId }: { patientId: string }) => {
             onClick={() => handleSend("Provide a comprehensive clinical summary of my longitudinal data trends.")}
             disabled={isPending}
           >
-            <RiSparklingLine size={14} /> {/* FIX 1: Updated icon tag */}
+            <RiSparklingLine size={14} />
             Generate History Report
           </Button>
         )}

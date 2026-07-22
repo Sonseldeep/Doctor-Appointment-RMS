@@ -1,4 +1,3 @@
-// src/features/lab-reports/components/lab-history-table.tsx
 "use client";
 
 import { useQuery } from "@tanstack/react-query";

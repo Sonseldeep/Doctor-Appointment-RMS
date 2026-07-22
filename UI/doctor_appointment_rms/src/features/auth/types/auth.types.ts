@@ -73,10 +73,8 @@ export interface LabTechnicianProfile {
   profilePhotoUrl: string | null;
 }
 
-// Union type for all user types with proper discriminated union
 export type CurrentUser = DoctorProfile | PatientProfile | AdminProfile | LabTechnicianProfile;
 
-// Type guard functions for better type safety
 export const isDoctorProfile = (user: CurrentUser): user is DoctorProfile => {
   return user.role === "Doctor";
 };

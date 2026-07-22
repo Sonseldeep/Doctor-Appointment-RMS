@@ -180,7 +180,7 @@ function BookingWizard() {
               onClick={() => router.push("/dashboard/doctors")} // Clears params, going back to Step 1
               className="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1 mb-2"
             >
-              ← Back to Doctor Selection
+              Back to Doctor Selection
             </button>
             <h2 className="text-2xl font-bold text-slate-950 tracking-tight">Choose Date & Time</h2>
             
@@ -367,7 +367,7 @@ function DateTimePicker({
                   type="button"
                   onClick={() => {
                     setSelectedDate(dateStr);
-                    setSelectedSlot(null); // Reset slot when date changes
+                    setSelectedSlot(null); 
                   }}
                   className={`w-full text-left p-4 rounded-xl border text-sm font-semibold transition-all duration-150 ${
                     isSelected

@@ -7,8 +7,6 @@ export interface CreateAppointmentPayload {
 
 export async function createAppointment(payload: CreateAppointmentPayload): Promise<void> {
 
-
-
   const token = typeof window !== "undefined" 
     ? (localStorage.getItem("token") || localStorage.getItem("accessToken")) 
     : null;

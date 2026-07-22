@@ -12,13 +12,9 @@ export function useRegister() {
 
   return useMutation({
     mutationFn: authApi.register,
-
-    // `variables` contains the RegisterDto passed to mutate()
     onSuccess: (_data, variables) => {
-      // variables is the RegisterDto used when calling mutate(...)
       const email = (variables as { email?: string })?.email ?? "";
       toast.success("Registration successful. Please verify your email.");
-      // Redirect to verification page with the email as a query param
       router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     },
 

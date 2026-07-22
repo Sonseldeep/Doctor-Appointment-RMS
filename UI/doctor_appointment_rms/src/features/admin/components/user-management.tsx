@@ -65,9 +65,6 @@ export function UserManagement() {
             <RiFilter3Line size={18} className="text-blue-600" />
             Filter Patients
           </CardTitle>
-          {/* <CardDescription>
-            Narrow down administrative search parameters on system user registries.
-          </CardDescription> */}
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -161,15 +158,12 @@ export function UserManagement() {
                   </TableRow>
                 ) : data?.items && data.items.length > 0 ? (
                   data.items.map((patient: any) => {
-                    // 1. Resolve nested account relationship structure cleanly
                     const account = patient.user || patient;
 
-                    // 2. Combine names safely from the verified account layer
                     const fullName = account.firstName || account.lastName
                       ? `${account.firstName || ""} ${account.lastName || ""}`.trim()
                       : "";
 
-                    // 3. Fallback variables for tracking keys, assets, and identity
                     const recordKey = patient.id || patient.patientProfileId || account.id;
                     const avatarUrl = account.profilePhotoUrl || null;
                     const displayEmail = account.email || patient.email || "—";

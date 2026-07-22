@@ -10,7 +10,6 @@ export interface UpdatePatientDto {
   dateOfBirth?: string;
 }
 
-// DTO for Initial Creation (POST /api/doctors/profile)
 export interface CreateDoctorProfileDto {
   nmcNumber: string; 
   bio: string;
@@ -18,14 +17,12 @@ export interface CreateDoctorProfileDto {
   consultationFee: number;
 }
 
-// DTO for Updates (PUT /api/doctors/profile) - Excludes NMC Number
 export interface UpdateDoctorProfileDto {
   bio: string;
   specialization: string;
   consultationFee: number;
 }
 
-// PATIENT PROFILE (PUT)
 export function useUpdatePatientProfile() {
   const queryClient = useQueryClient();
 
@@ -46,7 +43,6 @@ export function useUpdatePatientProfile() {
   });
 }
 
-// DOCTOR PROFILE - CREATION (POST)
 export function useCreateDoctorProfile() {
   const queryClient = useQueryClient();
 
@@ -61,7 +57,6 @@ export function useCreateDoctorProfile() {
   });
 }
 
-// DOCTOR PROFILE - SUBSEQUENT UPDATES (PUT)
 export function useUpdateDoctorProfile() {
   const queryClient = useQueryClient();
 
