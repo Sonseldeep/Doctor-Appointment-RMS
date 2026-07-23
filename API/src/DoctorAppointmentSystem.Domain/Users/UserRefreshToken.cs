@@ -8,7 +8,10 @@ public sealed class UserRefreshToken : Entity
     {
     }
 
-    private UserRefreshToken( Guid userId, string tokenHash, DateTimeOffset expiresAt) : base(Guid.NewGuid())
+    private UserRefreshToken(
+        Guid userId,
+        string tokenHash,
+        DateTimeOffset expiresAt) : base(Guid.NewGuid())
     {
         UserId = userId;
         TokenHash = tokenHash;

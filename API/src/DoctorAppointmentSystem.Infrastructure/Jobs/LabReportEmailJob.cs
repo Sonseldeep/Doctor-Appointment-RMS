@@ -37,11 +37,13 @@ internal sealed class LabReportEmailJob : ILabReportEmailJob
     public async Task SendReportEmailAsync(Guid labReportId, CancellationToken cancellationToken)
     {
         var report = await _labReports.GetByIdAsync(labReportId, cancellationToken);
+        
         if (report is null)
         {
             _logger.LogWarning(
                 "Skipping lab report email — report {LabReportId} not found.",
                 labReportId);
+            
             return;
         }
 

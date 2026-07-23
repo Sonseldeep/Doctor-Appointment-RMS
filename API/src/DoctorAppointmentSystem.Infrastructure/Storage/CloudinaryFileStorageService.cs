@@ -72,9 +72,8 @@ internal sealed partial class CloudinaryFileStorageService : IFileStorageService
         var uploadParams = new ImageUploadParams
         {
             File = new FileDescription(fileName, fileStream),
-            Folder = "lab_reports", // Segregates lab attachments into their own directory
+            Folder = "lab_reports", 
             Overwrite = true
-            // Removed ResourceType = "auto" since "image" natively supports both PDFs and JPEGs
         };
 
         var result = await _cloudinary.UploadAsync(uploadParams, cancellationToken);
