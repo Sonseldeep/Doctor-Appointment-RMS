@@ -28,7 +28,9 @@ public sealed class DoctorRatingSummary : Entity
     public DateTimeOffset LastUpdatedAtUtc { get; private set; }
 
     public static DoctorRatingSummary CreateEmpty(Guid doctorUserId)
-        => new(doctorUserId);
+    {
+        return   new DoctorRatingSummary(doctorUserId);
+    }
 
     public void AddRating(int stars)
     {

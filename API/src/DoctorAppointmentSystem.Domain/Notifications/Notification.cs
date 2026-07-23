@@ -43,7 +43,9 @@ public sealed class Notification : Entity
         string message,
         NotificationType type,
         Guid? appointmentId = null)
-        => new(userId, title, message, type, appointmentId);
+    {
+        return new Notification(userId, title, message, type, appointmentId);
+    }
 
     public void MarkAsRead()
     {

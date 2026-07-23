@@ -3,7 +3,7 @@ using DoctorAppointmentSystem.Application.Features.ClinicalNotes.Contracts;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.ExportClinicalNotes;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetClinicalNoteByAppointment;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetMyClinicalNotes;
-using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetUpcomingFollowUps;
+using DoctorAppointmentSystem.Application.Features.ClinicalNotes.GetUpcomingFollowUp;
 using DoctorAppointmentSystem.Application.Features.ClinicalNotes.UpdateClinicalNote;
 using DoctorAppointmentSystem.Domain.Users;
 using MediatR;

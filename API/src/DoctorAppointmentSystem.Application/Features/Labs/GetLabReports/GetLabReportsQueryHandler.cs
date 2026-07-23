@@ -4,7 +4,8 @@ using ErrorOr;
 
 namespace DoctorAppointmentSystem.Application.Features.Labs.GetLabReports;
 
-public sealed class GetLabReportsQueryHandler : IQueryHandler<GetLabReportsQuery, List<LabReportResponse>>
+public sealed class GetLabReportsQueryHandler 
+    : IQueryHandler<GetLabReportsQuery, List<LabReportResponse>>
 {
     private readonly ILabReportRepository _labRepository;
 

@@ -3,4 +3,5 @@
 namespace DoctorAppointmentSystem.Application.Features.Labs.GetLabReports;
 
 
-public record GetLabReportsQuery(Guid PatientId) : IQuery<List<LabReportResponse>>;
+public record GetLabReportsQuery(Guid PatientId)
+    : IQuery<List<LabReportResponse>>;

@@ -44,7 +44,9 @@ public sealed class Appointment : Entity
         DateTimeOffset startUtc,
         DateTimeOffset endUtc,
         string? notes)
-        => new(patientUserId, doctorUserId, startUtc, endUtc, notes);
+    {
+        return  new Appointment(patientUserId, doctorUserId, startUtc, endUtc, notes);
+    }
 
     public void Confirm(DateTimeOffset utcNow)
     {
