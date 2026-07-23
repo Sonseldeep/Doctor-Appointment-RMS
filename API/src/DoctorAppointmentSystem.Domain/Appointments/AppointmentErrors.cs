@@ -45,4 +45,9 @@ public static class AppointmentErrors
         Error.Conflict(
             code: "Appointment.PatientSlotConflict",
             description: "You already have an appointment booked during this time slot.");
+    
+    public static Error PatientAlreadyBookedDoctorToday =>
+        Error.Conflict(
+            code: "Appointment.PatientAlreadyBookedDoctorToday",
+            description: "You already have an active appointment with this doctor on this day.");
 }

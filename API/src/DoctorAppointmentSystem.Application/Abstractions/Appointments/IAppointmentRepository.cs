@@ -49,4 +49,9 @@ public interface IAppointmentRepository
     Task<bool> HasAssociationAsync(Guid doctorUserId, Guid patientUserId, CancellationToken cancellationToken);
 
 
+    Task<bool> PatientHasBookingWithDoctorOnDateAsync(
+        Guid patientUserId,
+        Guid doctorUserId,
+        DateOnly date,
+        CancellationToken cancellationToken);
 }

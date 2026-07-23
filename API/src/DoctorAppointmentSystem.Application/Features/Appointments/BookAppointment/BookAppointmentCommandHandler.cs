@@ -128,6 +128,18 @@ internal sealed class BookAppointmentCommandHandler
             return AppointmentErrors.PatientSlotConflict;
         }
 
+        var alreadyBookedThisDoctorToday = await _appointmentRepository
+            .PatientHasBookingWithDoctorOnDateAsync(
+            request.PatientUserId,
+            request.DoctorUserId,
+            date,
+            cancellationToken);
+        
+        if (alreadyBookedThisDoctorToday)
+        {
+            return AppointmentErrors.PatientAlreadyBookedDoctorToday;
+        }
+
         
         var appointment = Appointment.Create(
             request.PatientUserId,
