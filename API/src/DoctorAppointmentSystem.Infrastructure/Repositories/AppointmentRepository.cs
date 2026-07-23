@@ -158,4 +158,30 @@ internal sealed class AppointmentRepository : IAppointmentRepository
                         cancellationToken);
 
     }
+
+    public async Task<bool> PatientHasBookingWithDoctorOnDateAsync(
+        Guid patientUserId,
+        Guid doctorUserId,
+        DateOnly date,
+        CancellationToken cancellationToken)
+    {
+        var dayStartUtc = new DateTimeOffset(
+            date.Year,
+            date.Month,
+            date.Day, 
+            0, 
+            0,
+            0, 
+            TimeSpan.Zero);
+        var dayEndUtc = dayStartUtc.AddDays(1);
+
+        return await _db.Appointments.AsNoTracking().AnyAsync(x =>
+                x.PatientUserId == patientUserId
+                && x.DoctorUserId == doctorUserId
+                && x.Status != AppointmentStatus.Cancelled
+                && x.Status != AppointmentStatus.Completed
+                && x.StartUtc >= dayStartUtc
+                && x.StartUtc < dayEndUtc,
+            cancellationToken);
+    }
 }
