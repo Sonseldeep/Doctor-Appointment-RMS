@@ -94,23 +94,23 @@ public sealed class UserContext : IUserContext
         }
     }
 
-    public string Role => _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value ?? "Registered";
+    //public string Role => _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value ?? "Registered";
 
-    public Guid? PatientProfileId
-    {
-        get
-        {
-            var claim = _httpContextAccessor.HttpContext?.User?.FindFirst("PatientId")?.Value;
-            return Guid.TryParse(claim, out var id) ? id : null;
-        }
-    }
+    //public Guid? PatientProfileId
+    //{
+    //    get
+    //    {
+    //        var claim = _httpContextAccessor.HttpContext?.User?.FindFirst("PatientId")?.Value;
+    //        return Guid.TryParse(claim, out var id) ? id : null;
+    //    }
+    //}
 
-    public Guid? DoctorProfileId
-    {
-        get
-        {
-            var claim = _httpContextAccessor.HttpContext?.User?.FindFirst("DoctorId")?.Value;
-            return Guid.TryParse(claim, out var id) ? id : null;
-        }
-    }
+    //public Guid? DoctorProfileId
+    //{
+    //    get
+    //    {
+    //        var claim = _httpContextAccessor.HttpContext?.User?.FindFirst("DoctorId")?.Value;
+    //        return Guid.TryParse(claim, out var id) ? id : null;
+    //    }
+    //}
 }

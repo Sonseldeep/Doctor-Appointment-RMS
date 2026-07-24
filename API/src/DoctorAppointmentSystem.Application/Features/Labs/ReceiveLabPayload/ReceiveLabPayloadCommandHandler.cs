@@ -115,7 +115,12 @@ public class ReceiveLabPayloadCommandHandler : ICommandHandler<ReceiveLabPayload
             var memoryEmbedding = await _embeddingService.GenerateEmbeddingAsync(fullLabContextString, cancellationToken: cancellationToken);
             float[] vectorArray = memoryEmbedding.ToArray();
 
-            await _vectorDatabase.InsertRecordAsync(user.Id, fullLabContextString, vectorArray, cancellationToken);
+            await _vectorDatabase.InsertRecordAsync(
+                user.Id,
+                fullLabContextString,
+                vectorArray,
+                request.ObservationDate,
+                cancellationToken);
         }
         catch (Exception)
         {
